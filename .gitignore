@@ -1,0 +1,39 @@
+# general
+.DS_Store
+node_modules/
+.awcache
+dist/
+coverage/
+**/*.tsbuildinfo
+.nyc_output
+
+# elixir ignores
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+sequence-*.tar
+.elixir_ls
+secrets/
+.deliver/releases
+
+# asset ignores
+/priv/static
+
+# yarn / npm
+package-lock.json
+npm-debug.log
+yarn-error.log
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/releases
+!**/.yarn/plugins
+!**/.yarn/sdks
+!**/.yarn/versions
+**/.pnp.*
+
+# documents
+/docs/

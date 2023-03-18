@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#app {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overscroll-behavior: none;
+}
+
+.fade-appear { opacity: 0 }
+.fade-appear-active { opacity: 1 }
+.fade-appear-done { opacity: 1 }
+.fade-enter { opacity: 0 }
+.fade-enter-active { opacity: 1 }
+.fade-enter-done { opacity: 1 }
+.fade-exit { opacity: 1 }
+.fade-exit-active { opacity: 0 }
+.fade-exit-done { opacity: 0 }
+
+.without-ring {
+  @apply focus:ring-0 focus:ring-offset-0;
+}
+
+/*
+.scrollbar::-webkit-scrollbar { width: 5px; }
+.scrollbar::-webkit-scrollbar-track { background: transparent }
+.scrollbar::-webkit-scrollbar-thumb {
+  background: #888888;
+  border-radius: 3px;
+}
+.scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #aaaaaa;
+}
+*/
+
+span.grippy {
+  content: '....';
+  width: 10px;
+  height: 20px;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 5px;
+  padding: 3px 4px;
+  cursor: move;
+  vertical-align: middle;
+  margin-top: -.7em;
+  margin-right: .3em;
+  font-size: 12px;
+  font-family: sans-serif;
+  letter-spacing: 2px;
+  color: #cccccc;
+  text-shadow: 1px 0 1px black;
+}
+span.grippy::after {
+  content: '.. .. .. ..';
+}
+
+.legal {
+  h1 { font-size: 32px; font-weight: bold; line-height: 48px; margin-bottom: 12px; }
+  h2 { font-size: 24px; font-weight: bold; line-height: 32px; margin: 20px 0; }
+  p { line-height: 24px; margin: 12px 0; }
+  ol, ul { list-style: inherit }
+  li { line-height: 24px; margin: 12px 0 12px 12px; }
+  a { color: #50567d }
+  a:hover { text-decoration: underline }
+}
+
+.blink {
+  animation: blinker 1s step-start infinite;
+}
+
+@keyframes blinker {
+  50% { opacity: 0; }
+}
+
+
+ul[data-type="taskList"], .ProseMirror ul[data-type="taskList"] {
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  li:hover .group-hover {
+    display: flex;
+    opacity: 1;
+    transition: opacity 200ms;
+  }
+}
+
+.dot-flashing {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite linear alternate;
+  animation-delay: 0.5s;
+}
+.dot-flashing::before, .dot-flashing::after {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  top: 0;
+}
+.dot-flashing::before {
+  left: -15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 0s;
+}
+.dot-flashing::after {
+  left: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #9880ff;
+  color: #9880ff;
+  animation: dot-flashing 1s infinite alternate;
+  animation-delay: 1s;
+}
+
+@keyframes dot-flashing {
+  0% {
+    background-color: #9880ff;
+  }
+  50%, 100% {
+    background-color: rgba(152, 128, 255, 0.2);
+  }
+}

@@ -1,0 +1,5 @@
+<div id="app"></div>
+<%= if !dev_server?() do %>
+  <link rel="stylesheet" href={Routes.static_path(@conn, "/assets/style.css")}>
+<% end %>
+<script type="module" src={js_path(@conn, @entry)} onError="setTimeout(location.reload, 5000)"></script>
