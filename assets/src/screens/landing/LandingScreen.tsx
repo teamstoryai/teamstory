@@ -4,7 +4,7 @@ import Features from '@/screens/landing/Features'
 import FooterCTA from '@/screens/landing/FooterCTA'
 import Hero from '@/screens/landing/Hero'
 import Pricing from '@/screens/landing/Pricing'
-import WhyDaybird from '@/screens/landing/WhyDaybird'
+import FavoriteTools from '@/screens/landing/FavoriteTools'
 
 type Props = {
   path: string
@@ -20,11 +20,7 @@ export default (props: Props) => {
       <main className="flex flex-col grow ">
         <Hero />
 
-        <WhyDaybird />
-
-        <Features />
-
-        <FooterCTA />
+        <FavoriteTools />
       </main>
     </LandingLayout>
   )

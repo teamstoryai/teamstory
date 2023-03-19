@@ -6,7 +6,7 @@ import { uiStore } from '@/stores/uiStore'
 
 export default function (props: RenderableProps<{ darkFooter?: boolean }>) {
   return (
-    <div class="h-full flex flex-col bg-lavender-50">
+    <div class="h-full flex flex-col bg-slate-50">
       {!uiStore.reactNative && <Header />}
       {props.children}
       {!uiStore.reactNative && <Footer dark={props.darkFooter} />}

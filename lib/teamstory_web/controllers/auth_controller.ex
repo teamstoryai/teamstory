@@ -102,6 +102,17 @@ defmodule TeamstoryWeb.AuthController do
   #   {:ok, User} - successful
   #   {:invalid_token} - invalid google token
   #   {:not_found, {id, email, name}} - user not found
+  @spec find_user_by_google_token(any) ::
+          {:error, any}
+          | {:not_found,
+             %{
+               :email => binary,
+               :id => any,
+               optional(:domain) => any,
+               optional(:name) => any,
+               optional(:profile_img) => nil | binary
+             }}
+          | {:ok, any}
   def find_user_by_google_token(token) do
     case OAuth.get_user_info("google", token) do
       {:ok, profile} ->
