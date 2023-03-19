@@ -3,7 +3,6 @@ defmodule Teamstory.Repo.Migrations.CreateUsers do
 
   def change do
     create table(:users) do
-
       add :uuid, :uuid
       add :name, :string, size: 50
       add :nickname, :string, size: 50
@@ -15,6 +14,7 @@ defmodule Teamstory.Repo.Migrations.CreateUsers do
       add :invite_id, :integer
       add :meta, :map
       add :activated_at, :utc_datetime
+      add :deleted_at, :utc_datetime
       add :origin_type, :string, size: 10
 
       timestamps()

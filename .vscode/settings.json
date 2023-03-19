@@ -11,7 +11,7 @@
     "**/*.map": true,
     "yarn.lock": true
   },
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "prettier.configPath": "package.json",
   "prettier.prettierPath": "./node_modules/prettier",
   "[typescript][javascript][typescriptreact][javascriptreact]": {

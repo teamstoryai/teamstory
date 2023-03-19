@@ -6,21 +6,6 @@ defmodule Teamstory.Users.User do
 
   @type t :: %__MODULE__{}
 
-  def meta_last_team(), do: "lt"
-  def meta_has_app(), do: "ha"
-  def meta_last_doc(), do: "ld"
-  def meta_last_dee(), do: "ldee"  # dee = doc-edit email
-  def meta_num_dee(), do: "ndee"
-  def meta_first_call(), do: "fc"
-  def meta_last_download_reminder_email(), do: "ldre"
-  def meta_slack_user_scopes(), do: "sus"
-  def meta_pmf_survey_status(), do: "pmf"
-  def meta_hear_before_accept(), do: "hba"
-  def meta_mobile_push_token(), do: "mpt"
-  def meta_kiosk(), do: "ki"
-
-  def meta_last_download_reminder_email(val), do: %{ "ldre" => val }
-
   def meta(user, key) do
     user.meta && user.meta[key]
   end
@@ -44,6 +29,7 @@ defmodule Teamstory.Users.User do
     field :invite_id, :integer
     field :meta, :map
     field :activated_at, :utc_datetime
+    field :deleted_at, :utc_datetime
     field :origin_type, :string
 
     has_one :magic_link, MagicLink
@@ -54,20 +40,30 @@ defmodule Teamstory.Users.User do
 
   @doc false
   def changeset(user, attrs) do
-    attrs = Teamstory.Utils.atoms_to_keys(attrs)
-
-    attrs = if Map.has_key?(attrs, "google_id") do
-      %{ attrs | "google_id" => to_string(attrs["google_id"]) }
-    else
-      attrs
-    end
+    attrs =
+      Teamstory.Utils.atoms_to_keys(attrs)
+      |> cast_google_id
 
     user
-    |> cast(attrs, [:uuid, :name, :nickname, :profile_img,
-      :email, :google_id, :password, :timezone, :activated_at,
-      :invite_id, :meta, :org_id, :origin_type, :apple_id])
+    |> cast(attrs, [
+      :uuid,
+      :name,
+      :nickname,
+      :profile_img,
+      :email,
+      :google_id,
+      :password,
+      :timezone,
+      :activated_at,
+      :deleted_at,
+      :invite_id,
+      :meta,
+      :org_id,
+      :origin_type,
+      :apple_id
+    ])
     |> cast_assoc(:magic_link)
-    |> Repo.generate_uuid
+    |> Repo.generate_uuid()
     |> validate_required([:uuid, :name, :email])
     |> validate_length(:email, min: 1, max: 150)
     |> validate_length(:password, min: 5, max: 50)
@@ -82,11 +78,20 @@ defmodule Teamstory.Users.User do
     |> put_password_hash()
   end
 
+  defp cast_google_id(attrs) do
+    if Map.has_key?(attrs, "google_id") do
+      %{attrs | "google_id" => to_string(attrs["google_id"])}
+    else
+      attrs
+    end
+  end
+
   defp put_password_hash(changeset) do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
         put_change(changeset, :password_hash, Bcrypt.hash_pwd_salt(pass))
         |> delete_change(:password)
+
       _ ->
         changeset
     end

@@ -11,7 +11,7 @@ defmodule Teamstory.Billing.Subscription do
     field :interval, Ecto.Enum, values: [:month, :year]
     field :valid, :boolean, default: false
     field :next_renewal, :utc_datetime
-    field :team_id, :id
+    field :org_id, :id
     field :user_id, :id
 
     timestamps()
@@ -20,7 +20,16 @@ defmodule Teamstory.Billing.Subscription do
   @doc false
   def changeset(subscription, attrs) do
     subscription
-    |> cast(attrs, [:stripe_id, :customer_id, :type, :interval, :valid, :next_renewal, :team_id, :user_id])
-    |> validate_required([:stripe_id, :customer_id, :team_id, :user_id])
+    |> cast(attrs, [
+      :stripe_id,
+      :customer_id,
+      :type,
+      :interval,
+      :valid,
+      :next_renewal,
+      :org_id,
+      :user_id
+    ])
+    |> validate_required([:stripe_id, :customer_id, :org_id, :user_id])
   end
 end

@@ -4,7 +4,7 @@ defmodule Teamstory.Topicflow.Socket do
   @behaviour :cowboy_websocket
 
   alias Teamstory.Topicflow.{Socket, JsonRpc, Session}
-  alias Teamstory.{Repo, Teams, Auth }
+  alias Teamstory.{Repo, Teams, Auth}
 
   require Logger
 
@@ -64,51 +64,32 @@ defmodule Teamstory.Topicflow.Socket do
       %{"state_id" => state_id, "token" => token, "client_id" => client_id} ->
         case Auth.Guardian.resource_from_partial_token(token) do
           {:ok, user, is_partial} ->
-            team_check =
-              case Map.get(qs, "team_id") do
-                nil ->
-                  {:ok, nil}
+            team = %{id: 1}
 
-                team_id ->
-                  case Teams.team_by_uuid(user.id, !is_partial && team_id) do
-                    {:ok, team} ->
-                      {:ok, team |> Repo.preload(:org)}
+            session_pid =
+              case Session.Supervisor.start_child(user, team, client_id, state_id, self()) do
+                {:error, {:already_started, session_pid}} ->
+                  :ok = Session.cast_switch_socket(session_pid, user, team, state_id, self())
+                  session_pid
 
-                    _ ->
-                      :unauthorized
-                  end
+                {:ok, session_pid} ->
+                  session_pid
               end
 
-            case team_check do
-              {:ok, team} ->
-                session_pid =
-                  case Session.Supervisor.start_child(user, team, client_id, state_id, self()) do
-                    {:error, {:already_started, session_pid}} ->
-                      :ok = Session.cast_switch_socket(session_pid, user, team, state_id, self())
-                      session_pid
+            _ = Process.monitor(session_pid)
 
-                    {:ok, session_pid} ->
-                      session_pid
-                  end
+            {:ok, ping, socket} = issue_ping(socket, true)
 
-                _ = Process.monitor(session_pid)
+            {:ok, %{"exp" => exp}} = Auth.Guardian.decode_and_verify(token)
 
-                {:ok, ping, socket} = issue_ping(socket, true)
-
-                {:ok, %{ "exp" => exp }} = Auth.Guardian.decode_and_verify(token)
-
-                {:reply, {:text, JsonRpc.encode(ping)},
-                 %{
-                   socket
-                   | state_id: state_id,
-                     client_id: client_id,
-                     session_pid: session_pid,
-                     auth_timeout: exp
-                 }}
-
-              :unauthorized ->
-                {:reply, {:close, @unauthorized_code, "Unauthorized"}, socket}
-            end
+            {:reply, {:text, JsonRpc.encode(ping)},
+             %{
+               socket
+               | state_id: state_id,
+                 client_id: client_id,
+                 session_pid: session_pid,
+                 auth_timeout: exp
+             }}
 
           _ ->
             {:reply, {:close, @unauthorized_code, "Unauthorized"}, socket}
@@ -119,7 +100,10 @@ defmodule Teamstory.Topicflow.Socket do
     end
   end
 
-  def websocket_handle({:text, text}, %Socket{session_pid: session_pid, auth_timeout: exp} = socket) do
+  def websocket_handle(
+        {:text, text},
+        %Socket{session_pid: session_pid, auth_timeout: exp} = socket
+      ) do
     if exp > Timex.to_unix(Timex.now()) do
       case JsonRpc.decode(text) do
         {:ok, messages} ->
@@ -184,7 +168,8 @@ defmodule Teamstory.Topicflow.Socket do
   def websocket_info(
         {:send_messages, messages, max_wait},
         %Socket{flush_timer_ref: tref, message_buffer: buf} = socket
-      ) when max_wait > 0 do
+      )
+      when max_wait > 0 do
     tref =
       case tref && Process.read_timer(tref) do
         # If there was no timer set, a new timer
