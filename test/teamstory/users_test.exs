@@ -8,11 +8,14 @@ defmodule Teamstory.UsersTest do
 
     import Teamstory.UsersFixtures
 
-    @invalid_attrs %{completed_at: nil, deleted_at: nil, description: nil, short_code: nil, state: nil, title: nil}
+    @invalid_attrs %{
+      name: nil,
+      email: nil
+    }
 
     test "list_users/0 returns all users" do
       user = user_fixture()
-      assert Users.list_users() == [user]
+      assert Enum.find(Users.list_users(), fn u -> u.id == user.id end)
     end
 
     test "get_user!/1 returns the user with given id" do
@@ -21,14 +24,12 @@ defmodule Teamstory.UsersTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{creator_id: 1, project_id: 1,
-        description: "some description", short_code: "BL-1", state: "some state", title: "some title"}
+      valid_attrs = %{name: "George", email: "foo@bar.com"}
 
       assert {:ok, %User{} = user} = Users.create_user(valid_attrs)
-      assert user.description == "some description"
-      assert user.short_code == "BL-1"
-      assert user.state == "some state"
-      assert user.title == "some title"
+      assert user.name == "George"
+      assert user.email == "foo@bar.com"
+      assert user.uuid
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -37,17 +38,10 @@ defmodule Teamstory.UsersTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{completed_at: ~U[2022-07-14 06:23:00Z], deleted_at: ~U[2022-07-14 06:23:00Z],
-        description: "some updated description", short_code: "BL-2",
-        state: "some updated state", title: "some updated title"}
+      update_attrs = %{name: "Richard"}
 
       assert {:ok, %User{} = user} = Users.update_user(user, update_attrs)
-      assert user.completed_at == ~U[2022-07-14 06:23:00Z]
-      assert user.deleted_at == ~U[2022-07-14 06:23:00Z]
-      assert user.description == "some updated description"
-      assert user.short_code == "BL-2"
-      assert user.state == "some updated state"
-      assert user.title == "some updated title"
+      assert user.name == "Richard"
     end
 
     test "update_user/2 with invalid data returns error changeset" do

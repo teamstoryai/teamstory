@@ -2,7 +2,6 @@ defmodule TeamstoryWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "team:*", TeamstoryWeb.TeamChannel
   channel "user:*", TeamstoryWeb.UserChannel
 
   # Socket params are passed from the client and can
