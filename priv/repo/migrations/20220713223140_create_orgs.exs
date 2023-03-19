@@ -6,6 +6,9 @@ defmodule Teamstory.Repo.Migrations.CreateOrgs do
       add :uuid, :uuid
       add :name, :string, size: 50
       add :domain, :string, size: 50
+      add :domains, :string, size: 50
+      add :auto_join, :boolean
+      add :deleted_at, :utc_datetime
       add :meta, :map
 
       timestamps()
@@ -13,6 +16,7 @@ defmodule Teamstory.Repo.Migrations.CreateOrgs do
 
     create index(:orgs, [:uuid])
     create index(:orgs, [:domain])
+    create index(:orgs, [:domains])
 
     alter table(:users) do
       add :org_id, references(:orgs, on_delete: :nothing)
@@ -28,5 +32,4 @@ defmodule Teamstory.Repo.Migrations.CreateOrgs do
 
     drop table(:orgs)
   end
-
 end

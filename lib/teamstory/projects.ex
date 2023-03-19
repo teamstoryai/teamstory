@@ -12,18 +12,27 @@ defmodule Teamstory.Projects do
   @spec list_user_projects(User.t()) :: [Project.t()]
   def list_user_projects(user, include_archived \\ false) do
     project_ids = list_user_project_ids(user)
-    query = from p in Project, where: p.id in ^project_ids and is_nil(p.deleted_at), order_by: [asc: :id]
+
+    query =
+      from p in Project,
+        where: p.id in ^project_ids and is_nil(p.deleted_at),
+        order_by: [asc: :id]
 
     if !include_archived do
       query |> where([up], is_nil(up.archived_at))
     else
       query
-    end |> Repo.all
+    end
+    |> Repo.all()
   end
 
   @spec list_user_project_ids(User.t()) :: [integer]
   def list_user_project_ids(user) do
-    Repo.all(from up in UserProject, select: up.project_id, where: up.user_id == ^user.id and is_nil(up.left_at))
+    Repo.all(
+      from up in UserProject,
+        select: up.project_id,
+        where: up.user_id == ^user.id and is_nil(up.left_at)
+    )
   end
 
   @spec list_all_user_project(User.t()) :: [UserProject.t()]
@@ -31,19 +40,25 @@ defmodule Teamstory.Projects do
     Repo.all(from up in UserProject, where: up.user_id == ^user.id)
   end
 
-  @spec get_user_project(User.t() | binary, Team.t() | binary, boolean) :: UserTeam.t() | nil
+  @spec get_user_project(User.t() | binary, Project.t() | binary, boolean) ::
+          UserProject.t() | nil
   def get_user_project(user, project, active_only \\ true) do
     user_id = if is_map(user), do: user.id, else: user
     project_id = if is_map(project), do: project.id, else: project
 
-    query = from up in UserProject, where: up.user_id == ^user_id and
-      up.project_id == ^project_id, limit: 1
+    query =
+      from up in UserProject,
+        where:
+          up.user_id == ^user_id and
+            up.project_id == ^project_id,
+        limit: 1
 
     if active_only do
       query |> where([up], is_nil(up.left_at))
     else
       query
-    end |> Repo.one
+    end
+    |> Repo.one()
   end
 
   def is_member?(project, user) do
@@ -80,56 +95,67 @@ defmodule Teamstory.Projects do
   def join_project(user, project, role) do
     case get_user_project(user, project, false) do
       nil ->
-        create_user_project(%{ user_id: user.id, project_id: project.id,
-          role: role })
+        create_user_project(%{user_id: user.id, project_id: project.id, role: role})
+
       up ->
-        update_user_project(up, %{ left_at: nil })
+        update_user_project(up, %{left_at: nil})
     end
   end
 
   def generate_short_code(project) do
-    {:ok, next_id} = Repo.transaction(fn ->
-      project = get_project!(project.id)
-      next_id = (project.next_id || 0) + 1
-      update_project(project, %{ next_id: next_id })
-      next_id
-    end)
+    {:ok, next_id} =
+      Repo.transaction(fn ->
+        project = get_project!(project.id)
+        next_id = (project.next_id || 0) + 1
+        update_project(project, %{next_id: next_id})
+        next_id
+      end)
+
     "##{next_id}"
   end
 
-  @spec list_project_members(Project.t()) :: [%{ id: binary, name: binary, email: binary, role: binary }]
+  @spec list_project_members(Project.t()) :: [
+          %{id: binary, name: binary, email: binary, role: binary}
+        ]
   def list_project_members(project) do
-    ups = Repo.all(from up in UserProject, where: up.project_id == ^project.id and is_nil(up.left_at))
-    |> Repo.preload(:user)
+    ups =
+      Repo.all(from up in UserProject, where: up.project_id == ^project.id and is_nil(up.left_at))
+      |> Repo.preload(:user)
 
-    invites = Repo.all(from pi in ProjectInvite, where: pi.project_id == ^project.id and
-      is_nil(pi.deleted_at) and is_nil(pi.joined_at))
+    invites =
+      Repo.all(
+        from pi in ProjectInvite,
+          where:
+            pi.project_id == ^project.id and
+              is_nil(pi.deleted_at) and is_nil(pi.joined_at)
+      )
 
     Enum.map(ups, fn up ->
-      %{ id: up.user.uuid, name: up.user.name, role: up.role }
-    end) ++ Enum.map(invites, fn pi ->
-      %{ email: pi.email, role: pi.role }
-    end)
+      %{id: up.user.uuid, name: up.user.name, role: up.role}
+    end) ++
+      Enum.map(invites, fn pi ->
+        %{email: pi.email, role: pi.role}
+      end)
   end
 
   @spec find_project_invite(Project.t(), binary) :: ProjectInvite.t() | nil
   def find_project_invite(project, email) do
-    Repo.one(from pi in ProjectInvite, where: pi.project_id == ^project.id and
-      is_nil(pi.deleted_at) and is_nil(pi.joined_at) and pi.email == ^email, limit: 1)
+    Repo.one(
+      from pi in ProjectInvite,
+        where:
+          pi.project_id == ^project.id and
+            is_nil(pi.deleted_at) and is_nil(pi.joined_at) and pi.email == ^email,
+        limit: 1
+    )
   end
 
   def user_joined(user) do
-    {:ok, project} = create_project(%{ name: "Personal", shortcode: "P", creator_id: user.id })
-    create_user_project(%{
-      project_id: project.id,
-      role: "admin",
-      user_id: user.id
-    })
-
-    invites = Repo.all(from pi in ProjectInvite, where: is_nil(pi.deleted_at) and pi.email == ^user.email)
+    invites =
+      Repo.all(from pi in ProjectInvite, where: is_nil(pi.deleted_at) and pi.email == ^user.email)
 
     Enum.each(invites, fn invite ->
-      update_project_invite(invite, %{ joined_at: Timex.now })
+      update_project_invite(invite, %{joined_at: Timex.now()})
+
       create_user_project(%{
         project_id: invite.project_id,
         role: invite.role,

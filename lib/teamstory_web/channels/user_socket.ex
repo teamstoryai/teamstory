@@ -17,42 +17,36 @@ defmodule TeamstoryWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(params, socket) do
-    socket = socket
-    |> assign(:client_id, params["client_id"])
+    socket =
+      socket
+      |> assign(:client_id, params["client_id"])
 
     # token is not required for all socket request (in particular login channel)
     # but if it's passed in, we validate it and extract user id
     token = params["token"]
     legacy_client = params["hash"] == nil
+
     if token == nil or legacy_client do
-      socket = socket
-      |> assign(:user_id, nil)
-      |> assign(:user_uuid, nil)
+      socket =
+        socket
+        |> assign(:user_id, nil)
+        |> assign(:user_uuid, nil)
+
       {:ok, socket}
     else
       with {:ok, user, is_partial} <- Teamstory.Auth.Guardian.resource_from_partial_token(token) do
-        socket = socket
-        |> assign(:user_id, user.id)
-        |> assign(:user_uuid, user.uuid)
-        |> assign(:partial, is_partial)
-        |> maybe_assign_admin(params["admin"] && !is_partial, user)
+        socket =
+          socket
+          |> assign(:user_id, user.id)
+          |> assign(:user_uuid, user.uuid)
+          |> assign(:partial, is_partial)
+
         {:ok, socket}
       else
         _ -> :error
       end
     end
   end
-
-  def maybe_assign_admin(socket, nil, _), do: socket
-
-  def maybe_assign_admin(socket, _, user) do
-    with :ok <- TeamstoryWeb.EnsureAdmin.validate_admin(user) do
-      assign(socket, :admin, true)
-    else
-      _ -> socket
-    end
-  end
-
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
   #

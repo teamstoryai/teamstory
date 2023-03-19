@@ -3,7 +3,7 @@ defmodule Teamstory.Auth.Guardian do
 
   use Guardian.Token.Verify
 
-  alias Teamstory.{Users, Teams}
+  alias Teamstory.{Users}
 
   # generate guest token (used when guest user signing in with invite)
   def guest_token(invite) do

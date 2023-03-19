@@ -10,7 +10,7 @@ defmodule Teamstory.Orgs.Organization do
     field :name, :string
     field :domain, :string
     field :domains, :string
-    field :profile_img, :string
+    field :auto_join, :boolean
     field :deleted_at, :utc_datetime
     field :meta, :map
 
@@ -20,8 +20,8 @@ defmodule Teamstory.Orgs.Organization do
   @doc false
   def changeset(organization, attrs) do
     organization
-    |> cast(attrs, [:uuid, :name, :domain, :domains, :profile_img, :deleted_at, :meta])
-    |> Teamstory.Repo.generate_uuid
+    |> cast(attrs, [:uuid, :name, :domain, :domains, :auto_join, :deleted_at, :meta])
+    |> Teamstory.Repo.generate_uuid()
     |> validate_required([:uuid, :name])
   end
 end

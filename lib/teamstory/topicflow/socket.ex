@@ -4,7 +4,7 @@ defmodule Teamstory.Topicflow.Socket do
   @behaviour :cowboy_websocket
 
   alias Teamstory.Topicflow.{Socket, JsonRpc, Session}
-  alias Teamstory.{Repo, Teams, Auth}
+  alias Teamstory.{Auth}
 
   require Logger
 
@@ -63,7 +63,7 @@ defmodule Teamstory.Topicflow.Socket do
     case qs do
       %{"state_id" => state_id, "token" => token, "client_id" => client_id} ->
         case Auth.Guardian.resource_from_partial_token(token) do
-          {:ok, user, is_partial} ->
+          {:ok, user, _is_partial} ->
             team = %{id: 1}
 
             session_pid =

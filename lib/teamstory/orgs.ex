@@ -6,7 +6,7 @@ defmodule Teamstory.Orgs do
   import Ecto.Query, warn: false
   alias Teamstory.Repo
 
-  alias Teamstory.{Orgs.Organization, Users.User, Utils}
+  alias Teamstory.{Orgs.Organization, Users, Users.User, Utils}
 
   # restrict all users of a team to be part of organization
   def restriction_all, do: 1
@@ -16,7 +16,10 @@ defmodule Teamstory.Orgs do
       nil
     else
       domain_like = "%,#{domain},%"
-      Repo.one(from o in Organization, where: o.domain == ^domain or like(o.domains, ^domain_like))
+
+      Repo.one(
+        from o in Organization, where: o.domain == ^domain or like(o.domains, ^domain_like)
+      )
     end
   end
 
@@ -29,7 +32,7 @@ defmodule Teamstory.Orgs do
     if org = org_for_domain(domain) do
       {:ok, org}
     else
-      create_organization(%{ domain: domain, name: name })
+      create_organization(%{domain: domain, name: name})
     end
   end
 
@@ -38,13 +41,15 @@ defmodule Teamstory.Orgs do
   end
 
   def find_missing_users(%Organization{domain: nil}), do: []
+
   def find_missing_users(%Organization{domain: domain}) do
     domain_like = "%@#{domain}"
     Repo.all(from u in User, where: like(u.email, ^domain_like) and is_nil(u.org_id))
   end
 
   def add_to_org(users, org) do
-    ids = Enum.map(users, &(&1.id))
+    ids = Enum.map(users, & &1.id)
+
     from(u in User, where: u.id in ^ids)
     |> Repo.update_all(set: [org_id: org.id])
   end
@@ -53,6 +58,30 @@ defmodule Teamstory.Orgs do
   def by_uuid(uuid) do
     org = Repo.one(from q in Organization, where: q.uuid == ^uuid)
     if org, do: {:ok, org}, else: {:error, :not_found}
+  end
+
+  def user_joined(user) do
+    existing_org = org_for_email(user.email)
+
+    org =
+      if existing_org != nil && existing_org.auto_join do
+        existing_org
+      else
+        domain = EmailChecker.Tools.domain_name(user.email)
+
+        org_attrs =
+          if Utils.free_email_domain?(domain) do
+            %{name: "My Team"}
+          else
+            name = domain |> String.split(".") |> List.first() |> String.capitalize()
+            %{name: name, domain: domain, auto_join: true}
+          end
+
+        {:ok, org} = create_organization(org_attrs)
+        org
+      end
+
+    Users.update_user(user, %{org_id: org.id})
   end
 
   @doc """
@@ -98,13 +127,15 @@ defmodule Teamstory.Orgs do
 
   """
   def create_organization(attrs \\ %{}) do
-    result = %Organization{}
-    |> Organization.changeset(attrs)
-    |> Repo.insert()
+    result =
+      %Organization{}
+      |> Organization.changeset(attrs)
+      |> Repo.insert()
 
     with {:ok, org} <- result do
       find_missing_users(org)
       |> add_to_org(org)
+
       result
     end
   end
@@ -122,13 +153,15 @@ defmodule Teamstory.Orgs do
 
   """
   def update_organization(%Organization{} = organization, attrs) do
-    result = organization
-    |> Organization.changeset(attrs)
-    |> Repo.update()
+    result =
+      organization
+      |> Organization.changeset(attrs)
+      |> Repo.update()
 
     with {:ok, org} <- result do
       find_missing_users(org)
       |> add_to_org(org)
+
       result
     end
   end

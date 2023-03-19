@@ -4,26 +4,19 @@ defmodule TeamstoryWeb.BillingController do
 
   action_fallback TeamstoryWeb.FallbackController
 
-  alias Teamstory.{Teams, Billing}
+  alias Teamstory.{Orgs, Billing}
 
   # GET /billing/info
   # get basic billing info
-  def info(conn, %{"team" => id}) do
+  def info(conn, _) do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn),
-         # {:ok, team, _user_team} <- Teams.user_team_by_uuid(user, id),
-         sub <- Billing.get_subscription(team) do
-      july1stEOD = ~N[2022-07-02 00:00:00]
-      twoWeeksAfterCreation = Timex.shift(team.inserted_at, weeks: 2)
-
-      deadline =
-        if Timex.after?(july1stEOD, twoWeeksAfterCreation),
-          do: july1stEOD,
-          else: twoWeeksAfterCreation
-
+         org when is_map(org) <- Orgs.get_organization(user.org_id),
+         sub <- Billing.get_subscription(org) do
+      twoWeeksAfterCreation = Timex.shift(org.inserted_at, weeks: 2)
+      deadline = twoWeeksAfterCreation
       next_days = Timex.diff(deadline, Timex.now(), :days)
 
       json(conn, %{
-        # size: Teams.get_active_user_teams_count(team.id),
         valid: Billing.valid_sub?(sub),
         next_days: next_days,
         plan: sub != nil && sub.type
@@ -33,10 +26,9 @@ defmodule TeamstoryWeb.BillingController do
 
   # POST /billing/new
   # initiate subscription
-  def new(conn, %{"plan" => plan, "period" => period, "team" => team_id}) do
-    with user when is_map(user) <- Guardian.Plug.current_resource(conn) do
-      # {:ok, team, _user_team} <- Teams.user_team_by_uuid(user, team_id) do
-
+  def new(conn, %{"plan" => plan, "period" => period}) do
+    with user when is_map(user) <- Guardian.Plug.current_resource(conn),
+         org when is_map(org) <- Orgs.get_organization(user.org_id) do
       price_codes = Application.get_env(:teamstory, :stripe_products)
       prices = price_codes[plan]
       price_id = elem(prices, if(period == "annual", do: 1, else: 0))
@@ -49,7 +41,7 @@ defmodule TeamstoryWeb.BillingController do
         allow_promotion_codes: true,
         billing_address_collection: "required",
         metadata: %{
-          "team" => team.uuid
+          "org" => org.uuid
         },
         line_items: [
           %{
@@ -72,10 +64,10 @@ defmodule TeamstoryWeb.BillingController do
 
   # POST /billing/manage
   # manage subscription
-  def manage(conn, %{"team" => id}) do
+  def manage(conn, _) do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn),
-         # {:ok, team, _user_team} <- Teams.user_team_by_uuid(user, id)
-         sub <- Billing.get_subscription(team) do
+         org when is_map(org) <- Orgs.get_organization(user.org_id),
+         sub <- Billing.get_subscription(org) do
       customer = if sub, do: sub.customer_id
 
       session_config = %{
