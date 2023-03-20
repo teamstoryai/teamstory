@@ -17,6 +17,7 @@ import Tooltip from '@/components/core/Tooltip'
 import { logger } from '@/utils'
 import ErrorMessage from '@/components/core/ErrorMessage'
 import { API } from '@/api'
+import { tokenStore } from '@/stores/oauthStore'
 
 type Props = {
   path: string
@@ -29,12 +30,13 @@ const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&clie
 const Setup = (props: Props) => {
   const project = useStore(projectStore.currentProject)
   const [step, setStep] = useState(1)
+  const tokens = useStore(tokenStore.tokens)
 
   useEffect(() => {
     if (!project) route(paths.PROJECTS)
 
-    API.getOAuthTokens('github').then((response) => {
-      if (response.tokens.length > 0) setStep(2)
+    tokenStore.fetchTokens().then((tokens) => {
+      if (tokens.find((t) => t.name == 'github' || t.name == 'gitlab')) setStep(2)
     })
   }, [project])
 

@@ -262,6 +262,12 @@ class APIService {
     return response.data
   }
 
+  async getMultipleOAuthTokens(services: string[]): Promise<R.OAuthTokensResponse> {
+    const query = services.map((s) => `services[]=${s}`).join('&')
+    const response = await this.axios.get(`${this.endpoint}/oauth/token?${query}`)
+    return response.data
+  }
+
   async connectOAuthToken(
     redirectUri: string,
     code: string,

@@ -14,6 +14,13 @@ defmodule TeamstoryWeb.OAuthController do
     render(conn, "tokens.json", tokens: tokens)
   end
 
+  def get_service_token(conn, %{"services" => services}) do
+    user = Guardian.Plug.current_resource(conn)
+    tokens = OAuthTokens.multiple_for_user(user, services)
+
+    render(conn, "tokens.json", tokens: tokens)
+  end
+
   # DELETE /oauth/token
   def delete_service_token(conn, %{"service" => service, "email" => email}) do
     user = Guardian.Plug.current_resource(conn)
