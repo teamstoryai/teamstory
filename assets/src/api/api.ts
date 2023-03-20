@@ -1,10 +1,19 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
 
 import { config, OAuthProvider } from '@/config'
-import { AuthToken, AuthTokenPair, OAuthToken, Project, ProjectRole, User } from '@/models'
+import {
+  AuthToken,
+  AuthTokenPair,
+  OAuthToken,
+  Project,
+  ProjectRole,
+  Repository,
+  User,
+} from '@/models'
 import { AsyncPromise, logger } from '@/utils'
 
 import * as R from './types'
+import { Resource, ResourceWithParent, SingleResource } from '@/api/resource'
 
 class APIService {
   endpoint = config.apiUrl
@@ -180,43 +189,17 @@ class APIService {
 
   // user management
 
-  async updateUser(updates: Partial<User>): Promise<R.UserResponse> {
-    const response = await this.axios.put(`${this.endpoint}/user`, updates)
-    return response.data
-  }
-
-  async getUser(): Promise<R.UserResponse> {
-    const response = await this.axios.get(`${this.endpoint}/user`)
-    return response.data
-  }
+  public user = new SingleResource<User>(this, 'user')
 
   // projects
 
-  async listProjects(): Promise<R.ProjectsResponse> {
-    const response = await this.axios.get(`${this.endpoint}/projects`)
-    return response.data
-  }
-
-  async getProject(id: string): Promise<R.ProjectWithMembersResponse> {
-    const response = await this.axios.get(`${this.endpoint}/projects/${id}`)
-    return response.data
-  }
-
-  async createProject(project: Partial<Project>): Promise<R.ProjectResponse> {
-    const response = await this.axios.post(`${this.endpoint}/projects`, project)
-    return response.data
-  }
-
-  async updateProject(project: Project, updates: Partial<Project>): Promise<R.ProjectResponse> {
-    const response = await this.axios.put(`${this.endpoint}/projects/${project.id}`, updates)
-    return response.data
-  }
+  public projects = new Resource<Project>(this, 'projects')
 
   async projectAddMember(
     project: Project,
     email: string,
     role: ProjectRole
-  ): Promise<R.ProjectResponse> {
+  ): Promise<R.ProjectWithMembersResponse> {
     const response = await this.axios.post(`${this.endpoint}/projects/${project.id}/add_member`, {
       email,
       role,
@@ -228,7 +211,7 @@ class APIService {
     project: Project,
     email: string | undefined,
     user: string | undefined
-  ): Promise<R.ProjectResponse> {
+  ): Promise<R.ProjectWithMembersResponse> {
     const response = await this.axios.post(
       `${this.endpoint}/projects/${project.id}/remove_member`,
       { email, user }
@@ -255,14 +238,18 @@ class APIService {
     return response.data
   }
 
+  // other resources
+
+  public repos = new ResourceWithParent<Project, Repository>(this, 'project_id', 'connect/repos')
+
   // tokens
 
-  async getOAuthTokens(service: string): Promise<R.OAuthTokensResponse> {
+  async getOAuthTokens(service: string): Promise<R.ItemsResponse<OAuthToken>> {
     const response = await this.axios.get(`${this.endpoint}/oauth/token?service=${service}`)
     return response.data
   }
 
-  async getMultipleOAuthTokens(services: string[]): Promise<R.OAuthTokensResponse> {
+  async getMultipleOAuthTokens(services: string[]): Promise<R.ItemsResponse<OAuthToken>> {
     const query = services.map((s) => `services[]=${s}`).join('&')
     const response = await this.axios.get(`${this.endpoint}/oauth/token?${query}`)
     return response.data
@@ -272,7 +259,7 @@ class APIService {
     redirectUri: string,
     code: string,
     service: string
-  ): Promise<R.OAuthTokenResponse> {
+  ): Promise<R.ItemResponse<OAuthToken>> {
     const response = await this.axios.post(`${this.endpoint}/oauth/connect`, {
       service,
       code,
@@ -281,7 +268,7 @@ class APIService {
     return response.data
   }
 
-  async updateOAuthToken(token: OAuthToken): Promise<R.OAuthTokenResponse> {
+  async updateOAuthToken(token: OAuthToken): Promise<R.ItemResponse<OAuthToken>> {
     const response = await this.axios.put(
       `${this.endpoint}/oauth/token?service=${token.name}`,
       token
@@ -289,7 +276,7 @@ class APIService {
     return response.data
   }
 
-  async refreshOAuthToken(service: string, email: string): Promise<R.OAuthTokenResponse> {
+  async refreshOAuthToken(service: string, email: string): Promise<R.ItemsResponse<OAuthToken>> {
     let response = await this.axios.post(`${this.endpoint}/oauth/refresh`, { service, email })
     return response.data
   }
@@ -301,19 +288,19 @@ class APIService {
     return response.data
   }
 
-  // storage
+  // api connection
 
-  async uploadAttachment(file: File, projectId: string): Promise<{ url: string }> {
-    let formData = new FormData()
-    formData.append('upload', file)
-    const { token } = this.tokens?.access || {}
-    if (token) formData.append('token', token)
-    if (projectId) formData.append('project_id', projectId)
+  async fetchOrgs(service: string): Promise<any> {
+    const response = await this.axios.get(
+      `${this.endpoint}/connect/repos/fetch_orgs?service=${service}`
+    )
+    return response.data
+  }
 
-    const headers = { 'Content-Type': 'multipart/form-data' }
-    const response = await this.axios.post(`${this.endpoint}/attachments`, formData, {
-      headers: headers,
-    })
+  async fetchRepos(service: string, org: string): Promise<any> {
+    const response = await this.axios.get(
+      `${this.endpoint}/connect/repos/fetch_repos?service=${service}&org=${encodeURIComponent(org)}`
+    )
     return response.data
   }
 

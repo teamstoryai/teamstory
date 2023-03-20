@@ -7,11 +7,11 @@ import ProjectView from '@/screens/app/ProjectView'
 import Settings from '@/screens/app/Settings'
 import Dashboard from '@/screens/app/Dashboard'
 import Reports from '@/screens/app/Reports'
-import Setup from '@/screens/app/Setup'
+import ProjectSetup from '@/screens/setup/ProjectSetup'
 
 export default () => (
   <Router>
-    <Setup path={paths.SETUP} />
+    <ProjectSetup path={paths.SETUP} />
     <Dashboard path={paths.DASHBOARD} />
     <Reports path={paths.REPORTS} />
     <ProjectsList path={paths.PROJECTS} />

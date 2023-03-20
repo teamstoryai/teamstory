@@ -22,6 +22,11 @@ class TokenStore {
     this.tokens.set(response.tokens)
     return response.tokens
   }
+
+  addToken = (token: OAuthToken) => {
+    const tokens = this.tokens.get()
+    this.tokens.set([...tokens, token])
+  }
 }
 
 export const tokenStore = new TokenStore()

@@ -8,16 +8,12 @@ import { useStore } from '@nanostores/preact'
 import { route } from 'preact-router'
 import { config, paths } from '@/config'
 
-import githubLogo from '@/images/github.png'
-import gitlabLogo from '@/images/gitlab.png'
 import linearLogo from '@/images/linear.png'
 import jiraLogo from '@/images/jira.png'
 import { RenderableProps } from 'preact'
 import Tooltip from '@/components/core/Tooltip'
-import { logger } from '@/utils'
-import ErrorMessage from '@/components/core/ErrorMessage'
-import { API } from '@/api'
 import { tokenStore } from '@/stores/oauthStore'
+import { Step1 } from './Step1'
 
 type Props = {
   path: string
@@ -25,9 +21,9 @@ type Props = {
 
 const GH_SCOPES = 'user:email,repo,read:org'
 const GH_CLIENT_ID = config.dev ? '3008defde742bbe1efe0' : ''
-const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=${GH_CLIENT_ID}`
+export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=${GH_CLIENT_ID}`
 
-const Setup = (props: Props) => {
+const ProjectSetup = (props: Props) => {
   const project = useStore(projectStore.currentProject)
   const [step, setStep] = useState(1)
   const tokens = useStore(tokenStore.tokens)
@@ -62,51 +58,6 @@ const Setup = (props: Props) => {
   )
 }
 
-const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const messageListener = (message: MessageEvent) => {
-      const data = message.data
-      if (!data || data.type != 'oauth') return
-      logger.info(data)
-
-      if (data.event == 'closed') return
-
-      if (data.error) setError(data.error)
-      else if (data.result) {
-        // result should include access_token, scope, and name
-        const { service, code } = data.result
-        API.connectOAuthToken('', code, service)
-        setStep(2)
-      }
-    }
-
-    window.addEventListener('message', messageListener)
-    return () => window.removeEventListener('message', messageListener)
-  }, [])
-
-  return (
-    <div class="mb-12">
-      <h1 class="text-lg my-2">1. Connect a repository</h1>
-      <p class="text-gray-500">Where does your team collaborate on code?</p>
-
-      <div class="flex flex-row items-center justify-center mt-8 gap-8">
-        <ConnectButton
-          icon={githubLogo}
-          text="Connect GitHub"
-          onClick={() => window.open(GH_URL)}
-        />
-        <Tooltip message="Coming soon">
-          <ConnectButton disabled icon={gitlabLogo} text="Connect GitLab" />
-        </Tooltip>
-      </div>
-
-      <ErrorMessage error={error} />
-    </div>
-  )
-}
-
 const Step2 = () => (
   <div class="mb-12">
     <h1 class="text-lg my-2">2. Connect project management</h1>
@@ -135,7 +86,7 @@ type ConnectProps = {
   text: string
 }
 
-const ConnectButton = (props: RenderableProps<ConnectProps>) => (
+export const ConnectButton = (props: RenderableProps<ConnectProps>) => (
   <button
     onClick={props.onClick}
     disabled={props.disabled}
@@ -146,4 +97,4 @@ const ConnectButton = (props: RenderableProps<ConnectProps>) => (
   </button>
 )
 
-export default Setup
+export default ProjectSetup
