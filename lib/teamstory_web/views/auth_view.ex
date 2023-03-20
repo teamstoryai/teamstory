@@ -9,21 +9,21 @@ defmodule TeamstoryWeb.AuthView do
       email: user.email,
       profile_img: user.profile_img,
       meta: user.meta,
-      timezone: user.timezone,
+      timezone: user.timezone
     }
   end
 
   def render("token.json", params) do
     %{
-      success: (if Map.has_key?(params, :success), do: params[:success], else: true),
+      success: if(Map.has_key?(params, :success), do: params[:success], else: true),
       token: params[:token],
-      user: render_user(params[:user]),
+      user: render_user(params[:user])
     }
   end
 
   def render("user.json", %{user: user}) do
     %{
-      user: render_user(user)
+      item: render_user(user)
     }
   end
 end

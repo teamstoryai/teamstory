@@ -12,7 +12,7 @@ import linearLogo from '@/images/linear.png'
 import jiraLogo from '@/images/jira.png'
 import { RenderableProps } from 'preact'
 import Tooltip from '@/components/core/Tooltip'
-import { tokenStore } from '@/stores/oauthStore'
+import { tokenStore } from '@/stores/tokenStore'
 import { Step1 } from './Step1'
 
 type Props = {
@@ -26,17 +26,8 @@ export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPE
 const ProjectSetup = (props: Props) => {
   const project = useStore(projectStore.currentProject)
   const [step, setStep] = useState(1)
-  const tokens = useStore(tokenStore.tokens)
 
-  useEffect(() => {
-    if (!project) route(paths.PROJECTS)
-
-    tokenStore.fetchTokens().then((tokens) => {
-      if (tokens.find((t) => t.name == 'github' || t.name == 'gitlab')) setStep(2)
-    })
-  }, [project])
-
-  if (!project) return null
+  if (!project) return <div>Please select a project</div>
 
   return (
     <>

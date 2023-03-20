@@ -3,7 +3,7 @@ import { endOfDay, formatISO, startOfDay } from 'date-fns'
 import _ from 'lodash'
 import { action, atom, map } from 'nanostores'
 
-import { API, OAuthTokenResponse } from '@/api'
+import { API, ItemResponse } from '@/api'
 import { GoogleResponse } from '@/components/auth/GoogleServerOAuth'
 import { config, GCalendar, GColors, GEvent } from '@/config'
 import { GOOGLE_CAL, OAuthToken } from '@/models'
@@ -58,7 +58,7 @@ class CalendarStore {
     if (authStore.debugMode()) (window as any)['calendarStore'] = calendarStore
 
     API.getOAuthTokens(GOOGLE_CAL).then((response) => {
-      const tokens = response.tokens.map((t) => OAuthToken.fromJSON(t))
+      const tokens = response.items.map((t) => OAuthToken.fromJSON(t))
       this.tokens.set(tokens)
     })
 
@@ -75,8 +75,8 @@ class CalendarStore {
     store.set(newTokens)
   })
 
-  saveGoogleOAuthToken = async (response: GoogleResponse): Promise<OAuthTokenResponse> => {
-    let apiResponse: OAuthTokenResponse | undefined
+  saveGoogleOAuthToken = async (response: GoogleResponse): Promise<ItemResponse<OAuthToken>> => {
+    let apiResponse: ItemResponse<OAuthToken> | undefined
     if (response.code) {
       const redirectUri = location.origin + '/oauth/google'
       apiResponse = await API.connectOAuthToken(redirectUri, response.code, GOOGLE_CAL)
@@ -90,7 +90,7 @@ class CalendarStore {
     }
 
     logger.info('[cal] Saved token', apiResponse)
-    this.updateToken(OAuthToken.fromJSON(apiResponse.token))
+    this.updateToken(OAuthToken.fromJSON(apiResponse.item))
     this.fetchCalendars()
 
     return apiResponse
@@ -103,8 +103,8 @@ class CalendarStore {
 
     try {
       let response = await API.refreshOAuthToken(GOOGLE_CAL, token.email!)
-      if (response.token) {
-        token = OAuthToken.fromJSON(response.token)
+      if (response.item) {
+        token = OAuthToken.fromJSON(response.item)
         this.updateToken(token)
         return token
       }

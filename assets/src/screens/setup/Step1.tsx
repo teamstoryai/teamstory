@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useEffect, useState } from 'preact/hooks'
 import { useStore } from '@nanostores/preact'
 import { config } from '@/config'
 import githubLogo from '@/images/github.png'
@@ -7,7 +7,7 @@ import Tooltip from '@/components/core/Tooltip'
 import { logger } from '@/utils'
 import ErrorMessage from '@/components/core/ErrorMessage'
 import { API } from '@/api'
-import { tokenStore } from '@/stores/oauthStore'
+import { tokenStore } from '@/stores/tokenStore'
 import Loader from '@/components/core/Loader'
 import Pressable from '@/components/core/Pressable'
 import { connectStore, OrgData, RepoData } from '@/stores/connectStore'
@@ -16,6 +16,7 @@ import useOAuthPopup from '@/hooks/useOAuthPopup'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import ForkIcon from '@/components/icons/ForkIcon'
 import { ConnectButton, GH_URL } from './ProjectSetup'
+import { projectStore } from '@/stores/projectStore'
 
 enum ConnectState {
   NotConnected,
@@ -24,26 +25,58 @@ enum ConnectState {
   RepoSelected,
   ConnectAnother,
 }
-export const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
+export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
   const [state, setState] = useState<ConnectState>(ConnectState.NotConnected)
   const [error, setError] = useState<string>()
-
-  const tokens = useStore(tokenStore.tokens)
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
 
-  const addRepo = (repo: RepoData) => {
-    setCurrentToken(undefined)
-    setState(ConnectState.RepoSelected)
+  const repos = useStore(connectStore.repos)
+
+  useEffect(() => {
+    const project = projectStore.currentProject.get()
+    if (!project) return
+
+    async function init() {
+      // check if we have connections
+      const tokenPromise = tokenStore.fetchTokens()
+      const repos = await connectStore.loadConnectedRepos()
+      if (repos.length > 0) {
+        setState(ConnectState.RepoSelected)
+        setStep(2)
+        return
+      }
+
+      // check if we have tokens
+      const tokens = await tokenPromise
+      const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
+      if (found) {
+        setCurrentToken(found)
+        setState(ConnectState.Connected)
+      }
+    }
+    init()
+  }, [])
+
+  const addRepo = (org: OrgData, repo: RepoData) => {
+    setError(undefined)
+    connectStore
+      .addRepo(currentToken!.name, org, repo)
+      .then(() => {
+        setCurrentToken(undefined)
+        setState(ConnectState.RepoSelected)
+        setStep((step) => Math.max(step, 2))
+      })
+      .catch(setError)
   }
 
   useOAuthPopup((data) => {
     const { service, code } = data
     setState(ConnectState.Loading)
-    API.connectOAuthToken('', code, service)
-      .then((res) => {
-        tokenStore.addToken(res.token)
+    tokenStore
+      .connectToken('', code, service)
+      .then((token) => {
         setState(ConnectState.Connected)
-        setCurrentToken(res.token)
+        setCurrentToken(token)
       })
       .catch((err) => {
         logger.error(err)
@@ -51,14 +84,6 @@ export const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
         setError(err.message)
       })
   }, setError)
-
-  useEffect(() => {
-    const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
-    if (found) {
-      setCurrentToken(found)
-      setState(ConnectState.Connected)
-    }
-  }, [tokens])
 
   return (
     <div class="mb-12">
@@ -75,6 +100,23 @@ export const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
             <Loader class="mr-2" />
             Loading...
           </button>
+        </div>
+      )}
+
+      {repos.length > 0 && (
+        <div>
+          {repos.map((repo) => (
+            <div class="flex flex-row my-2" key={repo.id}>
+              <img src={repo.avatar_url} class="w-6 h-6 rounded-full mr-2" />
+              {repo.name}
+            </div>
+          ))}
+          <Pressable
+            onClick={() => setState(ConnectState.ConnectAnother)}
+            className="text-gray-400"
+          >
+            Connect another repository?
+          </Pressable>
         </div>
       )}
 
@@ -96,18 +138,6 @@ export const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
       )}
 
       <ErrorMessage error={error} />
-
-      {config.dev && (
-        <div class="flex gap-8 bg-green-100 text-sm rounded p-2 my-4">
-          <Pressable onClick={() => setState(ConnectState.NotConnected)}>NotConnected</Pressable>
-          <Pressable onClick={() => setState(ConnectState.Loading)}>Loading</Pressable>
-          <Pressable onClick={() => setState(ConnectState.Connected)}>Connected</Pressable>
-          <Pressable onClick={() => setState(ConnectState.RepoSelected)}>RepoSelected</Pressable>
-          <Pressable onClick={() => setState(ConnectState.ConnectAnother)}>
-            ConnectAnother
-          </Pressable>
-        </div>
-      )}
     </div>
   )
 }
@@ -118,7 +148,7 @@ function SelectRepository({
   setError,
 }: {
   token: OAuthToken
-  addRepo: (repo: RepoData) => void
+  addRepo: (org: OrgData, repo: RepoData) => void
   setError: (err: string | undefined) => void
 }) {
   const [orgs, setOrgs] = useState<OrgData[]>()
@@ -127,10 +157,14 @@ function SelectRepository({
   const [repos, setRepos] = useState<RepoData[]>()
   const [currentRepo, setCurrentRepo] = useState<RepoData>()
 
+  useEffect(() => {
+    fetchOrgs()
+  }, [token])
+
   const fetchOrgs = () => {
     setError(undefined)
     connectStore
-      .getOrgs(token.name)
+      .fetchOrgs(token.name)
       .then((orgs) => {
         logger.info(orgs)
         setOrgs(orgs)
@@ -142,7 +176,7 @@ function SelectRepository({
     setCurrentOrg(org)
     setError(undefined)
     connectStore
-      .getRepos(token.name, org)
+      .fetchRepos(token.name, org)
       .then((repos) => {
         logger.info(repos)
         setRepos(repos)
@@ -209,7 +243,11 @@ function SelectRepository({
               <div>Select a repository:</div>
               <div class="mt-2">
                 {repos.map((repo) => (
-                  <Pressable onClick={() => addRepo(repo)} key={repo.id} className="flex-row">
+                  <Pressable
+                    onClick={() => addRepo(currentOrg, repo)}
+                    key={repo.id}
+                    className="flex-row"
+                  >
                     {repo.full_name}
                     {repo.private && <LockClosedIcon class="ml-2 w-4 h-4" />}
                     {repo.fork && <ForkIcon class="ml-2 w-4 h-4" />}

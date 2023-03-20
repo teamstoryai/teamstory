@@ -276,7 +276,7 @@ class APIService {
     return response.data
   }
 
-  async refreshOAuthToken(service: string, email: string): Promise<R.ItemsResponse<OAuthToken>> {
+  async refreshOAuthToken(service: string, email: string): Promise<R.ItemResponse<OAuthToken>> {
     let response = await this.axios.post(`${this.endpoint}/oauth/refresh`, { service, email })
     return response.data
   }

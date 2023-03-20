@@ -2,7 +2,7 @@ import { action, atom, onMount } from 'nanostores'
 import { route } from 'preact-router'
 import { v4 as uuid } from 'uuid'
 
-import { API } from '@/api'
+import { API, ProjectsResponse } from '@/api'
 import { config, LS_AUTH_TOKENS, OAuthProvider, paths } from '@/config'
 import { AuthTokenPair, Project, User } from '@/models'
 import { uiStore } from '@/stores/uiStore'
@@ -45,7 +45,7 @@ class AuthStore {
     const { access, refresh } = tokens || {}
     if (!tokens?.access) throw 'Tokens were invalid'
 
-    const response = await API.listProjects()
+    const response = (await API.projects.list()) as ProjectsResponse
     logger.debug('AUTH - logged in', response)
 
     if (
@@ -57,7 +57,7 @@ class AuthStore {
 
     const user = User.fromJSON(response.user)
     this.loggedInUser.set(user)
-    projectStore.updateProjects(response.projects.map(Project.fromJSON))
+    projectStore.updateProjects(response.items.map(Project.fromJSON))
     projectStore.updateCurrentProject(user)
 
     if (!projectStore.activeProjects.get().length && location.pathname != paths.PROJECTS) {
@@ -143,10 +143,10 @@ class AuthStore {
 
   updateUser = action(this.loggedInUser, 'updateUser', async (store, updates: Partial<User>) => {
     logger.info(`AUTH —— Update User`, updates)
-    const response = await API.updateUser(updates)
+    const response = await API.user.update(updates)
 
     // by default, don't update logged in user since that triggers re-renders
-    Object.assign(store.get()!, User.fromJSON(response.user))
+    Object.assign(store.get()!, User.fromJSON(response.item))
   })
 }
 

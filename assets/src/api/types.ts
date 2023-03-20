@@ -28,11 +28,10 @@ export type ItemResponse<T> = {
   item: T
 }
 
-export type ProjectsResponse = {
-  projects: Project[]
+export type ProjectsResponse = ItemsResponse<Project> & {
   user: User
 }
 
-export type ProjectWithMembersResponse = ItemsResponse<Project> & {
+export type ProjectWithMembersResponse = ItemResponse<Project> & {
   members: ProjectMember[]
 }

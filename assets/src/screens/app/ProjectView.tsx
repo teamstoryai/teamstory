@@ -182,7 +182,7 @@ function RenameProject({ project }: ProjectArgs) {
       setSubmitting(true)
       setSuccess(false)
       setError(undefined)
-      const response = await API.updateProject(project, { name })
+      const response = await API.projects.update(project.id, { name })
       projectStore.onProjectUpdated(response)
       setName('')
       setSuccess(true)

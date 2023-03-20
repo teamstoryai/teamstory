@@ -16,5 +16,6 @@ defmodule Teamstory.Repo.Migrations.CreateRepositories do
 
     create index(:repositories, [:uuid])
     create index(:repositories, [:project_id])
+    create unique_index(:repositories, [:project_id, :base_url])
   end
 end

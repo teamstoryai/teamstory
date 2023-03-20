@@ -71,7 +71,7 @@ defmodule TeamstoryWeb.ConnectReposController do
          {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid),
          attrs <- %{
            name: params["name"],
-           avatar_url: params["name"],
+           avatar_url: params["avatar_url"],
            base_url: params["base_url"],
            service: params["service"],
            project_id: project.id

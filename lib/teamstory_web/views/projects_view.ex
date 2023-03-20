@@ -13,20 +13,20 @@ defmodule TeamstoryWeb.ProjectsView do
   def render("list.json", %{projects: projects, user: user}) do
     %{
       user: TeamstoryWeb.AuthView.render_user(user),
-      projects: projects |> Enum.map(&render_project(&1, user))
+      items: projects |> Enum.map(&render_project(&1, user))
     }
   end
 
   def render("get.json", %{project: project, user: user, members: members}) do
     %{
-      project: render_project(project, user),
+      item: render_project(project, user),
       members: members
     }
   end
 
   def render("get.json", %{project: project, user: user}) do
     %{
-      project: render_project(project, user)
+      item: render_project(project, user)
     }
   end
 end

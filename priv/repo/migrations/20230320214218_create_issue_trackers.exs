@@ -15,5 +15,6 @@ defmodule Teamstory.Repo.Migrations.CreateIssueTrackers do
 
     create index(:issue_trackers, [:uuid])
     create index(:issue_trackers, [:project_id])
+    create unique_index(:issue_trackers, [:project_id, :base_url])
   end
 end

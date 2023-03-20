@@ -1,7 +1,7 @@
 import { action, atom, map } from 'nanostores'
 import { route } from 'preact-router'
 
-import { API, ProjectResponse, ProjectWithMembersResponse } from '@/api'
+import { API, ItemResponse, ProjectWithMembersResponse } from '@/api'
 import { paths } from '@/config'
 import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
@@ -72,10 +72,10 @@ class ProjectStore {
     const project = this.projectMap.get()[id]
     if (project) this.currentProject.set(project)
 
-    const response = await API.getProject(id)
+    const response = (await API.projects.get(id)) as ProjectWithMembersResponse
     logger.info('loaded project details', response)
-    response.project.members = response.members
-    this.currentProject.set(response.project)
+    response.item.members = response.members
+    this.currentProject.set(response.item)
   }
 
   updateProjectMap = action(this.projectMap, 'updateProjectMap', (store, projects: Project[]) => {
@@ -87,9 +87,9 @@ class ProjectStore {
   })
 
   createProject = action(this.projects, 'createProject', async (store, attrs: Partial<Project>) => {
-    const response = await API.createProject(attrs)
+    const response = await API.projects.create(attrs)
     logger.info('PROJECTS - create', response)
-    const project = Project.fromJSON(response.project)
+    const project = Project.fromJSON(response.item)
     const projects = [...store.get(), project]
     this.updateProjects(projects)
     this.setCurrentProject(project)
@@ -108,13 +108,13 @@ class ProjectStore {
   }
 
   updateProject = async (project: Project, updates: Partial<Project>) => {
-    const response = await API.updateProject(project, updates)
+    const response = await API.projects.update(project.id, updates)
     this.onProjectUpdated(response)
   }
 
-  onProjectUpdated = (response: ProjectResponse | ProjectWithMembersResponse) => {
+  onProjectUpdated = (response: ItemResponse<Project> | ProjectWithMembersResponse) => {
     logger.info('on project updated', response)
-    const project = Project.fromJSON(response.project)
+    const project = Project.fromJSON(response.item)
 
     this.projects.set(this.projects.get().map((p) => (p.id == project.id ? project : p)))
 
@@ -128,7 +128,7 @@ class ProjectStore {
 }
 
 function hasMembers(
-  response: ProjectResponse | ProjectWithMembersResponse
+  response: ItemResponse<Project> | ProjectWithMembersResponse
 ): response is ProjectWithMembersResponse {
   return !!(response as ProjectWithMembersResponse).members
 }
