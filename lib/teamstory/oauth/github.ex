@@ -12,22 +12,35 @@ defmodule Teamstory.Github do
   end
 
   def add_profile_email(payload) do
-    IO.inspect(payload)
     %{"access_token" => token, "scope" => scope} = payload
 
     if String.contains?(scope, "user:email") do
       {:ok, emails} = get("https://api.github.com/user/emails", token_header(token))
-
-      IO.inspect(emails)
       email = hd(emails)["email"]
       Map.put(payload, "email", email)
     else
       {:ok, profile} = get("https://api.github.com/user", token_header(token))
-
-      IO.inspect(profile)
       email = profile["email"]
       Map.put(payload, "email", email)
     end
+  end
+
+  def user(token) do
+    get("https://api.github.com/user", token_header(token))
+  end
+
+  def user_repos(token) do
+    get("https://api.github.com/user/repos", token_header(token))
+  end
+
+  # https://docs.github.com/en/rest/orgs/orgs?apiVersion=2022-11-28#list-organizations-for-the-authenticated-user
+  def orgs(token) do
+    get("https://api.github.com/user/orgs", token_header(token))
+  end
+
+  # https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-organization-repositories
+  def org_repos(token, org) do
+    get("https://api.github.com/orgs/#{org}/repos", token_header(token))
   end
 
   ###

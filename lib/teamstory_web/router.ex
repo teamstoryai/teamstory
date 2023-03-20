@@ -93,6 +93,10 @@ defmodule TeamstoryWeb.Router do
     get "/users/data", UserDataController, :get_user_data
     post "/users/data", UserDataController, :set_user_data
 
+    resources "/connect/repos", ConnectReposController, only: [:index, :create, :update]
+    get "/connect/repos/fetch_orgs", ConnectController, :fetch_orgs
+    get "/connect/repos/fetch_repos", ConnectController, :fetch_repos
+
     get "/subinfo", BillingController, :info
     get "/billing/info", BillingController, :info
     post "/billing/new", BillingController, :new
