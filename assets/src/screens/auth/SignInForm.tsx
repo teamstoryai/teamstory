@@ -1,7 +1,8 @@
 import { useState } from 'preact/hooks'
 
 import GoogleServerOAuth, {
-    GoogleResponse, PROFILE_SCOPES
+  GoogleResponse,
+  PROFILE_SCOPES,
 } from '@/components/auth/GoogleServerOAuth'
 import Checkbox from '@/components/core/Checkbox'
 import ErrorMessage from '@/components/core/ErrorMessage'
@@ -117,7 +118,7 @@ export default () => {
         <ErrorMessage error={error} />
 
         <div className="mt-4 flex justify-center">
-          <a href={paths.SIGNUP + location.search} className="text-lavender-400 text-sm">
+          <a href={paths.SIGNUP + location.search} className="text-slate-400 text-sm">
             No account? Create one.
           </a>
         </div>

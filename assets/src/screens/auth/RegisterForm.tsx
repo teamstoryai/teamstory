@@ -59,11 +59,7 @@ export default () => {
   }
 
   return (
-    <AuthForm
-      title={`Welcome to ${
-        uiStore.insightLoop ? 'InsightLoop' : uiStore.addie ? 'Addie' : 'Daybird'
-      }`}
-    >
+    <AuthForm title={`Welcome to TeamStory`}>
       {!uiStore.reactNative && (
         <>
           <div className="flex justify-center">
@@ -123,14 +119,14 @@ export default () => {
         <ErrorMessage error={error} />
 
         <div className="mt-4 flex justify-center">
-          <a href={paths.SIGNIN + location.search} className="text-lavender-400 text-sm">
+          <a href={paths.SIGNIN + location.search} className="text-slate-400 text-sm">
             Already have an account?
           </a>
         </div>
 
         {config.dev && (
           <Pressable onClick={randomUser} className="mt-4 flex justify-center">
-            create a random user
+            dev: create a random user
           </Pressable>
         )}
       </form>
