@@ -5,12 +5,10 @@ import { CalendarIcon } from '@heroicons/react/outline'
 import { useStore } from '@nanostores/preact'
 
 export default function () {
-  const calendarOpen = useStore(uiStore.calendarOpen)
+  const calendarOpen = false
 
   const toggleCalendar = () => {
     const newSetting = !calendarOpen
-    uiStore.calendarOpen.set(newSetting)
-    uiStore.manualCalendarOpen = newSetting
   }
 
   return (

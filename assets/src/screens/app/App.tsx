@@ -1,5 +1,5 @@
 import { route } from 'preact-router'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 
 import Button from '@/components/core/Button'
 import Loader from '@/components/core/Loader'
@@ -7,10 +7,7 @@ import AppLayout from '@/components/layout/AppLayout'
 import { paths } from '@/config'
 import AppRouter from '@/screens/app/AppRouter'
 import { authStore } from '@/stores/authStore'
-import { LS_LAST_DOC } from '@/stores/docStore'
-import { projectStore } from '@/stores/projectStore'
 import { uiStore } from '@/stores/uiStore'
-import { logger } from '@/utils'
 import { useStore } from '@nanostores/preact'
 
 export default () => {
@@ -23,12 +20,7 @@ export default () => {
       uiStore.initLoggedInUser(user)
 
       if (location.pathname == paths.APP) {
-        const lastDoc = localStorage.getItem(LS_LAST_DOC)
-        if (lastDoc) {
-          const [projectId, _docId] = lastDoc.split('/')
-          projectStore.setCurrentProject(projectId)
-        }
-        route(paths.TODAY)
+        route(paths.DASHBOARD)
       }
     }
   }, [user])

@@ -13,7 +13,9 @@
 user =
   Teamstory.Repo.insert!(%Teamstory.Users.User{
     name: "Bob Cat",
-    email: "bob@cat.com"
+    email: "bob@cat.com",
+    password_hash: Bcrypt.hash_pwd_salt("test1234"),
+    timezone: "America/Los_Angeles"
   })
 
 project =

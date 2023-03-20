@@ -24,12 +24,12 @@ export default (props: Props) => {
 
   return (
     <>
-      <Helmet title={'Dashboard'} />
+      <Helmet title={'Reports'} />
 
       <AppHeader>
         <div class="flex flex-1 gap-2 items-center relative overflow-hidden">
           <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            Dashboard
+            Reports
           </h1>
         </div>
       </AppHeader>

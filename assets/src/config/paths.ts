@@ -9,39 +9,13 @@ export const paths = {
 
   APP: '/app',
 
-  TODAY: '/app/today',
+  DASHBOARD: '/app/dashboard',
 
   PROJECTS: '/app/projects',
 
-  TASKS: '/app/tasks',
+  REPORTS: '/app/reports',
 
-  DOC: '/app/docs',
+  SETUP: '/app/setup',
 
   SETTINGS: '/app/settings',
-
-  DB_JOURNAL: '/app/journal',
-
-  DB_INSIGHTS: '/app/insights',
-
-  // --- insight loop
-
-  INSIGHT_SIGNIN: '/auth/insight/signin',
-
-  INSIGHT_SIGNUP: '/auth/insight/signup',
-
-  JOURNAL: '/insight/journal',
-
-  INSIGHTS: '/insight/insights',
-
-  STATS: '/insight/stats',
-
-  PROFILE: '/insight/profile',
-
-  INSIGHT_DOC: '/insight/docs',
-
-  INSIGHT_SETTINGS: '/insight/settings',
-
-  // --- addie
-
-  ADDIE: '/addie',
 }

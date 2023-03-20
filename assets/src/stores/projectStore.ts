@@ -2,12 +2,9 @@ import { action, atom, map } from 'nanostores'
 import { route } from 'preact-router'
 
 import { API, ProjectResponse, ProjectWithMembersResponse } from '@/api'
-import { config, paths } from '@/config'
-import { FileType, Project, User } from '@/models'
+import { paths } from '@/config'
+import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
-import { docStore } from '@/stores/docStore'
-import { fileStore } from '@/stores/fileStore'
-import { taskStore } from '@/stores/taskStore'
 import { uiStore } from '@/stores/uiStore'
 import { logger } from '@/utils'
 
@@ -42,12 +39,11 @@ class ProjectStore {
       const projects = this.projects.get()
       const lastProjectId = user.meta.lp
       let currentProject: Project | undefined
-      if (!uiStore.insightLoop && lastProjectId) {
+      if (lastProjectId) {
         currentProject = projects.find((p) => p.id == lastProjectId)
       }
       if (!currentProject) currentProject = projects[0]
       store.set(currentProject)
-      if (currentProject) taskStore.loadTasks(currentProject)
     }
   )
 
@@ -65,7 +61,6 @@ class ProjectStore {
           if (user?.meta?.lp != project.id) {
             authStore.updateUser({ meta: { lp: project.id } })
           }
-          taskStore.loadTasks(project)
 
           return project
         }
@@ -98,10 +93,6 @@ class ProjectStore {
     const projects = [...store.get(), project]
     this.updateProjects(projects)
     this.setCurrentProject(project)
-
-    // create a document
-    fileStore.newFile(project.id, 'Welcome', FileType.DOC)
-    fileStore.setExpanded(project.id, true)
   })
 
   deleteProject = async (project: Project) => {

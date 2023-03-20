@@ -20,7 +20,7 @@ export default function () {
       <div className="flex items-center md:ml-12">
         {loggedIn ? (
           <>
-            <a href={paths.TODAY}>
+            <a href={paths.APP}>
               <Button>Go to app</Button>
             </a>
           </>

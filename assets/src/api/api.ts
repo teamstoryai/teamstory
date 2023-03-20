@@ -1,20 +1,7 @@
 import axios, { AxiosError, AxiosInstance } from 'axios'
-import { encode } from 'base64-arraybuffer'
 
 import { config, OAuthProvider } from '@/config'
-import {
-  AuthToken,
-  AuthTokenPair,
-  File as LNFile,
-  FileType,
-  OAuthToken,
-  Period,
-  Project,
-  ProjectRole,
-  Task,
-  Team,
-  User,
-} from '@/models'
+import { AuthToken, AuthTokenPair, OAuthToken, Project, ProjectRole, User } from '@/models'
 import { AsyncPromise, logger } from '@/utils'
 
 import * as R from './types'
@@ -249,78 +236,6 @@ class APIService {
     return response.data
   }
 
-  // files
-
-  async listFiles(project: Project): Promise<R.FilesResponse> {
-    const response = await this.axios.get(`${this.endpoint}/files?project_id=${project.id}`)
-    return response.data
-  }
-
-  async createFile(
-    projectId: string,
-    file: { name: string; type: FileType; parent?: string | null }
-  ): Promise<R.FileResponse> {
-    const response = await this.axios.post(`${this.endpoint}/files?project_id=${projectId}`, file)
-    return response.data
-  }
-
-  async readFile(project: Project, uuid: string): Promise<any> {
-    const response = await this.axios.get(
-      `${this.endpoint}/doc?project_id=${project.id}&uuid=${uuid}`
-    )
-    return response.data
-  }
-
-  async writeFile(project: Project, uuid: string, bindata: any): Promise<R.SuccessResponse> {
-    const data = new FormData()
-    data.append('bindata', encode(bindata.buffer))
-
-    const response = await this.axios.post(
-      `${this.endpoint}/doc?project_id=${project.id}&uuid=${uuid}`,
-      data,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    )
-    return response.data
-  }
-
-  async updateFile(
-    projectId: string,
-    id: string,
-    updates: Partial<LNFile>
-  ): Promise<R.FileResponse> {
-    const response = await this.axios.put(
-      `${this.endpoint}/files/${id}?project_id=${projectId}`,
-      updates
-    )
-    return response.data
-  }
-
-  // tasks
-
-  async listTasks(project: Project): Promise<R.TasksResponse> {
-    const response = await this.axios.get(`${this.endpoint}/tasks?project_id=${project.id}`)
-    return response.data
-  }
-
-  async createTask(project: Project, task: Partial<Task>): Promise<R.TaskResponse> {
-    const response = await this.axios.post(`${this.endpoint}/tasks?project_id=${project.id}`, task)
-    return response.data
-  }
-
-  async getTask(id: string): Promise<R.TaskResponse> {
-    const response = await this.axios.get(`${this.endpoint}/tasks/${id}`)
-    return response.data
-  }
-
-  async updateTask(id: string, task: Partial<Task>): Promise<R.TaskResponse> {
-    const response = await this.axios.put(`${this.endpoint}/tasks/${id}`, task)
-    return response.data
-  }
-
   // user data
 
   async getUserData(key: string, projectId?: string): Promise<any> {
@@ -394,56 +309,6 @@ class APIService {
       headers: headers,
     })
     return response.data
-  }
-
-  // notes
-
-  async listNotes(
-    project: Project,
-    type: Period,
-    start: string,
-    end: string
-  ): Promise<R.NotesResponse> {
-    const response = await this.axios.get(
-      `${this.endpoint}/daily_notes?project_id=${project.id}&start=${start}&end=${end}&type=${type}`
-    )
-    return response.data
-  }
-
-  async saveNote(
-    project: Project,
-    type: Period,
-    date: string,
-    contents: any,
-    snippet: string,
-    id?: string
-  ): Promise<R.NoteResponse> {
-    const response = await this.axios.post(
-      `${this.endpoint}/daily_notes/${date}?project_id=${project.id}`,
-      {
-        type,
-        contents,
-        snippet,
-        id,
-      }
-    )
-    return response.data
-  }
-
-  async generateSummary(notes: string): Promise<string> {
-    const response = await this.axios.post(`${this.endpoint}/generate/summary`, {
-      notes,
-    })
-    return response.data
-  }
-
-  async generateChat(
-    messages: { role: string; content: string }[]
-  ): Promise<{ response: string; status: number }> {
-    const response = await this.axios.post(`${this.endpoint}/generate/addie`, {
-      messages,
-    })
-    return { response: response.data, status: response.status }
   }
 
   // misc

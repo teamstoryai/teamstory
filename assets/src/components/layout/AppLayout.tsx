@@ -6,12 +6,6 @@ import { useEffect, useState } from 'preact/hooks'
 import { Toaster } from 'react-hot-toast'
 import uniqolor from 'uniqolor'
 
-import CalendarRail from '@/components/calendar/CalendarRail'
-import TaskContextMenu from '@/components/menus/TaskContextMenu'
-import DeleteTaskModal from '@/components/modals/DeleteTaskModal'
-import OnboardingModal from '@/components/modals/OnboardingModal'
-import QuickFindModal from '@/components/modals/QuickFindModal'
-import ShortcutsModal from '@/components/modals/ShortcutsModal'
 import AppSidebar from '@/components/nav/AppSidebar'
 import { SidebarMenu } from '@/components/nav/SidebarMenu'
 import useSwipe from '@/hooks/useSwipe'
@@ -27,10 +21,7 @@ export default function ({ children }: RenderableProps<{}>) {
 
   useEffect(() => {
     if (sidebarMenuOpen) {
-      const unsub = uiStore.path.listen(() => {
-        setSidebarOpen(false)
-      })
-      return unsub
+      // TODO close sidebar menu?
     }
   }, [sidebarMenuOpen])
 
@@ -65,14 +56,7 @@ export default function ({ children }: RenderableProps<{}>) {
       >
         <div className="flex-1 flex">
           <main className="flex flex-1 flex-col mt-1 overflow-x-hidden">{children}</main>
-          <CalendarRail />
         </div>
-
-        <TaskContextMenu />
-        <DeleteTaskModal />
-        <QuickFindModal />
-        <OnboardingModal />
-        <ShortcutsModal />
       </div>
     </div>
   )

@@ -118,23 +118,18 @@ class AuthStore {
 
   postAuth = () => {
     const search = new URLSearchParams(location.search)
-    const postRedirect =
-      search.get('path') ||
-      (uiStore.insightLoop ? paths.JOURNAL : uiStore.addie ? paths.ADDIE : paths.TODAY)
+    const postRedirect = search.get('path') || paths.APP
 
-    logger.info('post auth redirect', postRedirect, uiStore.insightLoop)
+    logger.info('post auth redirect', postRedirect)
 
     location.href = postRedirect.match(/^\/[^\/]+/) ? postRedirect : paths.APP
   }
 
   logout = () => {
     localStorage.removeItem(LS_AUTH_TOKENS)
-    const signInPath = uiStore.insightLoop ? paths.INSIGHT_SIGNIN : paths.SIGNIN
+    const signInPath = paths.SIGNIN
 
-    location.href =
-      signInPath +
-      (uiStore.insightLoop ? '?path=' + paths.JOURNAL : '') +
-      (uiStore.reactNative ? '?app' : '')
+    location.href = signInPath
   }
 
   debugMode = () => {

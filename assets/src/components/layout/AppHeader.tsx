@@ -1,14 +1,11 @@
 import { RenderableProps } from 'preact'
-import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 import { twMerge } from 'tailwind-merge'
 
 import CalendarToggle from '@/components/calendar/CalendarToggle'
 import UserMenu from '@/components/nav/UserMenu'
-import ProjectPills from '@/components/projects/ProjectPills'
 import { uiStore } from '@/stores/uiStore'
-import { classNames } from '@/utils'
-import { ChevronLeftIcon, MenuAlt2Icon } from '@heroicons/react/outline'
+import { MenuAlt2Icon } from '@heroicons/react/outline'
 import { useStore } from '@nanostores/preact'
 
 type Props = {
@@ -18,7 +15,6 @@ type Props = {
 export default function AppHeader(p: RenderableProps<Props>) {
   const sidebarOpen = useStore(uiStore.sidebarMenuOpen)
   const sidebarHidden = useStore(uiStore.sidebarHidden)
-  const prevPaths = useStore(uiStore.prevPaths)
 
   const [hasShadow, setHasShadow] = useState(false)
 
@@ -30,10 +26,6 @@ export default function AppHeader(p: RenderableProps<Props>) {
     window.addEventListener('scroll', listener)
     return () => window.removeEventListener('scroll', listener)
   }, [hasShadow])
-
-  if (uiStore.reactNative) {
-    return null
-  }
 
   return (
     <div
@@ -58,18 +50,8 @@ export default function AppHeader(p: RenderableProps<Props>) {
           <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
         </button>
       )}
-      {prevPaths.length > 0 ? (
-        <button
-          type="button"
-          className="text-gray-400 ml-1 md:block hover:bg-gray-100 rounded-md"
-          onClick={() => uiStore.goBack()}
-          title="Previous Page"
-        >
-          <ChevronLeftIcon className="h-6 w-6" aria-hidden="true" />
-        </button>
-      ) : (
-        <div class="w-8" />
-      )}
+
+      <div class="w-8" />
 
       <div className="flex-1 sm:px-2 flex justify-between select-none pt-1 overflow-hidden">
         {p.children}

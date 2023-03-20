@@ -12,54 +12,16 @@ import { classNames, ctrlOrCommand } from '@/utils'
 import { Menu, Transition } from '@headlessui/react'
 import { useStore } from '@nanostores/preact'
 
-const toggleFocusMode = () => {
-  const setting = !uiStore.sidebarHidden.get()
-  uiStore.sidebarHidden.set(setting)
-  uiStore.calendarOpen.set(!setting)
-  uiStore.manualCalendarOpen = !setting
-}
-
 export default () => {
   const user = useStore(authStore.loggedInUser)
 
   if (!user) return null
 
   const userNavigation = [
-    {
-      name: 'Toggle Focus Mode',
-      shortcut: '\\',
-      onClick: toggleFocusMode,
-    },
-    { name: 'User Settings', href: paths.SETTINGS },
-    uiStore.insightLoop
-      ? { name: 'Switch to Daybird', href: paths.TODAY }
-      : { name: 'Try InsightLoop', href: paths.JOURNAL },
-    uiStore.isPWA ? null : { name: 'Install Daybird App', onClick: () => uiStore.installAction() },
-    {
-      name: 'Keyboard Shortcuts',
-      shortcut: '/',
-      onClick: () => modalStore.shortcutsModal.set(true),
-    },
-    { name: 'Report a Bug', href: 'mailto:tim@daybird.app?subject=Bug Report' },
-    config.dev && {
-      name: '[dev] Onboarding',
-      onClick: () => uiStore.checkForOnboarding(true),
-    },
+    { name: 'User Settings', href: paths.SETTINGS, shortcut: undefined },
+    { name: 'Report a Bug', href: 'mailto:tim@teamstory.ai?subject=Bug Report' },
     { name: 'Sign out', onClick: () => authStore.logout() },
   ].filter(Boolean)
-
-  useShortcut((e) => {
-    if (checkShortcut(e, '\\')) {
-      toggleFocusMode()
-      return true
-    } else if (checkShortcut(e, '/', '?')) {
-      modalStore.shortcutsModal.set(true)
-      return true
-    } else if (checkShortcut(e, 'y')) {
-      route(paths.TODAY)
-    }
-    return false
-  }, [])
 
   return (
     <Menu as="div" className="ml-3 relative">

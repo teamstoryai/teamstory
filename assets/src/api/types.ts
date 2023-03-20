@@ -1,4 +1,4 @@
-import { DailyNote, File, OAuthToken, Project, ProjectMember, Task, User } from '@/models'
+import { OAuthToken, Project, ProjectMember, User } from '@/models'
 
 export type SuccessResponse = {
   success: boolean
@@ -45,25 +45,10 @@ export type FileResponse = {
   file: File
 }
 
-export type TasksResponse = {
-  tasks: Task[]
-}
-
-export type TaskResponse = {
-  task: Task
-}
-
 export type OAuthTokenResponse = {
   token: OAuthToken
 }
 
 export type OAuthTokensResponse = {
   tokens: OAuthToken[]
-}
-
-export type NotesResponse = {
-  notes: DailyNote[]
-}
-export type NoteResponse = {
-  note: DailyNote
 }

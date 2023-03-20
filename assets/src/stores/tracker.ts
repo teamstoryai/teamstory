@@ -9,32 +9,16 @@ class Tracker {
     amplitude.setUserId(user?.id)
   }
 
-  openJournal() {
-    amplitude.logEvent('openJournal')
+  setup() {
+    amplitude.logEvent('pageSetup')
   }
 
-  journalEntry() {
-    amplitude.logEvent('journalEntry')
+  dashboard() {
+    amplitude.logEvent('pageDashboard')
   }
 
-  insightEntry(type: string) {
-    amplitude.logEvent('insightEntry', { type })
-  }
-
-  openAddie() {
-    amplitude.logEvent('openAddie')
-  }
-
-  addieEvent(type: string) {
-    amplitude.logEvent('addieEvent', { type })
-  }
-
-  addieGPTChat(input: string) {
-    amplitude.logEvent('addieGPTChat', { input })
-  }
-
-  addieRating(rating: string, messages: number) {
-    amplitude.logEvent('addieRating', { rating, messages })
+  reports() {
+    amplitude.logEvent('pageReports')
   }
 }
 

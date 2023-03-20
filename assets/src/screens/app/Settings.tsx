@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'preact/hooks'
-
 import GoogleServerOAuth, {
-    CALENDAR_SCOPES, GoogleResponse, PROFILE_SCOPES
+  CALENDAR_SCOPES,
+  GoogleResponse,
+  PROFILE_SCOPES,
 } from '@/components/auth/GoogleServerOAuth'
 import Helmet from '@/components/core/Helmet'
 import Pressable from '@/components/core/Pressable'
@@ -9,7 +9,6 @@ import AppHeader from '@/components/layout/AppHeader'
 import { OAuthToken } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { calendarStore } from '@/stores/calendarStore'
-import { uiStore } from '@/stores/uiStore'
 import { TrashIcon } from '@heroicons/react/outline'
 import { useStore } from '@nanostores/preact'
 
@@ -27,7 +26,6 @@ export default (props: { path: string }) => {
         <div class="flex flex-col gap-6">
           <TimeZoneSetting />
           <CalendarSettings />
-          <ReactNativeSettings />
           <LogOut />
         </div>
       </div>
@@ -42,8 +40,6 @@ declare global {
 }
 
 function TimeZoneSetting() {
-  if (uiStore.insightLoop) return null
-
   const user = useStore(authStore.loggedInUser)
 
   const tzs: string[] = Intl.supportedValuesOf('timeZone')
@@ -72,8 +68,6 @@ function TimeZoneSetting() {
 }
 
 function CalendarSettings() {
-  if (uiStore.insightLoop) return null
-
   const tokens = useStore(calendarStore.tokens)
 
   const onConnect = async (response: GoogleResponse) => {
@@ -115,21 +109,6 @@ function LogOut() {
         onClick={() => confirm('Log out?') && authStore.logout()}
       >
         Log Out ({user?.email})
-      </Pressable>
-    </div>
-  )
-}
-
-function ReactNativeSettings() {
-  if (!uiStore.reactNative) return null
-
-  return (
-    <div className="my-2">
-      <Pressable
-        className="text-blue-600 py-3"
-        onClick={() => window.ReactNativeWebView?.postMessage('notif-settings')}
-      >
-        Notification Settings
       </Pressable>
     </div>
   )

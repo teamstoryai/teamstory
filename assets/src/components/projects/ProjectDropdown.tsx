@@ -65,7 +65,7 @@ export default function () {
             )}
             onClick={() => {
               projectStore.setCurrentProject(p)
-              route(uiStore.insightLoop ? paths.JOURNAL : paths.TODAY)
+              route(paths.DASHBOARD)
               setPillsOpen(false)
             }}
           >

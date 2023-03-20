@@ -56,7 +56,7 @@ export default function () {
             )}
             onClick={() => {
               projectStore.setCurrentProject(p)
-              route(paths.TODAY)
+              route(paths.DASHBOARD)
               setPillsOpen(false)
             }}
           >

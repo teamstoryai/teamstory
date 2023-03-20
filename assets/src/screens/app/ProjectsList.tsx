@@ -1,6 +1,3 @@
-import { route } from 'preact-router'
-import { useEffect } from 'preact/hooks'
-
 import Button from '@/components/core/Button'
 import Helmet from '@/components/core/Helmet'
 import AppHeader from '@/components/layout/AppHeader'
@@ -10,9 +7,8 @@ import { Project } from '@/models'
 import NoProjects from '@/screens/app/NoProjects'
 import { modalStore } from '@/stores/modalStore'
 import { projectStore } from '@/stores/projectStore'
-import { uiStore } from '@/stores/uiStore'
-import { classNames, makeInitials, mediumColorFor, pluralizeWithCount } from '@/utils'
-import { DotsVerticalIcon, PlusIcon } from '@heroicons/react/solid'
+import { classNames, mediumColorFor, pluralizeWithCount } from '@/utils'
+import { PlusIcon } from '@heroicons/react/solid'
 import { useStore } from '@nanostores/preact'
 
 type Props = {
@@ -21,8 +17,6 @@ type Props = {
 export default (props: Props) => {
   const projects = useStore(projectStore.projects)
   const activeProjects = useStore(projectStore.activeProjects)
-
-  useEffect(() => uiStore.calendarOpen.set(false))
 
   return (
     <>
