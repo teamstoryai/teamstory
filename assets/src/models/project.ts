@@ -3,12 +3,15 @@ export enum ProjectRole {
   MEMBER = 'member',
 }
 
+export type ProjectMeta = {
+  // onboarded?
+  ob?: boolean
+}
+
 export class Project {
   public id: string = ''
 
   public name: string = ''
-
-  public shortcode: string = ''
 
   public archived_at?: string | null
 
@@ -16,9 +19,15 @@ export class Project {
 
   public members?: ProjectMember[]
 
+  public meta?: ProjectMeta
+
   public static fromJSON(obj: Object): Project {
     let item: Project = Object.assign(new Project(), obj)
     return item
+  }
+
+  public static meta(p: Project | null | undefined): ProjectMeta {
+    return p?.meta || {}
   }
 }
 

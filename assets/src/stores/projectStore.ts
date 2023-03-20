@@ -93,6 +93,8 @@ class ProjectStore {
     const projects = [...store.get(), project]
     this.updateProjects(projects)
     this.setCurrentProject(project)
+
+    location.href = paths.SETUP
   })
 
   deleteProject = async (project: Project) => {

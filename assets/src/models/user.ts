@@ -32,12 +32,6 @@ export class UserMeta {
   /** last project */
   lp?: string
 
-  /** last file */
-  lf?: string
-
-  /** no-calendars */
-  nc?: number
-
   /** onboarded */
   ob?: number
 }

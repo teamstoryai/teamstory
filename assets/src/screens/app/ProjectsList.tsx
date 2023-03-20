@@ -75,12 +75,10 @@ function ProjectList({ projects }: { projects: Project[] }) {
             <li key={project.name} className="col-span-1 flex shadow-sm rounded-md">
               <div
                 className={classNames(
-                  'flex-shrink-0 flex items-center justify-center w-16 text-white text-sm font-medium rounded-l-md'
+                  'flex-shrink-0 flex items-center justify-center w-4 text-white text-sm font-medium rounded-l-md'
                 )}
                 style={{ background: project.bgColor }}
-              >
-                {project.shortcode}
-              </div>
+              />
               <div
                 className="flex-1 flex items-center justify-between border-t border-r border-b
                  border-gray-200 bg-white rounded-r-md truncate hover:bg-gray-200"

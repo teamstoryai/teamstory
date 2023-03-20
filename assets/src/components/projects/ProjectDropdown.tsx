@@ -38,11 +38,9 @@ export default function () {
         }}
       >
         <div
-          className={classNames('text-white text-sm font-medium rounded-md mr-2 px-2 py-1')}
+          className={classNames('text-white text-sm font-medium rounded-md mr-2 w-2 px-2 py-1')}
           style={{ background: bgColor }}
-        >
-          {currentProject.shortcode}
-        </div>
+        />
         <div class="font-semibold">{currentProject.name}</div>
       </div>
 

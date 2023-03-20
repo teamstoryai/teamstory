@@ -11,9 +11,8 @@ import { Dialog } from '@headlessui/react'
 import { PlusIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
-export default () => {
+const NewProjectModal = () => {
   const [name, setName] = useState<string>()
-  const [shortcode, setShortcode] = useState<string>()
   const [error, setError] = useState<string>()
   const [submitting, setSubmitting] = useState<boolean>(false)
   const open = useStore(modalStore.newProjectModal)
@@ -21,7 +20,6 @@ export default () => {
   useEffect(() => {
     if (!open) return
     setName('')
-    setShortcode('')
     setError('')
   }, [open])
 
@@ -32,17 +30,15 @@ export default () => {
   const onNameChange = (e: Event) => {
     const name = (e.target as HTMLInputElement).value
     setName(name)
-    setShortcode(makeInitials(name))
   }
 
   const submit = async (e: Event) => {
     e.preventDefault()
     if (!name) return setError('Name must not be blank')
-    if (!shortcode || shortcode.trim().length > 4) return setError('Code must be 1 - 4 characters')
 
     try {
       setSubmitting(true)
-      await projectStore.createProject({ name: name.trim(), shortcode: shortcode.trim() })
+      await projectStore.createProject({ name: name.trim() })
       close()
     } catch (e) {
       setError(unwrapError(e))
@@ -66,19 +62,10 @@ export default () => {
               type="text"
               label="Project Name"
               id="name"
-              placeholder="e.g. Home Projects, Marketing, Personal"
+              placeholder="e.g. the name of your repository"
               value={name}
               autoComplete="off"
               onChange={onNameChange}
-            />
-            <Input
-              type="text"
-              label="Project Code (up to 4 letters)"
-              id="shortcode"
-              placeholder="Used to identify tasks for this project"
-              value={shortcode}
-              autoComplete="off"
-              onChange={(e) => setShortcode((e.target as HTMLInputElement).value.toUpperCase())}
             />
           </div>
         </div>
@@ -91,3 +78,5 @@ export default () => {
     </Modal>
   )
 }
+
+export default NewProjectModal

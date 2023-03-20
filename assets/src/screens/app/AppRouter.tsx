@@ -6,11 +6,12 @@ import ProjectsList from '@/screens/app/ProjectsList'
 import ProjectView from '@/screens/app/ProjectView'
 import Settings from '@/screens/app/Settings'
 import Dashboard from '@/screens/app/Dashboard'
-import { uiStore } from '@/stores/uiStore'
 import Reports from '@/screens/app/Reports'
+import Setup from '@/screens/app/Setup'
 
 export default () => (
   <Router>
+    <Setup path={paths.SETUP} />
     <Dashboard path={paths.DASHBOARD} />
     <Reports path={paths.REPORTS} />
     <ProjectsList path={paths.PROJECTS} />

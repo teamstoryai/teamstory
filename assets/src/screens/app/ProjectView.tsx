@@ -43,9 +43,7 @@ export default ({ id }: Props) => {
     <>
       <Helmet title={`Project | ${project.name}`} />
       <AppHeader>
-        <h1 className="text-2xl font-semibold text-gray-900">
-          {project.name} ({project.shortcode})
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{project.name}</h1>
       </AppHeader>
 
       <div class="w-full max-w-2xl px-6 pb-6">
@@ -171,7 +169,6 @@ function Members({ project, isAdmin }: ProjectArgs) {
 
 function RenameProject({ project }: ProjectArgs) {
   const [name, setName] = useState<string>(project.name)
-  const [shortcode, setShortcode] = useState<string>(project.shortcode)
   const [error, setError] = useState<string>()
   const [submitting, setSubmitting] = useState<boolean>(false)
   const [success, setSuccess] = useState<boolean>(false)
@@ -180,16 +177,14 @@ function RenameProject({ project }: ProjectArgs) {
     e.preventDefault()
 
     if (!name) return setError('Name must not be blank')
-    if (!shortcode || shortcode.trim().length > 4) return setError('Code must be 1 - 4 characters')
 
     try {
       setSubmitting(true)
       setSuccess(false)
       setError(undefined)
-      const response = await API.updateProject(project, { name, shortcode })
+      const response = await API.updateProject(project, { name })
       projectStore.onProjectUpdated(response)
       setName('')
-      setShortcode('')
       setSuccess(true)
     } catch (e) {
       setError(unwrapError(e))
@@ -201,7 +196,6 @@ function RenameProject({ project }: ProjectArgs) {
   const onNameChange = (e: Event) => {
     const name = (e.target as HTMLInputElement).value
     setName(name)
-    setShortcode(makeInitials(name))
   }
 
   return (
@@ -221,13 +215,6 @@ function RenameProject({ project }: ProjectArgs) {
             value={name}
             placeholder="New Project Name"
             onChange={onNameChange}
-          />
-          <input
-            type="text"
-            className="max-w-xs w-25 mr-4 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            value={shortcode}
-            placeholder="Short code"
-            onChange={(e) => setShortcode((e.target as HTMLInputElement).value.toUpperCase())}
           />
 
           <button

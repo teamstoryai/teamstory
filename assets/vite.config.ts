@@ -3,7 +3,6 @@ import path from 'path'
 import analyze from 'rollup-plugin-analyzer'
 import tsTreeshaking from 'rollup-plugin-ts-treeshaking'
 import { defineConfig } from 'vite'
-import { chunkSplitPlugin } from 'vite-plugin-chunk-split'
 
 import preact from '@preact/preset-vite'
 

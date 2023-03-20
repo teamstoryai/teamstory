@@ -5,7 +5,8 @@ defmodule TeamstoryWeb.ProjectsView do
     %{
       id: Teamstory.Utils.no_dash(project.uuid),
       name: project.name,
-      archived_at: project.archived_at
+      archived_at: project.archived_at,
+      meta: project.meta
     }
   end
 

@@ -6,6 +6,9 @@ import AppHeader from '@/components/layout/AppHeader'
 
 import { projectStore } from '@/stores/projectStore'
 import { useStore } from '@nanostores/preact'
+import { Project } from '@/models'
+import { route } from 'preact-router'
+import { paths } from '@/config'
 
 type Props = {
   path: string
@@ -19,6 +22,11 @@ export default (props: Props) => {
   useEffect(() => {
     if (projectParam && projectParam != project?.id) projectStore.setCurrentProject(projectParam)
   }, [projectParam, project])
+
+  useEffect(() => {
+    if (!project) return
+    if (!Project.meta(project).ob) route(paths.SETUP)
+  }, [project])
 
   const today = new Date()
 

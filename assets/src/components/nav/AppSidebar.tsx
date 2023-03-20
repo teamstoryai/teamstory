@@ -44,16 +44,10 @@ export default ({ showHideButton }: { showHideButton?: boolean }) => {
 function Links() {
   const projects = useStore(projectStore.projects)
 
-  let navigation = (
-    [
-      { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
-      { name: 'Reports', href: paths.REPORTS, icon: ChartBarIcon },
-    ] as NavItem[]
-  ).concat(
-    projects.map(
-      (project) => ({ name: project.name, href: paths.PROJECTS + '/' + project.id } as NavItem)
-    )
-  )
+  let navigation = [
+    { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
+    { name: 'Reports', href: paths.REPORTS, icon: ChartBarIcon },
+  ] as NavItem[]
 
   return (
     <nav className="px-2 space-y-1">
