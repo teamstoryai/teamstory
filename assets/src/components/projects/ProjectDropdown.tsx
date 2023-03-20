@@ -1,7 +1,6 @@
 import { route } from 'preact-router'
 import { useEffect, useState } from 'preact/hooks'
 
-import Tooltip from '@/components/core/Tooltip'
 import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { uiStore } from '@/stores/uiStore'
@@ -70,22 +69,20 @@ export default function () {
             {p.name}
           </div>
         ))}
-        <Tooltip message={pillsOpen ? '' : 'Manage Projects'} placement="right">
-          <div
-            className={classNames(
-              'text-gray-400 text-sm flex',
-              'hover:bg-gray-400 hover:text-gray-900 cursor-pointer rounded-md p-2',
-              'overflow-hidden whitespace-nowrap'
-            )}
-            onClick={() => {
-              route(paths.PROJECTS)
-              setPillsOpen(false)
-            }}
-          >
-            <Bars4Icon className="w-5 h-5" />
-            {pillsOpen && <div className="ml-2">Manage Projects</div>}
-          </div>
-        </Tooltip>
+        <div
+          className={classNames(
+            'text-gray-400 text-sm flex',
+            'hover:bg-gray-400 hover:text-gray-900 cursor-pointer rounded-md p-2',
+            'overflow-hidden whitespace-nowrap'
+          )}
+          onClick={() => {
+            route(paths.PROJECTS)
+            setPillsOpen(false)
+          }}
+        >
+          <Bars4Icon className="w-5 h-5" />
+          {pillsOpen && <div className="ml-2">Manage Projects</div>}
+        </div>
       </div>
     </div>
   )

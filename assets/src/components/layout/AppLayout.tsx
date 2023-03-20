@@ -1,5 +1,3 @@
-import 'tippy.js/themes/light.css'
-
 import { format } from 'date-fns'
 import { RenderableProps } from 'preact'
 import { useEffect, useState } from 'preact/hooks'

@@ -1,12 +1,9 @@
 import { StateUpdater, useEffect, useState } from 'preact/hooks'
 import { useStore } from '@nanostores/preact'
-import { config } from '@/config'
 import githubLogo from '@/images/github.png'
 import gitlabLogo from '@/images/gitlab.png'
-import Tooltip from '@/components/core/Tooltip'
 import { logger } from '@/utils'
 import ErrorMessage from '@/components/core/ErrorMessage'
-import { API } from '@/api'
 import { tokenStore } from '@/stores/tokenStore'
 import Loader from '@/components/core/Loader'
 import Pressable from '@/components/core/Pressable'
@@ -15,8 +12,13 @@ import { OAuthToken } from '@/models'
 import useOAuthPopup from '@/hooks/useOAuthPopup'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import ForkIcon from '@/components/icons/ForkIcon'
-import { ConnectButton, GH_URL } from './ProjectSetup'
+import { ConnectButton } from './ConnectButton'
 import { projectStore } from '@/stores/projectStore'
+import { config } from '@/config'
+
+const GH_SCOPES = 'user:email,repo,read:org'
+const GH_CLIENT_ID = config.dev ? '3008defde742bbe1efe0' : ''
+export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=${GH_CLIENT_ID}`
 
 enum ConnectState {
   NotConnected,
@@ -131,9 +133,7 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
             text="Connect GitHub"
             onClick={() => window.open(GH_URL)}
           />
-          <Tooltip message="Coming soon">
-            <ConnectButton disabled icon={gitlabLogo} text="Connect GitLab" />
-          </Tooltip>
+          <ConnectButton comingSoon icon={gitlabLogo} text="Connect GitLab" />
         </div>
       )}
 
@@ -199,7 +199,7 @@ function SelectRepository({
                   setRepos(undefined)
                 }}
                 className="flex-row"
-                tooltip={{ message: 'Select another organization', placement: 'left' }}
+                tooltip="Select another organization"
               >
                 <img src={currentOrg.avatar_url} class="w-6 h-6 rounded-full mr-2" />
                 {currentOrg.login}
@@ -230,7 +230,7 @@ function SelectRepository({
                 <Pressable
                   onClick={() => setCurrentRepo(undefined)}
                   className="flex-row"
-                  tooltip={{ message: 'Select another repository', placement: 'left' }}
+                  tooltip="Select another repository"
                 >
                   <img src={currentOrg!.avatar_url} class="w-6 h-6 rounded-full mr-2" />
 
@@ -244,7 +244,7 @@ function SelectRepository({
               <div class="mt-2">
                 {repos.map((repo) => (
                   <Pressable
-                    onClick={() => addRepo(currentOrg, repo)}
+                    onClick={() => addRepo(currentOrg!, repo)}
                     key={repo.id}
                     className="flex-row"
                   >

@@ -1,7 +1,7 @@
 import '@event-calendar/core/index.css'
 import './calendar.css'
 
-import { format, getHours } from 'date-fns'
+import { format } from 'date-fns'
 import Linkify from 'linkify-react'
 import { flatten } from 'lodash'
 import { useEffect, useRef, useState } from 'preact/hooks'
@@ -10,15 +10,11 @@ import GoogleServerOAuth, {
   CALENDAR_SCOPES,
   GoogleResponse,
   PROFILE_SCOPES,
-  scopesInclude,
 } from '@/components/auth/GoogleServerOAuth'
-import Button from '@/components/core/Button'
 import ErrorMessage from '@/components/core/ErrorMessage'
 import Loader from '@/components/core/Loader'
 import Pressable from '@/components/core/Pressable'
-import Tooltip from '@/components/core/Tooltip'
-import { config, GEvent } from '@/config'
-import { User } from '@/models'
+import { GEvent } from '@/config'
 import { authStore } from '@/stores/authStore'
 import { calendarStore } from '@/stores/calendarStore'
 import { assertIsDefined, logger } from '@/utils'
