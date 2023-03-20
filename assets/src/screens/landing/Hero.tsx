@@ -4,23 +4,21 @@ import landing from '@/images/landing-unsplash.jpg'
 
 export default () => (
   <>
-    <div className="lg:relative lg:py-20/ bg-slate-50 overflow-hidden">
+    <div className="lg:relative lg:py-20/ bg-slate-50 overflow-hidden mt-8">
       <div
         className="mx-auto max-w-md px-4 sm:max-w-3xl sm:px-6 lg:grid lg:max-w-7xl
           lg:grid-cols-2 lg:gap-24 lg:px-8"
       >
         <div>
-          <div>
-            <Logo class="w-[150px] sm:w-[250px]" />
-          </div>
           <div className="my-20">
             <div className="mt-6 sm:max-w-xl mx-auto">
               <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl text-center lg:text-left">
                 <div className="">Increase velocity</div>
-                <div className="text-slate-500">and team happiness?</div>
+                <div className="text-slate-600">and team happiness?</div>
               </h1>
               <p className="mt-6 text-xl text-gray-500 leading-normal">
-                Yes, it's possible. Come find out how the best engineering teams get better.
+                Yes, it's possible. Discover how the best engineering teams get better by analyzing
+                the past.
               </p>
               <div className="mt-10 flex flex-col items-center">
                 <a

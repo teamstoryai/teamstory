@@ -7,16 +7,14 @@ export default function () {
   const loggedIn = hasToken()
   return (
     <div
-      className="flex justify-between items-center px-4 py-2
-        sm:px-6 md:justify-start md:space-x-10"
+      className="flex justify-between items-center py-2
+        px-6 md:justify-start md:space-x-10"
     >
-      {location.pathname != paths.ROOT && (
-        <div>
-          <a href={paths.ROOT}>
-            <LogoIcon class="w-[40px]" />
-          </a>
-        </div>
-      )}
+      <div>
+        <a href={paths.ROOT}>
+          <Logo class="w-[150px]" />
+        </a>
+      </div>
       <div className="grow" />
 
       <div className="flex items-center md:ml-12">
