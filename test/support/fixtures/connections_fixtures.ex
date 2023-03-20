@@ -11,9 +11,9 @@ defmodule Teamstory.ConnectionsFixtures do
     {:ok, repository} =
       attrs
       |> Enum.into(%{
+        project_id: 1,
         avatar_url: "some avatar_url",
         base_url: "some base_url",
-        deleted_at: ~U[2023-03-19 21:30:00Z],
         name: "some name",
         service: "some service"
       })
@@ -29,9 +29,9 @@ defmodule Teamstory.ConnectionsFixtures do
     {:ok, issue_tracker} =
       attrs
       |> Enum.into(%{
-        deleted_at: ~U[2023-03-19 21:42:00Z],
+        project_id: 1,
         project: "some project",
-        project_id: "some project_id",
+        base_url: "some base_url",
         service: "some service",
         uuid: "7488a646-e31f-11e4-aace-600308960662"
       })

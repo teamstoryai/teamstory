@@ -5,7 +5,7 @@ defmodule TeamstoryWeb.ConnectReposController do
 
   action_fallback TeamstoryWeb.FallbackController
 
-  alias Teamstory.{Github, OAuthTokens}
+  alias Teamstory.{Connections, Github, OAuthTokens, Projects, Utils}
 
   # GET /connect/repos/fetch_orgs (project in gitlab)
   def fetch_orgs(conn, %{"service" => service}) do

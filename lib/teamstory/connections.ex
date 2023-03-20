@@ -6,9 +6,9 @@ defmodule Teamstory.Connections do
   import Ecto.Query, warn: false
   alias Teamstory.Repo
 
-  alias Teamstory.Connections.Repository
+  alias Teamstory.Connections.{Repository, IssueTracker}
 
-  @spec list_tasks(Project.t()) :: [Repository.t()]
+  @spec list_repositories(Project.t()) :: [Repository.t()]
   def list_repositories(project) do
     from(t in Repository,
       where: t.project_id == ^project.id and is_nil(t.deleted_at),
@@ -120,8 +120,6 @@ defmodule Teamstory.Connections do
   def change_repository(%Repository{} = repository, attrs \\ %{}) do
     Repository.changeset(repository, attrs)
   end
-
-  alias Teamstory.Connections.IssueTracker
 
   @doc """
   Returns the list of issue_trackers.

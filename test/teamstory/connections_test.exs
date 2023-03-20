@@ -21,12 +21,18 @@ defmodule Teamstory.ConnectionsTest do
     end
 
     test "create_repository/1 with valid data creates a repository" do
-      valid_attrs = %{avatar_url: "some avatar_url", base_url: "some base_url", deleted_at: ~U[2023-03-19 21:30:00Z], name: "some name", service: "some service"}
+      valid_attrs = %{
+        avatar_url: "some avatar_url",
+        base_url: "some base_url",
+        project_id: 1,
+        name: "some name",
+        service: "some service"
+      }
 
       assert {:ok, %Repository{} = repository} = Connections.create_repository(valid_attrs)
       assert repository.avatar_url == "some avatar_url"
       assert repository.base_url == "some base_url"
-      assert repository.deleted_at == ~U[2023-03-19 21:30:00Z]
+      assert repository.project_id == 1
       assert repository.name == "some name"
       assert repository.service == "some service"
     end
@@ -37,9 +43,18 @@ defmodule Teamstory.ConnectionsTest do
 
     test "update_repository/2 with valid data updates the repository" do
       repository = repository_fixture()
-      update_attrs = %{avatar_url: "some updated avatar_url", base_url: "some updated base_url", deleted_at: ~U[2023-03-20 21:30:00Z], name: "some updated name", service: "some updated service"}
 
-      assert {:ok, %Repository{} = repository} = Connections.update_repository(repository, update_attrs)
+      update_attrs = %{
+        avatar_url: "some updated avatar_url",
+        base_url: "some updated base_url",
+        deleted_at: ~U[2023-03-20 21:30:00Z],
+        name: "some updated name",
+        service: "some updated service"
+      }
+
+      assert {:ok, %Repository{} = repository} =
+               Connections.update_repository(repository, update_attrs)
+
       assert repository.avatar_url == "some updated avatar_url"
       assert repository.base_url == "some updated base_url"
       assert repository.deleted_at == ~U[2023-03-20 21:30:00Z]
@@ -49,7 +64,10 @@ defmodule Teamstory.ConnectionsTest do
 
     test "update_repository/2 with invalid data returns error changeset" do
       repository = repository_fixture()
-      assert {:error, %Ecto.Changeset{}} = Connections.update_repository(repository, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Connections.update_repository(repository, @invalid_attrs)
+
       assert repository == Connections.get_repository!(repository.id)
     end
 
@@ -83,12 +101,20 @@ defmodule Teamstory.ConnectionsTest do
     end
 
     test "create_issue_tracker/1 with valid data creates a issue_tracker" do
-      valid_attrs = %{deleted_at: ~U[2023-03-19 21:42:00Z], project: "some project", project_id: "some project_id", service: "some service", uuid: "7488a646-e31f-11e4-aace-600308960662"}
+      valid_attrs = %{
+        project_id: 1,
+        project: "some project",
+        base_url: "some base_url",
+        service: "some service",
+        uuid: "7488a646-e31f-11e4-aace-600308960662"
+      }
 
-      assert {:ok, %IssueTracker{} = issue_tracker} = Connections.create_issue_tracker(valid_attrs)
-      assert issue_tracker.deleted_at == ~U[2023-03-19 21:42:00Z]
+      assert {:ok, %IssueTracker{} = issue_tracker} =
+               Connections.create_issue_tracker(valid_attrs)
+
+      assert issue_tracker.project_id == 1
       assert issue_tracker.project == "some project"
-      assert issue_tracker.project_id == "some project_id"
+      assert issue_tracker.base_url == "some base_url"
       assert issue_tracker.service == "some service"
       assert issue_tracker.uuid == "7488a646-e31f-11e4-aace-600308960662"
     end
@@ -99,19 +125,31 @@ defmodule Teamstory.ConnectionsTest do
 
     test "update_issue_tracker/2 with valid data updates the issue_tracker" do
       issue_tracker = issue_tracker_fixture()
-      update_attrs = %{deleted_at: ~U[2023-03-20 21:42:00Z], project: "some updated project", project_id: "some updated project_id", service: "some updated service", uuid: "7488a646-e31f-11e4-aace-600308960668"}
 
-      assert {:ok, %IssueTracker{} = issue_tracker} = Connections.update_issue_tracker(issue_tracker, update_attrs)
+      update_attrs = %{
+        deleted_at: ~U[2023-03-20 21:42:00Z],
+        project: "some updated project",
+        base_url: "some updated base_url",
+        service: "some updated service",
+        uuid: "7488a646-e31f-11e4-aace-600308960668"
+      }
+
+      assert {:ok, %IssueTracker{} = issue_tracker} =
+               Connections.update_issue_tracker(issue_tracker, update_attrs)
+
       assert issue_tracker.deleted_at == ~U[2023-03-20 21:42:00Z]
       assert issue_tracker.project == "some updated project"
-      assert issue_tracker.project_id == "some updated project_id"
+      assert issue_tracker.base_url == "some updated base_url"
       assert issue_tracker.service == "some updated service"
       assert issue_tracker.uuid == "7488a646-e31f-11e4-aace-600308960668"
     end
 
     test "update_issue_tracker/2 with invalid data returns error changeset" do
       issue_tracker = issue_tracker_fixture()
-      assert {:error, %Ecto.Changeset{}} = Connections.update_issue_tracker(issue_tracker, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Connections.update_issue_tracker(issue_tracker, @invalid_attrs)
+
       assert issue_tracker == Connections.get_issue_tracker!(issue_tracker.id)
     end
 

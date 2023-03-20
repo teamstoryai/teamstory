@@ -1,9 +1,9 @@
-defmodule ConcordaWeb.ConnectReposView do
-  use ConcordaWeb, :view
+defmodule TeamstoryWeb.ConnectReposView do
+  use TeamstoryWeb, :view
 
   def render_item(item) do
     %{
-      id: Concorda.Utils.no_dash(item.uuid),
+      id: Teamstory.Utils.no_dash(item.uuid),
       name: item.name,
       service: item.service,
       base_url: item.base_url,

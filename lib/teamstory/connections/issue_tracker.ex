@@ -5,7 +5,7 @@ defmodule Teamstory.Connections.IssueTracker do
   schema "issue_trackers" do
     field :deleted_at, :utc_datetime
     field :project, :string
-    field :project_id, :string
+    field :base_url, :string
     field :service, :string
     field :uuid, Ecto.UUID
     field :project_id, :id
@@ -16,7 +16,8 @@ defmodule Teamstory.Connections.IssueTracker do
   @doc false
   def changeset(issue_tracker, attrs) do
     issue_tracker
-    |> cast(attrs, [:uuid, :service, :project, :project_id, :deleted_at])
-    |> validate_required([:uuid, :service, :project, :project_id, :deleted_at])
+    |> cast(attrs, [:uuid, :service, :project, :project_id, :base_url, :deleted_at])
+    |> Teamstory.Repo.generate_uuid()
+    |> validate_required([:uuid, :service, :project, :project_id])
   end
 end

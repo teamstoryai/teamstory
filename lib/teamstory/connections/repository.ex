@@ -18,7 +18,7 @@ defmodule Teamstory.Connections.Repository do
   def changeset(repository, attrs) do
     repository
     |> cast(attrs, [:service, :avatar_url, :name, :base_url, :deleted_at, :project_id])
-    |> Repo.generate_uuid()
+    |> Teamstory.Repo.generate_uuid()
     |> validate_required([:uuid, :service, :name, :project_id])
   end
 end
