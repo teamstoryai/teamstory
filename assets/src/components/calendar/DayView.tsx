@@ -7,7 +7,10 @@ import { flatten } from 'lodash'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
 import GoogleServerOAuth, {
-    CALENDAR_SCOPES, GoogleResponse, PROFILE_SCOPES, scopesInclude
+  CALENDAR_SCOPES,
+  GoogleResponse,
+  PROFILE_SCOPES,
+  scopesInclude,
 } from '@/components/auth/GoogleServerOAuth'
 import Button from '@/components/core/Button'
 import ErrorMessage from '@/components/core/ErrorMessage'
@@ -22,8 +25,12 @@ import { assertIsDefined, logger } from '@/utils'
 import Calendar, { EventClickInfo } from '@event-calendar/core'
 import TimeGrid from '@event-calendar/time-grid'
 import {
-    CheckIcon, ChevronDownIcon, ChevronUpIcon, RefreshIcon, TrashIcon
-} from '@heroicons/react/outline'
+  ArrowPathIcon,
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 import { createPopper } from '@popperjs/core'
 
@@ -213,7 +220,7 @@ function Events({ date }: Props) {
       <div class="flex px-3 items-center">
         <div class="flex-1 font-bold">{format(date, 'MMMM do')}</div>
         <Pressable tooltip="Refresh Events" onClick={() => calendarStore.fetchEvents(date)}>
-          <RefreshIcon class="text-gray-500 h-3 w-3" />
+          <ArrowPathIcon class="text-gray-500 h-3 w-3" />
         </Pressable>
       </div>
       <div id="ec" class="flex-1 text-sm"></div>

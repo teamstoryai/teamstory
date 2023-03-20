@@ -6,7 +6,7 @@ import ErrorMessage from '@/components/core/ErrorMessage'
 import Modal from '@/components/modals/Modal'
 import { unwrapError } from '@/utils'
 import { Dialog } from '@headlessui/react'
-import { ArchiveIcon, TrashIcon } from '@heroicons/react/outline'
+import { ArchiveBoxIcon, TrashIcon } from '@heroicons/react/24/outline'
 
 type Props = {
   label: string
@@ -40,7 +40,7 @@ export default ({ archive, label, close, children, performAction }: RenderablePr
       <form onSubmit={submit}>
         <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
           {archive ? (
-            <ArchiveIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
+            <ArchiveBoxIcon className="h-6 w-6 text-orange-600" aria-hidden="true" />
           ) : (
             <TrashIcon className="h-6 w-6 text-red-600" aria-hidden="true" />
           )}

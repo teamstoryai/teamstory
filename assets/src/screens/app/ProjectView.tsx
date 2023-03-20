@@ -16,7 +16,7 @@ import { authStore } from '@/stores/authStore'
 import { modalStore } from '@/stores/modalStore'
 import { projectStore } from '@/stores/projectStore'
 import { makeInitials, unwrapError } from '@/utils'
-import { MailIcon } from '@heroicons/react/solid'
+import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { useStore } from '@nanostores/preact'
 
 type Props = {
@@ -132,7 +132,7 @@ function Members({ project, isAdmin }: ProjectArgs) {
                             {member.id ? (
                               <Alphatar id={member.id} text={member.name!} />
                             ) : (
-                              <MailIcon className="h-8 w-8" />
+                              <EnvelopeIcon className="h-8 w-8" />
                             )}
                           </div>
                           <div className="ml-4">

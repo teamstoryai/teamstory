@@ -8,7 +8,7 @@ import NoProjects from '@/screens/app/NoProjects'
 import { modalStore } from '@/stores/modalStore'
 import { projectStore } from '@/stores/projectStore'
 import { classNames, mediumColorFor, pluralizeWithCount } from '@/utils'
-import { PlusIcon } from '@heroicons/react/solid'
+import { PlusIcon } from '@heroicons/react/24/solid'
 import { useStore } from '@nanostores/preact'
 
 type Props = {
@@ -28,7 +28,8 @@ export default (props: Props) => {
 
       <div className="px-4 sm:px-6 md:px-8">
         <div className="my-6 text-sm">
-          Click a project to view settings and invite collaborators.
+          Code & stories are organized into projects. Click on a project to view settings and invite
+          collaborators.
         </div>
         <ProjectList projects={projects} />
 

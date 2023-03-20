@@ -9,7 +9,7 @@ import AppHeader from '@/components/layout/AppHeader'
 import { OAuthToken } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { calendarStore } from '@/stores/calendarStore'
-import { TrashIcon } from '@heroicons/react/outline'
+import { TrashIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 export default (props: { path: string }) => {

@@ -1,7 +1,6 @@
+import { XMarkIcon } from '@heroicons/react/24/outline'
 import { getDayOfYear } from 'date-fns'
 import { useState } from 'preact/hooks'
-
-import { XIcon } from '@heroicons/react/outline'
 
 const prompts = [
   '“Pleasure in the job puts perfection in the work.” – Aristotle',
@@ -121,7 +120,7 @@ export default function ({ date }: { date: Date }) {
         title="Hide"
         onClick={() => setHidden(true)}
       >
-        <XIcon className="w-3 h-3" />
+        <XMarkIcon className="w-3 h-3" />
       </a>
     </div>
   )

@@ -6,7 +6,7 @@ import ProjectDropdown from '@/components/projects/ProjectDropdown'
 import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { classNames } from '@/utils'
-import { ChartBarIcon, HomeIcon } from '@heroicons/react/outline'
+import { ChartBarIcon, HomeIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 type NavItem = {
@@ -28,7 +28,7 @@ export default ({ showHideButton }: { showHideButton?: boolean }) => {
       <div className="flex-1 flex flex-col overflow-y-auto scrollbar">
         {!projects.length ? (
           <>
-            <div className="p-4 italic text-sm">Please create a project to continue.</div>
+            <div />
           </>
         ) : (
           <>

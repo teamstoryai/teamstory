@@ -1,8 +1,6 @@
 import Tooltip from '@/components/core/Tooltip'
-import { uiStore } from '@/stores/uiStore'
-import { classNames, debounce, DebounceStyle } from '@/utils'
-import { CalendarIcon } from '@heroicons/react/outline'
-import { useStore } from '@nanostores/preact'
+import { classNames } from '@/utils'
+import { CalendarIcon } from '@heroicons/react/24/outline'
 
 export default function () {
   const calendarOpen = false

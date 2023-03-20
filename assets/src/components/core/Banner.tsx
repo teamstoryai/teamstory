@@ -1,6 +1,6 @@
 import { RenderableProps } from 'preact'
 
-import { XIcon } from '@heroicons/react/outline'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 
 type Props = {
   onClose?: () => void
@@ -19,7 +19,7 @@ export default function ({ onClose, children }: RenderableProps<Props>) {
               className="flex p-2 rounded-md hover:bg-white-500/75 focus:outline-none focus:ring-2 focus:ring-white"
             >
               <span className="sr-only">Dismiss</span>
-              <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+              <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
             </button>
           </div>
         )}

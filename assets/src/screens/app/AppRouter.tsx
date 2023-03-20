@@ -16,6 +16,7 @@ export default () => (
     <ProjectsList path={paths.PROJECTS} />
     <ProjectView path={paths.PROJECTS + '/:id'} />
     <Settings path={paths.SETTINGS} />
+    <Redirect path={paths.APP + '/:anything'} to={paths.DASHBOARD} />
     <Redirect path={paths.APP} to={paths.DASHBOARD} />
   </Router>
 )

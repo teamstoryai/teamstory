@@ -6,7 +6,7 @@ import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { uiStore } from '@/stores/uiStore'
 import { classNames, mediumColorFor } from '@/utils'
-import { ViewListIcon } from '@heroicons/react/outline'
+import { Bars4Icon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 export default function () {
@@ -84,7 +84,7 @@ export default function () {
               setPillsOpen(false)
             }}
           >
-            <ViewListIcon className="w-5 h-5" />
+            <Bars4Icon className="w-5 h-5" />
             {pillsOpen && <div className="ml-2">Manage Projects</div>}
           </div>
         </Tooltip>

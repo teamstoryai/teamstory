@@ -1,12 +1,20 @@
 import {
-    addDays, addMonths, endOfMonth, endOfWeek, format, isSameDay, isSameMonth, startOfMonth,
-    startOfWeek, subMonths
+  addDays,
+  addMonths,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
 } from 'date-fns'
 import { useEffect, useState } from 'preact/hooks'
 import { twMerge } from 'tailwind-merge'
 
 import { classNames } from '@/utils'
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
 export type CalendarProps = {
   className?: string

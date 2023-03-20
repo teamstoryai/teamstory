@@ -5,7 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import CalendarToggle from '@/components/calendar/CalendarToggle'
 import UserMenu from '@/components/nav/UserMenu'
 import { uiStore } from '@/stores/uiStore'
-import { MenuAlt2Icon } from '@heroicons/react/outline'
+import { Bars3Icon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 type Props = {
@@ -47,17 +47,16 @@ export default function AppHeader(p: RenderableProps<Props>) {
           }
         >
           <span className="sr-only">Open sidebar</span>
-          <MenuAlt2Icon className="h-6 w-6" aria-hidden="true" />
+          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
       )}
 
       <div class="w-8" />
 
-      <div className="flex-1 sm:px-2 flex justify-between select-none pt-1 overflow-hidden">
+      <div className="flex-1 flex justify-between select-none pt-1 overflow-hidden">
         {p.children}
       </div>
       <div className="mr-4 flex items-center">
-        <CalendarToggle />
         <UserMenu />
       </div>
     </div>

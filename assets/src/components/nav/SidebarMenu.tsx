@@ -3,7 +3,7 @@ import { Fragment } from 'preact'
 import AppSidebar from '@/components/nav/AppSidebar'
 import { uiStore } from '@/stores/uiStore'
 import { Dialog, Transition } from '@headlessui/react'
-import { XIcon } from '@heroicons/react/outline'
+import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 export function SidebarMenu() {
@@ -51,7 +51,7 @@ export function SidebarMenu() {
                     onClick={() => uiStore.sidebarMenuOpen.set(false)}
                   >
                     <span className="sr-only">Close sidebar</span>
-                    <XIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                    <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
                   </button>
                 </div>
               </Transition.Child>

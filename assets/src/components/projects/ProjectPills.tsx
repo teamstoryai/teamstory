@@ -5,8 +5,8 @@ import Tooltip from '@/components/core/Tooltip'
 import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { classNames } from '@/utils'
-import { ViewListIcon } from '@heroicons/react/outline'
 import { useStore } from '@nanostores/preact'
+import { Bars4Icon } from '@heroicons/react/24/outline'
 
 export default function () {
   const [pillsOpen, setPillsOpen] = useState(false)
@@ -74,7 +74,7 @@ export default function () {
               route(paths.PROJECTS)
             }}
           >
-            <ViewListIcon className="w-5 h-5" />
+            <Bars4Icon className="w-5 h-5" />
             {pillsOpen && <div className="ml-2">Manage Projects</div>}
           </div>
         </Tooltip>

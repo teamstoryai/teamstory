@@ -8,7 +8,7 @@ import { modalStore } from '@/stores/modalStore'
 import { projectStore } from '@/stores/projectStore'
 import { makeInitials, unwrapError } from '@/utils'
 import { Dialog } from '@headlessui/react'
-import { PlusIcon } from '@heroicons/react/outline'
+import { PlusIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 export default () => {
