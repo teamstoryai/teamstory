@@ -20,6 +20,6 @@ defmodule Teamstory.Connections.Repository do
     |> cast(attrs, [:service, :avatar_url, :name, :base_url, :deleted_at, :project_id])
     |> Teamstory.Repo.generate_uuid()
     |> validate_required([:uuid, :service, :name, :project_id])
-    |> unique_constraint([:project_id, :base_url])
+    |> unique_constraint([:project_id, :base_url], message: "+ repository already exists")
   end
 end
