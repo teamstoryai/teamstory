@@ -88,6 +88,20 @@ defmodule TeamstoryWeb.OAuthController do
     save_oauth_token(user, params)
   end
 
+  defp save_oauth_token(
+         user,
+         %{"access_token" => access_token} = params
+       ) do
+    params =
+      params
+      |> Map.delete("access_token")
+      |> Map.put("access", access_token)
+      |> Map.put("refresh", nil)
+      |> Map.put("expires_in", nil)
+
+    save_oauth_token(user, params)
+  end
+
   defp save_oauth_token(user, %{
          "email" => email,
          "service" => service,
@@ -95,7 +109,7 @@ defmodule TeamstoryWeb.OAuthController do
          "refresh" => refresh,
          "expires_in" => expires_in
        }) do
-    expires_at = Timex.shift(Timex.now(), seconds: expires_in)
+    expires_at = if expires_in, do: Timex.shift(Timex.now(), seconds: expires_in)
 
     attrs = %{
       user_id: user.id,
@@ -186,6 +200,19 @@ defmodule TeamstoryWeb.OAuthController do
             |> json(%{error: reason})
         end
     end
+  end
+
+  def github_oauth(conn, %{"code" => code}) do
+    origin = get_origin_uri(conn)
+
+    json_result =
+      %{
+        code: code,
+        service: "github"
+      }
+      |> Poison.encode!()
+
+    render(conn, "google_oauth.html", result: json_result, origin: origin)
   end
 
   # GET /oauth/google

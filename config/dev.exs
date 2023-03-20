@@ -77,3 +77,7 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :teamstory, :docroot, Path.expand("../docs", __DIR__)
+
+config :teamstory, Teamstory.Github,
+  github_client_id: "3008defde742bbe1efe0",
+  github_secret: "2d5ec6723a7211a6eec4d56cd96d9478ebc4b90a"

@@ -57,15 +57,11 @@ function ConnectCalendar() {
   const error = useStore(calendarStore.error)
   const user = useStore(authStore.loggedInUser)
 
-  if (User.meta(user).nc) return null
-
   const onConnect = async (response: GoogleResponse) => {
     await calendarStore.saveGoogleOAuthToken(response)
   }
 
-  const hide = () => {
-    authStore.updateUser({ meta: { nc: 1 } })
-  }
+  const hide = () => {}
 
   return (
     <div class="p-2 flex flex-col items-center text-center text-sm">

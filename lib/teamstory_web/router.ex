@@ -143,6 +143,7 @@ defmodule TeamstoryWeb.Router do
     get "/admin/*path", PageController, :admin
 
     get "/oauth/google", OAuthController, :google_oauth
+    get "/oauth/github", OAuthController, :github_oauth
     get "/oauth/*path", PageController, :auth
 
     get "/about", PageController, :redirect_about

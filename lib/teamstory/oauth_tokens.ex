@@ -9,22 +9,40 @@ defmodule Teamstory.OAuthTokens do
   alias Teamstory.OAuthTokens.OAuthToken
 
   def all_for_user(user, name) do
-    Repo.all(from t in OAuthToken, where: t.user_id == ^user.id and t.name == ^name and
-      is_nil(t.deleted_at), order_by: [desc: :id])
+    Repo.all(
+      from t in OAuthToken,
+        where:
+          t.user_id == ^user.id and t.name == ^name and
+            is_nil(t.deleted_at),
+        order_by: [desc: :id]
+    )
   end
 
   def find_for_email(user, email, name) do
-    Repo.one(from t in OAuthToken, where: t.user_id == ^user.id and t.name == ^name and
-      t.email == ^email and is_nil(t.deleted_at), order_by: [desc: :id], limit: 1)
+    Repo.one(
+      from t in OAuthToken,
+        where:
+          t.user_id == ^user.id and t.name == ^name and
+            t.email == ^email and is_nil(t.deleted_at),
+        order_by: [desc: :id],
+        limit: 1
+    )
   end
 
   def update_or_create_for_user_and_service(user, email, service, attrs) do
     case find_for_email(user, email, service) do
       nil ->
         create_oauth_token(attrs)
+
       token ->
         if token.meta["invalid_grant"] do
-          attrs = Map.put(attrs, :meta, Utils.updated_meta_field(token.meta, %{ "invalid_grant" => false }))
+          attrs =
+            Map.put(
+              attrs,
+              :meta,
+              Utils.updated_meta_field(token.meta, %{"invalid_grant" => false})
+            )
+
           update_oauth_token(token, attrs)
         else
           update_oauth_token(token, attrs)
@@ -36,21 +54,29 @@ defmodule Teamstory.OAuthTokens do
     case get_service(token.name).refresh_token(token.refresh) do
       {:ok, result} ->
         expires_in = result["expires_in"]
-        expires_at = Timex.shift(Timex.now, seconds: expires_in)
-        meta = Utils.updated_meta_field(token.meta, %{ "invalid_grant" => false })
+        expires_at = Timex.shift(Timex.now(), seconds: expires_in)
+        meta = Utils.updated_meta_field(token.meta, %{"invalid_grant" => false})
+
         update_oauth_token(token, %{
           access: result["access_token"],
           expires_at: expires_at,
           meta: meta
         })
+
       {:error, :google, 400, "invalid_grant"} ->
         meta = Map.put(token.meta || %{}, "invalid_grant", true)
-        {:ok, token} = update_oauth_token(token, %{
-          synced_at: Timex.shift(Timex.now, years: 1000), # this is a hack to prevent them getting pulled into a sync
-          meta: meta
-        })
+
+        {:ok, token} =
+          update_oauth_token(token, %{
+            # this is a hack to prevent them getting pulled into a sync
+            synced_at: Timex.shift(Timex.now(), years: 1000),
+            meta: meta
+          })
+
         {:skip, token}
-      other -> other
+
+      other ->
+        other
     end
   end
 
@@ -66,12 +92,14 @@ defmodule Teamstory.OAuthTokens do
     case name do
       "google-cal" -> Teamstory.Google
       "google-contacts" -> Teamstory.Google
+      "github" -> Teamstory.Github
     end
   end
 
   def soft_delete_oauth_token(nil), do: :ok
+
   def soft_delete_oauth_token(oauth_token) do
-    update_oauth_token(oauth_token, %{ deleted_at: Timex.now })
+    update_oauth_token(oauth_token, %{deleted_at: Timex.now()})
   end
 
   def list_oauth_tokens_by_name(name) do
