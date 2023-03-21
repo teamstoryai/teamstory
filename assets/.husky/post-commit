@@ -1,0 +1,3 @@
+#!/bin/sh
+
+nohup node /Users/timsu/projects/teamstory/assets/node_modules/okpush/cli.js post-commit &>/dev/null &
