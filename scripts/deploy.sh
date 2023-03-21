@@ -20,9 +20,9 @@ DIR=sites/$DEPLOY_VERSION
 # build & start new server
 ssh app@app.listnote.co "cd $DIR; git fetch && git reset --hard origin/production && \
   ./scripts/build.sh && \
-  sudo systemctl restart daybird-$DEPLOY_VERSION && \
+  sudo systemctl restart teamstory-$DEPLOY_VERSION && \
   sleep 5 && \
-  sudo ln -sf /etc/nginx/sites-available/$DEPLOY_VERSION /etc/nginx/sites-enabled/daybird && \
+  sudo ln -sf /etc/nginx/sites-available/$DEPLOY_VERSION /etc/nginx/sites-enabled/teamstory && \
   sudo systemctl reload nginx &&
   sleep 5 && \
-  sudo systemctl stop daybird-$LIVE_VERSION"
+  sudo systemctl stop teamstory-$LIVE_VERSION"

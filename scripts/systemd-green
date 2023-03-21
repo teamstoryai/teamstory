@@ -1,0 +1,18 @@
+[Unit]
+Description=Green Phoenix application
+After=network.target postgresql.service
+Requires=postgresql.service
+Wants=nginx.service
+
+[Service]
+Type=simple
+User=app
+Group=app
+EnvironmentFile=/home/app/.secrets
+WorkingDirectory=/home/app/sites/green
+ExecStart=/home/app/sites/green/scripts/start-green.sh
+KillMode=mixed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

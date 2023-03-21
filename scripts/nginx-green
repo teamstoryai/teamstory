@@ -1,7 +1,7 @@
 server {
     listen 0.0.0.0:80;
-    server_name daybird.app;
-    root /home/app/daybird/priv/static;
+    server_name teamstory.ai;
+    root /home/app/sites/green/priv/static;
 
     location ~ ^/(js|css|assets|images)/ {
         add_header 'Access-Control-Allow-Origin' "*" always;
@@ -13,6 +13,10 @@ server {
     location ~* \.(jpg|jpeg|gif|css|js|ico|rar|gz|zip|pdf|tar|bmp|xls|doc|swf|mp3|avi|png|htc|txt|htc|flv|html|dmg)$ {
         access_log   off;
         expires      7d;
+    }
+
+    location /deployment_id {
+        return 200 "green";
     }
 
     location / {

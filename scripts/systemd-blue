@@ -1,0 +1,18 @@
+[Unit]
+Description=Blue Phoenix application
+After=network.target postgresql.service
+Requires=postgresql.service
+Wants=nginx.service
+
+[Service]
+Type=simple
+User=app
+Group=app
+EnvironmentFile=/home/app/.secrets
+WorkingDirectory=/home/app/sites/blue
+ExecStart=/home/app/sites/blue/scripts/start.sh
+KillMode=mixed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
