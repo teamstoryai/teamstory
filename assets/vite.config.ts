@@ -65,7 +65,6 @@ export default defineConfig({
         chunkFileNames: 'js/[name]-[hash].js',
         assetFileNames: 'assets/[name][extname]',
         manualChunks: {
-          tiptap: ['@tiptap/core'],
           preact: ['preact', 'preact-router', 'preact/compat'],
         },
       },

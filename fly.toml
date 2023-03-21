@@ -1,4 +1,4 @@
-# fly.toml file generated for teamstory on 2023-03-20T17:22:49-07:00
+# fly.toml file generated for teamstory on 2023-03-20T20:54:25-07:00
 
 app = "teamstory"
 kill_signal = "SIGTERM"

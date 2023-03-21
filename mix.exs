@@ -111,7 +111,7 @@ defmodule Teamstory.MixProject do
       "ecto.redo": ["ecto.rollback", "ecto.migrate"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       seed: ["run priv/repo/seeds.exs"],
-      "assets.deploy": ["esbuild default --minify", "phx.digest"]
+      "assets.deploy": ["cmd cd assets && yarn && yarn build", "phx.digest"]
     ]
   end
 end
