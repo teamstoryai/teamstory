@@ -1,4 +1,4 @@
-import { StateUpdater, useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useEffect, useRef, useState } from 'preact/hooks'
 import { useStore } from '@nanostores/preact'
 import githubLogo from '@/images/github.png'
 import gitlabLogo from '@/images/gitlab.png'
@@ -15,10 +15,10 @@ import ForkIcon from '@/components/icons/ForkIcon'
 import { ConnectButton } from './ConnectButton'
 import { projectStore } from '@/stores/projectStore'
 import { config } from '@/config'
+import { API } from '@/api'
 
 const GH_SCOPES = 'user:email,repo,read:org'
-const GH_CLIENT_ID = config.dev ? '3008defde742bbe1efe0' : ''
-export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=${GH_CLIENT_ID}`
+export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=`
 
 enum ConnectState {
   NotConnected,
@@ -31,6 +31,7 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
   const [state, setState] = useState<ConnectState>(ConnectState.NotConnected)
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
+  const ghClientIdRef = useRef<string>()
 
   const repos = useStore(connectStore.repos)
 
@@ -39,6 +40,8 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
     if (!project) return
 
     async function init() {
+      API.clientId('github').then((id) => (ghClientIdRef.current = id.client_id))
+
       // check if we have connections
       const tokenPromise = tokenStore.fetchTokens()
       const repos = await connectStore.loadConnectedRepos()
@@ -135,7 +138,7 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
           <ConnectButton
             icon={githubLogo}
             text="Connect GitHub"
-            onClick={() => window.open(GH_URL)}
+            onClick={() => window.open(GH_URL + ghClientIdRef.current)}
           />
           <ConnectButton comingSoon icon={gitlabLogo} text="Connect GitLab" />
         </div>

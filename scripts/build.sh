@@ -4,7 +4,7 @@ set -e
 
 . $HOME/.profile
 cd assets
-yarn --production=false
+yarn
 yarn build
 cd ..
 mix deps.get > /dev/null

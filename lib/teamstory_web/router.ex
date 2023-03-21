@@ -70,6 +70,7 @@ defmodule TeamstoryWeb.Router do
 
     get "/time", ConfigController, :time
     get "/githash", ConfigController, :githash
+    get "/client_id", ConfigController, :client_id
 
     pipe_through :authenticated
 

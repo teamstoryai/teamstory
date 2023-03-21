@@ -3,16 +3,12 @@
 # Needs to be run as root
 
 sudo apt-get update
-sudo apt-get install -y ntp git emacs-nox zsh nginx yarn wget unzip
+sudo apt-get install -y ntp git emacs-nox zsh nginx wget unzip postgresql-13
 sudo apt-get upgrade -y
 sudo apt autoremove -y
-
-# setup ntp services
-sudo service ntp start
-sudo service nginx start
+sudo systemctl enable --now ntp
 
 # set up deploy user
-
 cd ~
 
 mkdir -p .emacs.d
@@ -51,4 +47,26 @@ mix deps.get
 
 cd ../green
 mix deps.get
+cd ../blue
+
+# set up node.js
+curl -sL https://deb.nodesource.com/setup_16.x | sudo bash -
+sudo apt -y install nodejs
+sudo npm install --global --force yarn
+
+# set up services
+sudo cp scripts/nginx-blue /etc/nginx/sites-available/blue
+sudo cp scripts/nginx-green /etc/nginx/sites-available/green
+sudo cp scripts/systemd-blue /etc/systemd/system/teamstory-blue.service
+sudo cp scripts/systemd-green /etc/systemd/system/teamstory-green.service
+sudo systemctl daemon-reload
+
+sudo systemctl enable --now postgresql@13-main
+sudo systemctl enable --now nginx
+sudo systemctl enable teamstory-blue
+
+# set up the server
+cp scripts/secrets.example.env ~/.secrets
+emacs ~/.secrets
+
 

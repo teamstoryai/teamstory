@@ -311,6 +311,11 @@ class APIService {
     return response.data
   }
 
+  async clientId(service: string): Promise<{ client_id: string }> {
+    const response = await this.axios.get(`${this.endpoint}/client_id?service=${service}`)
+    return response.data
+  }
+
   // for storybooks, put API into a stub state
 
   stubMode() {

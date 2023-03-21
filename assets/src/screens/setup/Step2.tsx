@@ -3,30 +3,33 @@ import jiraLogo from '@/images/jira.png'
 import { ConnectButton } from './ConnectButton'
 import { config } from '@/config'
 import useOAuthPopup from '@/hooks/useOAuthPopup'
-import { StateUpdater, useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useEffect, useRef, useState } from 'preact/hooks'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
 import { logger, toTitleCase } from '@/utils'
 import ErrorMessage from '@/components/core/ErrorMessage'
 import { OAuthToken } from '@/models'
 import { CheckIcon } from '@heroicons/react/24/outline'
+import { API } from '@/api'
 
 const LIN_SCOPES = 'read'
-const LIN_CLIENT_ID = config.dev ? '13dd1c5358f4477f868c4cbc84cd57ff' : ''
 const LIN_URI = location.origin + '/oauth/linear'
 const LINEAR_URL =
-  'https://linear.app/oauth/authorize?response_type=code&actor=application&' +
-  `client_id=${LIN_CLIENT_ID}&scope=${LIN_SCOPES}&redirect_uri=${encodeURIComponent(LIN_URI)}`
+  'https://linear.app/oauth/authorize?response_type=code&actor=application' +
+  `&scope=${LIN_SCOPES}&redirect_uri=${encodeURIComponent(LIN_URI)}&client_id=`
 
 export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
+  const linClientIdRef = useRef<string>()
 
   useEffect(() => {
     const project = projectStore.currentProject.get()
     if (!project) return
 
     async function init() {
+      API.clientId('linear').then((id) => (linClientIdRef.current = id.client_id))
+
       // check if we have connections
       const tokens = tokenStore.tokens.get()
       const found = tokens.find((t) => t.name == 'linear' || t.name == 'jira')
@@ -75,7 +78,7 @@ export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
             <ConnectButton
               icon={linearLogo}
               text="Connect Linear"
-              onClick={() => window.open(LINEAR_URL)}
+              onClick={() => window.open(LINEAR_URL + linClientIdRef.current)}
             />
             <ConnectButton comingSoon icon={jiraLogo} text="Connect Jira" />
           </div>
