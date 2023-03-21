@@ -62,7 +62,7 @@ defmodule Teamstory.MixProject do
       {:plug_cowboy, "~> 2.5"},
       {:timex, "~> 3.7", override: true},
       {:cors_plug, "~> 1.5"},
-      {:guardian, "~> 2.2"},
+      {:guardian, "~> 2.3"},
       {:comeonin, "~> 5.3"},
       {:bcrypt_elixir, "~> 2.3"},
       {:cloak, "~> 1.1"},

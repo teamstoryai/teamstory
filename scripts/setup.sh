@@ -3,7 +3,7 @@
 # Needs to be run as root
 
 sudo apt-get update
-sudo apt-get install -y ntp git emacs-nox zsh nginx wget unzip postgresql-13
+sudo apt-get install -y ntp git emacs-nox zsh nginx wget unzip postgresql-13 build-essential
 sudo apt-get upgrade -y
 sudo apt autoremove -y
 sudo systemctl enable --now ntp
@@ -65,8 +65,15 @@ sudo systemctl enable --now postgresql@13-main
 sudo systemctl enable --now nginx
 sudo systemctl enable teamstory-blue
 
+echo "Do the following to set up postgres:"
+echo "create database teamstory;"
+echo "create user app with encrypted password '<mypassword>';"
+echo "grant all privileges on database teamstory to app;"
+
+sudo -u postgres psql
+
 # set up the server
 cp scripts/secrets.example.env ~/.secrets
 emacs ~/.secrets
 
-
+mix ecto.create

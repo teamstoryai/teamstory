@@ -1,14 +1,26 @@
 defmodule Teamstory.Utils do
-
   require Logger
 
   @dialyzer [{:nowarn_function, free_email_domain?: 1}]
+
+  def truncate_string(str, size) do
+    if byte_size(str) >= size do
+      if byte_size(str) == String.length(str) do
+        Kernel.binary_part(str, 0, size)
+      else
+        String.slice(str, 0..size)
+      end
+    else
+      str
+    end
+  end
 
   def no_dash(uuid) do
     uuid |> String.replace("-", "")
   end
 
   def uuid_to_base16(nil), do: nil
+
   def uuid_to_base16(uuid) do
     uuid |> String.upcase() |> String.replace("-", "") |> Base.decode16!()
   end
@@ -25,15 +37,17 @@ defmodule Teamstory.Utils do
 
   def to_struct(kind, attrs) do
     struct = struct(kind)
-    Enum.reduce Map.to_list(struct), struct, fn {k, _}, acc ->
+
+    Enum.reduce(Map.to_list(struct), struct, fn {k, _}, acc ->
       case Map.fetch(attrs, Atom.to_string(k)) do
         {:ok, v} -> %{acc | k => v}
         :error -> acc
       end
-    end
+    end)
   end
 
   def keys_to_atoms(value) when is_struct(value), do: value
+
   def keys_to_atoms(string_key_map) when is_map(string_key_map) do
     for {key, val} <- string_key_map, into: %{} do
       if is_binary(key) do
@@ -43,12 +57,15 @@ defmodule Teamstory.Utils do
       end
     end
   end
+
   def keys_to_atoms(list) when is_list(list) do
     Enum.map(list, &keys_to_atoms/1)
   end
+
   def keys_to_atoms(value), do: value
 
   def atoms_to_keys(value) when is_struct(value), do: value
+
   def atoms_to_keys(atom_key_map) when is_map(atom_key_map) do
     for {key, val} <- atom_key_map, into: %{}, do: {to_string(key), atoms_to_keys(val)}
   end
@@ -59,11 +76,19 @@ defmodule Teamstory.Utils do
 
   def atoms_to_keys(value), do: value
 
-  def encrypt(term), do: term |> :erlang.term_to_binary |> Teamstory.Vault.encrypt |> elem(1) |> Base.encode64
+  def encrypt(term),
+    do:
+      term |> :erlang.term_to_binary() |> Teamstory.Vault.encrypt() |> elem(1) |> Base.encode64()
 
   def decrypt(code) do
     try do
-      result = code |> Base.decode64! |> Teamstory.Vault.decrypt |> elem(1) |> :erlang.binary_to_term
+      result =
+        code
+        |> Base.decode64!()
+        |> Teamstory.Vault.decrypt()
+        |> elem(1)
+        |> :erlang.binary_to_term()
+
       {:ok, result}
     rescue
       e -> {:error, e}
@@ -78,11 +103,15 @@ defmodule Teamstory.Utils do
 
   # from Rosetta Code
   def permute([]), do: [[]]
+
   def permute(list) do
-    for x <- list, y <- permute(list -- [x]), do: [x|y]
+    for x <- list, y <- permute(list -- [x]), do: [x | y]
   end
 
-  @wordlist File.read("data/eff_wordlist.txt") |> elem(1) |> String.split("\n") |> Enum.map(fn s -> String.split(s, "\t") |> Enum.at(1) end)
+  @wordlist File.read("data/eff_wordlist.txt")
+            |> elem(1)
+            |> String.split("\n")
+            |> Enum.map(fn s -> String.split(s, "\t") |> Enum.at(1) end)
 
   def magic_words(iterations) do
     Enum.take_random(@wordlist, iterations)
@@ -90,27 +119,34 @@ defmodule Teamstory.Utils do
   end
 
   def random_string(length) do
-    :crypto.strong_rand_bytes(length) |> Base.url_encode64 |> binary_part(0, length)
+    :crypto.strong_rand_bytes(length) |> Base.url_encode64() |> binary_part(0, length)
   end
 
   def nickname(name) do
     String.split(name, " ") |> hd
   end
 
-  @free_email_domain_list File.read("data/free-email-domain-list.conf") |> elem(1) |> String.split("\n") |> Enum.map(&String.trim/1)
-  |> Enum.reject(&(String.starts_with?(&1,"#"))) |> Enum.map(&String.downcase/1) |> MapSet.new
+  @free_email_domain_list File.read("data/free-email-domain-list.conf")
+                          |> elem(1)
+                          |> String.split("\n")
+                          |> Enum.map(&String.trim/1)
+                          |> Enum.reject(&String.starts_with?(&1, "#"))
+                          |> Enum.map(&String.downcase/1)
+                          |> MapSet.new()
 
   @spec free_email_domain?(binary) :: boolean
   def free_email_domain?(domain) do
-    !! (@free_email_domain_list |> MapSet.member?(String.downcase(domain)))
+    !!(@free_email_domain_list |> MapSet.member?(String.downcase(domain)))
   end
 
-  def updated_meta_field(nil, incoming) do updated_meta_field(%{}, incoming) end
+  def updated_meta_field(nil, incoming) do
+    updated_meta_field(%{}, incoming)
+  end
 
   def updated_meta_field(current, incoming) do
     Map.merge(current, incoming)
-      |> Enum.filter(fn {k, _v} -> !Map.has_key?(incoming, k) or Map.get(incoming, k) != nil end)
-      |> Enum.into(%{})
+    |> Enum.filter(fn {k, _v} -> !Map.has_key?(incoming, k) or Map.get(incoming, k) != nil end)
+    |> Enum.into(%{})
   end
 
   def timex_parse(value, default) do
@@ -120,8 +156,9 @@ defmodule Teamstory.Utils do
         value -> Timex.parse(value, "{ISO:Extended:Z}")
       end
     rescue
-      e -> Logger.error("Error timex_parse for value #{inspect(value)}: #{inspect(e)}")
-      {:error, default}
+      e ->
+        Logger.error("Error timex_parse for value #{inspect(value)}: #{inspect(e)}")
+        {:error, default}
     end
   end
 
@@ -131,12 +168,10 @@ defmodule Teamstory.Utils do
   def to_date(_), do: :error
 
   def deep_merge(left, right) do
-
-    Map.merge left, right, fn
-      (_key, left = %{}, right = %{}) -> deep_merge(left, right)
-      (_key, _left, right) -> right
-    end
-
+    Map.merge(left, right, fn
+      _key, left = %{}, right = %{} -> deep_merge(left, right)
+      _key, _left, right -> right
+    end)
   end
 
   # equal -> nothing to report
@@ -146,10 +181,9 @@ defmodule Teamstory.Utils do
 
   # Both maps, recurse
   def deep_diff(%{} = left, %{} = right) do
-
     empty = %{}
 
-    Map.keys(left) ++ Map.keys(right)
+    (Map.keys(left) ++ Map.keys(right))
     |> Enum.uniq()
     |> Enum.map(fn key ->
       case deep_diff(left[key], right[key]) do
@@ -177,7 +211,6 @@ defmodule Teamstory.Utils do
     {left, right}
   end
 
-
   def pair_apply({left, right}, func) do
     {func.(left), func.(right)}
   end
@@ -187,16 +220,17 @@ defmodule Teamstory.Utils do
   end
 
   def compact(enum) do
-    Enum.filter(enum, & !is_nil(&1))
+    Enum.filter(enum, &(!is_nil(&1)))
   end
 
   # the current time shifted to the next weekday (Mon-Fri)
   def next_weekday() do
-    day = Timex.now |> Timex.weekday
+    day = Timex.now() |> Timex.weekday()
+
     case day do
       # 5, 6 = friday, saturday
-      d when d in [5, 6] -> Timex.now |> Timex.shift(days: 8 - d)
-      _ -> Timex.now |> Timex.shift(days: 1)
+      d when d in [5, 6] -> Timex.now() |> Timex.shift(days: 8 - d)
+      _ -> Timex.now() |> Timex.shift(days: 1)
     end
   end
 
@@ -206,7 +240,8 @@ defmodule Teamstory.Utils do
 
   # the current time in the given timezone shifted to the next weekday (Mon-Fri)
   def next_weekday(timezone) do
-    day = Timex.now(timezone) |> Timex.weekday
+    day = Timex.now(timezone) |> Timex.weekday()
+
     case day do
       # 5, 6 = friday, saturday
       d when d in [5, 6] -> Timex.now(timezone) |> Timex.shift(days: 8 - d)
@@ -226,16 +261,16 @@ defmodule Teamstory.Utils do
   def any_to_float(%Decimal{} = dec), do: Decimal.to_float(dec)
   def any_to_float(num) when is_number(num), do: num
   def any_to_float(str) when is_binary(str), do: Float.parse(str) |> elem(0)
-  def any_to_float(any), do: raise "Don't know how to convert #{inspect(any)} to float"
+  def any_to_float(any), do: raise("Don't know how to convert #{inspect(any)} to float")
 
   def current_stack_trace(strip \\ 1) do
-      {:current_stacktrace, stacktrace} = Process.info(self(), :current_stacktrace)
-      Enum.drop(stacktrace, strip)
+    {:current_stacktrace, stacktrace} = Process.info(self(), :current_stacktrace)
+    Enum.drop(stacktrace, strip)
   end
 
   # convert allowed PUT params into fields, supporting *_at timestamps
   def params_to_attrs(params, allowed_keys) do
-    Enum.reduce(allowed_keys, %{}, fn(key, acc) ->
+    Enum.reduce(allowed_keys, %{}, fn key, acc ->
       if Map.has_key?(params, key) do
         value = params[key]
         Map.put(acc, key, value)
@@ -244,5 +279,4 @@ defmodule Teamstory.Utils do
       end
     end)
   end
-
 end
