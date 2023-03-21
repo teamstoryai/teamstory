@@ -3,7 +3,7 @@
 cd assets && yarn tsc && cd ..
 git push -f origin HEAD:production
 
-LIVE_VERSION=$(curl -s -w "\n" "https://daybird.app/deployment_id")
+LIVE_VERSION=$(curl -s -w "\n" "https://teamstory.ai/deployment_id")
 
 if [ "$LIVE_VERSION" = "blue" ]; then
   DEPLOY_VERSION="green"
@@ -18,7 +18,7 @@ set -e
 DIR=sites/$DEPLOY_VERSION
 
 # build & start new server
-ssh app@app.listnote.co "cd $DIR; git fetch && git reset --hard origin/production && \
+gcloud compute ssh teamstory-00 "cd $DIR; git fetch && git reset --hard origin/production && \
   ./scripts/build.sh && \
   sudo systemctl restart teamstory-$DEPLOY_VERSION && \
   sleep 5 && \
