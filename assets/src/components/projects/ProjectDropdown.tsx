@@ -8,7 +8,7 @@ import { classNames, mediumColorFor } from '@/utils'
 import { Bars4Icon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
-export default function () {
+const ProjectDropdown = () => {
   const [pillsOpen, setPillsOpen] = useState(false)
   const projects = useStore(projectStore.activeProjects)
   const currentProject = useStore(projectStore.currentProject)
@@ -29,7 +29,7 @@ export default function () {
       <div
         className={classNames(
           'm-1 flex items-center text-gray-900 text-sm whitespace-nowrap',
-          'hover:bg-gray-300/50 hover:text-gray-900 cursor-pointer rounded-md px-1 py-2',
+          'hover:bg-gray-300/50 hover:text-gray-900 cursor-pointer rounded-md px-1 py-3',
           'block'
         )}
         onClick={() => {
@@ -37,7 +37,7 @@ export default function () {
         }}
       >
         <div
-          className={classNames('text-white text-sm font-medium rounded-md mr-2 w-2 px-2 py-1')}
+          className={classNames('text-white text-sm font-medium rounded-md ml-2 mr-3 w-6 h-6')}
           style={{ background: bgColor }}
         />
         <div class="font-semibold">{currentProject.name}</div>
@@ -87,3 +87,5 @@ export default function () {
     </div>
   )
 }
+
+export default ProjectDropdown

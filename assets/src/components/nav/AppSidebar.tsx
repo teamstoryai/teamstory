@@ -42,8 +42,6 @@ export default ({ showHideButton }: { showHideButton?: boolean }) => {
 }
 
 function Links() {
-  const projects = useStore(projectStore.projects)
-
   let navigation = [
     { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
     { name: 'Reports', href: paths.REPORTS, icon: ChartBarIcon },
@@ -51,8 +49,8 @@ function Links() {
 
   return (
     <nav className="px-2 space-y-1">
-      {navigation.map((item) => (
-        <Match path={item.href}>
+      {navigation.map((item, i) => (
+        <Match path={item.href} key={i}>
           {({ matches, url }: { matches: boolean; url: string }) => (
             <Link
               key={item.name}
