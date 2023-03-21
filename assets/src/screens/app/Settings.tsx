@@ -22,10 +22,10 @@ export default (props: { path: string }) => {
         <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
       </AppHeader>
 
-      <div className="py-6 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="flex flex-col grow w-full px-6 mt-4 mx-2">
         <div class="flex flex-col gap-6">
           <TimeZoneSetting />
-          <CalendarSettings />
+          {/* <CalendarSettings /> */}
           <LogOut />
         </div>
       </div>

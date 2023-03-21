@@ -11,7 +11,7 @@ type Props = {
   path: string
 }
 
-export default (props: Props) => {
+const Reports = (props: Props) => {
   const params = new URLSearchParams(location.search)
   const project = useStore(projectStore.currentProject)
 
@@ -33,9 +33,13 @@ export default (props: Props) => {
           </h1>
         </div>
       </AppHeader>
-      <div class="flex flex-col grow w-full px-6 mt-4 max-w-2xl mx-auto">
-        <DailyPrompt date={today} />
+      <div class="flex flex-col grow w-full px-6 mt-4 mx-2">
+        {/* <DailyPrompt date={today} /> */}
+
+        <div>Please check back when your dashboard is ready.</div>
       </div>
     </>
   )
 }
+
+export default Reports

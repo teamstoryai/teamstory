@@ -23,7 +23,7 @@ type Props = {
   id?: string
   path: string
 }
-export default ({ id }: Props) => {
+const ProjectSettings = ({ id }: Props) => {
   const user = useStore(authStore.loggedInUser)
   const project = useStore(projectStore.currentProject)
 
@@ -48,6 +48,10 @@ export default ({ id }: Props) => {
 
       <div class="w-full max-w-2xl px-6 pb-6">
         <div className="h-8" />
+
+        <ProjectSetup {...projectArgs} />
+
+        <div className="h-12" />
 
         <RenameProject {...projectArgs} />
 
@@ -167,6 +171,30 @@ function Members({ project, isAdmin }: ProjectArgs) {
   )
 }
 
+function ProjectSetup({ project }: ProjectArgs) {
+  const openProjectSetup = (e: Event) => {
+    projectStore.setCurrentProject(project)
+    route(paths.SETUP)
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+      <div className="sm:flex sm:items-center">
+        <div className="sm:flex-auto">
+          <h1 className="text-xl font-semibold text-gray-900">Project Setup</h1>
+        </div>
+      </div>
+      <div className="mt-4">
+        <button
+          onClick={openProjectSetup}
+          className="mt-3 inline-flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm"
+        >
+          Open Project Setup
+        </button>
+      </div>
+    </div>
+  )
+}
 function RenameProject({ project }: ProjectArgs) {
   const [name, setName] = useState<string>(project.name)
   const [error, setError] = useState<string>()
@@ -353,3 +381,5 @@ function DeleteProject({ project }: ProjectArgs) {
     </div>
   )
 }
+
+export default ProjectSettings

@@ -41,7 +41,7 @@ export default (props: Props) => {
           </h1>
         </div>
       </AppHeader>
-      <div class="flex flex-col grow w-full px-6 mt-4 max-w-2xl mx-auto">
+      <div class="flex flex-col grow w-full px-6 mt-4 mx-2">
         <DailyPrompt date={today} />
       </div>
     </>
