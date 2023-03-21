@@ -9,7 +9,7 @@ defmodule Teamstory.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       elixirc_options: [
         {:all_warnings, true},
-        {:warnings_as_errors, Mix.env != :dev && Mix.env != :test}
+        {:warnings_as_errors, Mix.env() != :dev && Mix.env() != :test}
       ],
       compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -20,7 +20,7 @@ defmodule Teamstory.MixProject do
         plt_core_path: "_build",
         plt_add_apps: [:ex_unit, :mix],
         ignore_warnings: ".dialyzer_ignore.exs"
-      ],
+      ]
     ]
   end
 
@@ -33,7 +33,7 @@ defmodule Teamstory.MixProject do
       extra_applications: [
         :logger,
         :runtime_tools,
-        :mojito,
+        :mojito
       ]
     ]
   end
@@ -60,7 +60,6 @@ defmodule Teamstory.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-
       {:timex, "~> 3.7", override: true},
       {:cors_plug, "~> 1.5"},
       {:guardian, "~> 2.2"},
@@ -84,6 +83,7 @@ defmodule Teamstory.MixProject do
       {:uuid, "~> 1.1"},
       {:sweet_xml, "~> 0.0"},
       {:hammer, "~> 6.1"},
+      {:neuron, "~> 5.1.0"},
 
       # dev dependencies
       {:mix_test_watch, "~> 0.6", only: [:dev, :docker], runtime: false},
@@ -93,7 +93,7 @@ defmodule Teamstory.MixProject do
 
       # test dependencies
       {:floki, ">= 0.30.0", only: :test},
-      {:lcov_ex, "~> 0.2.0", only: :test, runtime: false},
+      {:lcov_ex, "~> 0.2.0", only: :test, runtime: false}
     ]
   end
 

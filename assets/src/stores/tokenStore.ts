@@ -14,7 +14,7 @@ class TokenStore {
   fetchTokens = async () => {
     if (authStore.debugMode()) (window as any)['tokenStore'] = tokenStore
 
-    const response = await API.getMultipleOAuthTokens(['github', 'gitlab'])
+    const response = await API.getMultipleOAuthTokens(['github', 'gitlab', 'linear', 'jira'])
     this.tokens.set(response.items)
     return response.items
   }

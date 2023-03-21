@@ -13,7 +13,7 @@ config :teamstory,
 # Configures the endpoint
 config :teamstory, TeamstoryWeb.Endpoint,
   url: [host: "localhost"],
-  version: Mix.Project.config[:version],
+  version: Mix.Project.config()[:version],
   render_errors: [view: TeamstoryWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Teamstory.PubSub,
   live_view: [signing_salt: "MkW9CMZy"]
@@ -54,18 +54,17 @@ config :phoenix, :filter_parameters, ["password", "secret", "contents", "bindata
 # Server configuration
 
 # Configure Teamstory.Application's clustering topology
-config :teamstory, :cluster_topology, [
+config :teamstory, :cluster_topology,
   strategy: Cluster.Strategy.Epmd,
-  config: [hosts: []],
-]
+  config: [hosts: []]
 
 {githash, _} = System.cmd("git", ["rev-parse", "HEAD"])
 config :teamstory, githash: String.trim(githash)
 
-config :teamstory, env: Mix.env
-config :teamstory, prod: Mix.env == :prod
-config :teamstory, dev: Mix.env == :dev
-config :teamstory, test: Mix.env == :test
+config :teamstory, env: Mix.env()
+config :teamstory, prod: Mix.env() == :prod
+config :teamstory, dev: Mix.env() == :dev
+config :teamstory, test: Mix.env() == :test
 config :teamstory, staging: System.get_env("STAGING")
 
 config :teamstory, staging: System.get_env("STAGING")
@@ -76,6 +75,14 @@ config :teamstory, load_application_links_from_s3: false
 config :teamstory, sendgrid_api_key: System.get_env("SENDGRID_KEY")
 
 config :teamstory, openai_api_key: System.get_env("OPENAI_KEY")
+
+config :teamstory, Teamstory.Github,
+  client_id: System.get_env("GH_APP_CLIENT_ID"),
+  client_secret: System.get_env("GH_APP_CLIENT_SECRET")
+
+config :teamstory, Teamstory.Linear,
+  client_id: System.get_env("LINEAR_CLIENT_ID"),
+  client_secret: System.get_env("LINEAR_CLIENT_SECRET")
 
 config :ex_aws,
   access_key_id: {:system, "LN_S3_ACCESS_KEY_ID"},
@@ -93,7 +100,7 @@ config :arc,
 config :teamstory, Teamstory.Auth.Guardian,
   issuer: "teamstory",
   secret_key: "hNl6o6PmZIvYBP2dx3nDixwG4xA+MquH+MR4u5xBGXBwROzCPNeAOddVssKb7A0i",
-  token_ttl: %{ "access" => {3, :day}, "refresh" => {12, :week} }
+  token_ttl: %{"access" => {3, :day}, "refresh" => {12, :week}}
 
 config :teamstory, Teamstory.Auth.OAuth,
   google_client_id: System.get_env("LN_GOOGLE_ID"),
@@ -110,8 +117,7 @@ config :mojito,
   pool_opts: [size: 100, max_overflow: 500]
 
 config :hammer,
-  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4,
-                                 cleanup_interval_ms: 60_000 * 10]}
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60 * 4, cleanup_interval_ms: 60_000 * 10]}
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

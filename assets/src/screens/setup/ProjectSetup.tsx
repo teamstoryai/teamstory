@@ -8,6 +8,7 @@ import { useStore } from '@nanostores/preact'
 
 import { Step1 } from './Step1'
 import { Step2 } from './Step2'
+import { Step3 } from '@/screens/setup/Step3'
 
 type Props = {
   path: string
@@ -33,7 +34,9 @@ const ProjectSetup = (props: Props) => {
       <div class="flex flex-col grow w-full px-6 mt-4 mx-2">
         <Step1 setStep={setStep} />
 
-        {step >= 2 && <Step2 />}
+        {step >= 2 && <Step2 setStep={setStep} />}
+
+        {step >= 3 && <Step3 setStep={setStep} />}
       </div>
     </>
   )

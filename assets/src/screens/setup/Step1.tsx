@@ -71,21 +71,25 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
       .catch(setError)
   }
 
-  useOAuthPopup((data) => {
-    const { service, code } = data
-    setState(ConnectState.Loading)
-    tokenStore
-      .connectToken('', code, service)
-      .then((token) => {
-        setState(ConnectState.Connected)
-        setCurrentToken(token)
-      })
-      .catch((err) => {
-        logger.error(err)
-        setState(ConnectState.NotConnected)
-        setError(err.message)
-      })
-  }, setError)
+  useOAuthPopup(
+    (data) => {
+      const { service, code } = data
+      setState(ConnectState.Loading)
+      tokenStore
+        .connectToken('', code, service)
+        .then((token) => {
+          setState(ConnectState.Connected)
+          setCurrentToken(token)
+        })
+        .catch((err) => {
+          logger.error(err)
+          setState(ConnectState.NotConnected)
+          setError(err)
+        })
+    },
+    setError,
+    state == ConnectState.NotConnected || state == ConnectState.ConnectAnother
+  )
 
   return (
     <div class="mb-12">
@@ -115,7 +119,7 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
           ))}
           <Pressable
             onClick={() => setState(ConnectState.ConnectAnother)}
-            className="text-gray-400"
+            className="text-gray-500 hover:text-gray-900 block"
           >
             Connect another repository?
           </Pressable>

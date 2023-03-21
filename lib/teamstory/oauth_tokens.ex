@@ -104,6 +104,7 @@ defmodule Teamstory.OAuthTokens do
       "google-cal" -> Teamstory.Google
       "google-contacts" -> Teamstory.Google
       "github" -> Teamstory.Github
+      "linear" -> Teamstory.Linear
     end
   end
 

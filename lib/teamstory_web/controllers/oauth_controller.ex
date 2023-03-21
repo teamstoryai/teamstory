@@ -48,11 +48,8 @@ defmodule TeamstoryWeb.OAuthController do
       {:ok, token} = save_oauth_token(user, Map.merge(result, new_params))
       render(conn, "token.json", token: token)
     else
-      {:error, :spotify, _status, error} ->
-        {:error, :bad_request, "Login error: #{error}"}
-
-      {:error, :google, _status, error} ->
-        {:error, :bad_request, "Login error: #{error}"}
+      {:error, service, _status, error} ->
+        {:error, :bad_request, "Login error: #{service} #{error}"}
     end
   end
 
@@ -104,7 +101,7 @@ defmodule TeamstoryWeb.OAuthController do
       |> Map.delete("access_token")
       |> Map.put("access", access_token)
       |> Map.put("refresh", nil)
-      |> Map.put("expires_in", nil)
+      |> Map.put("expires_in", params["expires_in"])
 
     save_oauth_token(user, params)
   end
@@ -120,7 +117,7 @@ defmodule TeamstoryWeb.OAuthController do
 
     attrs = %{
       user_id: user.id,
-      email: email,
+      email: email || user.email,
       name: service,
       access: access,
       refresh: refresh,
@@ -129,7 +126,7 @@ defmodule TeamstoryWeb.OAuthController do
       deleted_at: nil
     }
 
-    OAuthTokens.update_or_create_for_user_and_service(user, email, service, attrs)
+    OAuthTokens.update_or_create_for_user_and_service(user, email || user.email, service, attrs)
   end
 
   # PUT /oauth/token
@@ -209,7 +206,8 @@ defmodule TeamstoryWeb.OAuthController do
     end
   end
 
-  def github_oauth(conn, %{"code" => code}) do
+  # GET /oauth/github
+  def connect_oauth(conn, %{"service" => "github", "code" => code}) do
     origin = get_origin_uri(conn)
 
     json_result =
@@ -222,8 +220,22 @@ defmodule TeamstoryWeb.OAuthController do
     render(conn, "google_oauth.html", result: json_result, origin: origin)
   end
 
+  # GET /oauth/linear
+  def connect_oauth(conn, %{"service" => "linear", "code" => code}) do
+    origin = get_origin_uri(conn)
+
+    json_result =
+      %{
+        code: code,
+        service: "linear"
+      }
+      |> Poison.encode!()
+
+    render(conn, "google_oauth.html", result: json_result, origin: origin)
+  end
+
   # GET /oauth/google
-  def google_oauth(conn, %{"code" => code} = params) do
+  def connect_oauth(conn, %{"service" => "google", "code" => code} = params) do
     stored_state = conn.cookies["state"]
     origin = get_origin_uri(conn)
 
@@ -250,12 +262,12 @@ defmodule TeamstoryWeb.OAuthController do
     end
   end
 
-  def google_oauth(conn, %{"error" => error}) do
+  def connect_oauth(conn, %{"service" => "google", "error" => error}) do
     origin = get_origin_uri(conn)
     render(conn, "google_oauth.html", error: error, origin: origin)
   end
 
-  def google_oauth(conn, params) do
+  def connect_oauth(conn, %{"service" => "google"} = params) do
     state = if(params["skip_token"], do: "skip-", else: "") <> Utils.random_string(16)
     conn = put_resp_cookie(conn, "state", state, max_age: 3600)
     redirect_uri = get_redirect_uri(conn)
@@ -280,6 +292,10 @@ defmodule TeamstoryWeb.OAuthController do
 
     url = "https://accounts.google.com/o/oauth2/v2/auth?" <> params
     redirect(conn, external: url)
+  end
+
+  def connect_oauth(_conn, _) do
+    {:error, :not_found}
   end
 
   defp get_origin_uri(conn),

@@ -3,9 +3,12 @@ import { useEffect } from 'preact/hooks'
 
 export default function useOAuthPopup(
   onResult: (result: { service: string; code: string }) => void,
-  onError: (error: string) => void
+  onError: (error: string) => void,
+  subscribe?: boolean
 ) {
   useEffect(() => {
+    if (!subscribe) return
+
     const messageListener = (message: MessageEvent) => {
       const data = message.data
       if (!data || data.type != 'oauth') return
@@ -19,5 +22,5 @@ export default function useOAuthPopup(
 
     window.addEventListener('message', messageListener)
     return () => window.removeEventListener('message', messageListener)
-  }, [])
+  }, [subscribe])
 }
