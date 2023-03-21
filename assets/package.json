@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && NODE_ENV=production vite build",
+    "prepare": "cd .. && husky install .husky && yarn okpush install",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -45,6 +46,8 @@
     "@types/phoenix": "^1.5.4",
     "@types/uuid": "^8.3.4",
     "autoprefixer": "^10.4.7",
+    "husky": "^8.0.3",
+    "okpush": "^0.0.7",
     "postcss": "^8.4.14",
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-ts-treeshaking": "^1.0.2",
