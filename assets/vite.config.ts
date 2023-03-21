@@ -21,11 +21,6 @@ if (process.env.NODE_ENV != 'production') {
   process.stdin.resume()
 }
 
-// load global variables
-
-const commitHash = execSync('git rev-parse HEAD').toString().trimEnd()
-process.env.VITE_GIT_HASH = commitHash
-
 const useAnalyzer = process.env.ANALYZE
   ? analyze({
       limit: 30,
