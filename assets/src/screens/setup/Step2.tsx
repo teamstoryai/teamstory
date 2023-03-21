@@ -62,9 +62,10 @@ export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
       <p class="text-gray-500">Where does your team track stories and bugs?</p>
 
       {currentToken && (
-        <div class="my-2 flex items-center">
-          <CheckIcon class="h-4 w-4 text-green-600 mr-2" />
-          {toTitleCase(currentToken.name)} connected
+        <div class="my-2 flex items-center text-green-700">
+          <img src={currentToken.name == 'linear' ? linearLogo : jiraLogo} class="h-6 w-6 mr-2" />
+          {toTitleCase(currentToken.name)}
+          <CheckIcon class="h-4 w-4 text-green-600 ml-2" />
         </div>
       )}
 
