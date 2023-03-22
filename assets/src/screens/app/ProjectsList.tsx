@@ -71,7 +71,7 @@ function ProjectList({ projects }: { projects: Project[] }) {
     <div>
       <ul role="list" className="grid grid-cols-2 gap-5 sm:gap-6">
         {projectItems.map((project) => (
-          <a href={project.href}>
+          <a href={project.href} key={project.id}>
             <li key={project.name} className="col-span-1 flex shadow-sm rounded-md">
               <div
                 className={classNames(
@@ -91,6 +91,7 @@ function ProjectList({ projects }: { projects: Project[] }) {
                     )}
                   >
                     {project.name}
+                    {project.id == 'fake' && ' (sample project)'}
                     {project.archived_at ? ' (archived)' : null}
                   </div>
                   <p className="text-gray-500">

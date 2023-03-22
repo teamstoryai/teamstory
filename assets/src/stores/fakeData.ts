@@ -16,7 +16,7 @@ export function initFakeData() {
     },
   }
   projectStore.activeProjects.set([...projectStore.activeProjects.get(), project])
-  projectStore.projects.set([...projectStore.activeProjects.get(), project])
+  projectStore.projects.set([...projectStore.projects.get(), project])
 
   projectStore.projectSwitchListeners.push(onSwitchProject)
 }
@@ -65,6 +65,7 @@ const titleToFeature =
     identifier: `SPACE-${181 + Math.floor(idx + i * 2.5)}`,
     title,
     createdAt: sub(today, { days: 3 - i }),
+    url: '',
     ...props,
   })
 

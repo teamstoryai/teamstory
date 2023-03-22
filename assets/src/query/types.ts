@@ -68,6 +68,7 @@ export type QueryIssue = {
   createdAt: Date
   startedAt?: Date
   completedAt?: Date
+  url: string
 }
 
 export type QueryPullRequest = {
