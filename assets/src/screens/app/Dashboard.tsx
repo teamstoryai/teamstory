@@ -15,6 +15,7 @@ import { tokenStore } from '@/stores/tokenStore'
 import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
 import Loader from '@/components/core/Loader'
+import IssuesModule from '@/modules/IssuesModule'
 
 type Props = {
   path: string
@@ -55,6 +56,11 @@ const Dashboard = (props: Props) => {
     query: `is:merged is:pr merged:>${sub(new Date(), { days: 1 }).toISOString()}`,
   }
 
+  const issuesModule = {
+    title: 'Active Issues',
+    open: true,
+  }
+
   return (
     <>
       <Helmet title={'Dashboard'} />
@@ -72,6 +78,8 @@ const Dashboard = (props: Props) => {
         <div class="flex flex-wrap -mx-4 my-4">
           <PullRequestsModule {...prModule1} />
           <PullRequestsModule {...prModule2} />
+
+          <IssuesModule {...issuesModule} />
         </div>
       </AppBody>
     </>

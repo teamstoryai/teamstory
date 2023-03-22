@@ -2,6 +2,7 @@ import { API } from '@/api'
 import { config } from '@/config'
 import { Repository } from '@/models'
 import github from '@/query/github'
+import linear from '@/query/linear'
 import { connectStore } from '@/stores/connectStore'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
@@ -64,6 +65,8 @@ class DataStore {
     tokens.forEach((token) => {
       if (token.name == 'github') {
         github.setToken(token.access)
+      } else if (token.name == 'linear') {
+        linear.setToken(token.access)
       }
     })
     this.initialized.set(true)
