@@ -1,12 +1,7 @@
 import DataModule from '@/modules/DataModule'
-import github, { PullRequest } from '@/query/github'
-import { connectStore } from '@/stores/connectStore'
-import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
-import { useStore } from '@nanostores/preact'
 import { useEffect, useState } from 'preact/hooks'
-import { LinearClient } from '@linear/sdk'
-import type { IssueFilter, Issue } from '@linear/sdk/dist/_generated_documents'
+import type { Issue } from '@linear/sdk/dist/_generated_documents'
 import linear from '@/query/linear'
 
 type Props = {
@@ -14,6 +9,7 @@ type Props = {
   before?: string
   after?: string
   open?: boolean
+  completedAfter?: Date
 }
 
 const IssuesModule = (props: Props) => {
@@ -30,6 +26,12 @@ const IssuesModule = (props: Props) => {
             null: true,
           },
         }
+      : props.completedAfter
+      ? {
+          completedAt: {
+            gte: props.completedAfter,
+          },
+        }
       : undefined
 
     linear.client
@@ -41,6 +43,10 @@ const IssuesModule = (props: Props) => {
       .then((issues) => {
         logger.info('issues', issues)
         setIssues(issues.nodes as any[])
+      })
+      .catch((e) => {
+        logger.error(e)
+        setError(unwrapError(e))
       })
   }
 

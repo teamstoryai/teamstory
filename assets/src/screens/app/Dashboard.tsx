@@ -56,9 +56,14 @@ const Dashboard = (props: Props) => {
     query: `is:merged is:pr merged:>${sub(new Date(), { days: 2 }).toISOString()}`,
   }
 
-  const issuesModule = {
-    title: 'Active Issues',
+  const issuesModule1 = {
+    title: 'Issues In Progress',
     open: true,
+  }
+
+  const issuesModule2 = {
+    title: 'Recently Completed',
+    completedAfter: sub(new Date(), { days: 2 }),
   }
 
   return (
@@ -75,11 +80,12 @@ const Dashboard = (props: Props) => {
       <AppBody>
         <DailyPrompt date={today} />
 
-        <div class="flex flex-wrap -mx-4 my-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -mx-4 my-4">
           <PullRequestsModule {...prModule1} />
           <PullRequestsModule {...prModule2} />
 
-          <IssuesModule {...issuesModule} />
+          <IssuesModule {...issuesModule1} />
+          <IssuesModule {...issuesModule2} />
         </div>
       </AppBody>
     </>
