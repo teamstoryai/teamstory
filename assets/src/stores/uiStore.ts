@@ -5,6 +5,9 @@ import { User } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { topicStore } from '@/stores/topicStore'
 import tracker from '@/stores/tracker'
+import { tokenStore } from '@/stores/tokenStore'
+import { connectStore } from '@/stores/connectStore'
+import { dataStore } from '@/stores/dataStore'
 
 const SLEEP_CHECK_INTERVAL = 30_000
 
@@ -37,6 +40,9 @@ class UIStore {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       authStore.updateUser({ timezone })
     }
+
+    tokenStore.fetchTokens().then(() => dataStore.initTokens())
+    connectStore.loadConnectedRepos()
   }
 }
 

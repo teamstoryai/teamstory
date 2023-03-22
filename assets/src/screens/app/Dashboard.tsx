@@ -9,14 +9,21 @@ import { useStore } from '@nanostores/preact'
 import { Project } from '@/models'
 import { route } from 'preact-router'
 import { paths } from '@/config'
+import PullRequestsModule from '@/modules/PullRequestsModule'
+import { sub } from 'date-fns'
+import { tokenStore } from '@/stores/tokenStore'
+import { dataStore } from '@/stores/dataStore'
+import AppBody from '@/components/layout/AppBody'
+import Loader from '@/components/core/Loader'
 
 type Props = {
   path: string
 }
 
-export default (props: Props) => {
+const Dashboard = (props: Props) => {
   const params = new URLSearchParams(location.search)
   const project = useStore(projectStore.currentProject)
+  const initialized = useStore(dataStore.initialized)
 
   const projectParam = params.get('p')
   useEffect(() => {
@@ -28,7 +35,25 @@ export default (props: Props) => {
     if (!Project.meta(project).ob) route(paths.SETUP)
   }, [project])
 
+  if (!Project.meta(project).ob) return null
+  if (!initialized)
+    return (
+      <AppBody class="items-center">
+        <Loader size={50} />
+      </AppBody>
+    )
+
   const today = new Date()
+
+  const prModule1 = {
+    title: 'Active Pull Requests',
+    query: 'is:open is:pr draft:false',
+  }
+
+  const prModule2 = {
+    title: 'Recently Merged Pull Requests',
+    query: `is:merged is:pr merged:>${sub(new Date(), { days: 1 }).toISOString()}`,
+  }
 
   return (
     <>
@@ -41,9 +66,16 @@ export default (props: Props) => {
           </h1>
         </div>
       </AppHeader>
-      <div class="flex flex-col grow w-full px-6 mt-4 mx-2">
+      <AppBody>
         <DailyPrompt date={today} />
-      </div>
+
+        <div class="flex flex-wrap -mx-4 my-4">
+          <PullRequestsModule {...prModule1} />
+          <PullRequestsModule {...prModule2} />
+        </div>
+      </AppBody>
     </>
   )
 }
+
+export default Dashboard

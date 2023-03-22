@@ -37,9 +37,11 @@ const ProjectDropdown = () => {
         }}
       >
         <div
-          className={classNames('text-white text-sm font-medium rounded-md ml-2 mr-3 w-6 h-6')}
+          className={classNames('text-white text-sm font-medium rounded-md ml-2 mr-3 px-2 py-1')}
           style={{ background: bgColor }}
-        />
+        >
+          {currentProject.name[0].toUpperCase()}
+        </div>
         <div class="font-semibold">{currentProject.name}</div>
       </div>
 

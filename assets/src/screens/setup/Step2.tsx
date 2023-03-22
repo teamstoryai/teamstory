@@ -1,9 +1,8 @@
 import linearLogo from '@/images/linear.png'
 import jiraLogo from '@/images/jira.png'
 import { ConnectButton } from './ConnectButton'
-import { config } from '@/config'
 import useOAuthPopup from '@/hooks/useOAuthPopup'
-import { StateUpdater, useEffect, useRef, useState } from 'preact/hooks'
+import { useEffect, useRef, useState } from 'preact/hooks'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
 import { logger, toTitleCase } from '@/utils'
@@ -18,7 +17,7 @@ const LINEAR_URL =
   'https://linear.app/oauth/authorize?response_type=code&actor=application' +
   `&scope=${LIN_SCOPES}&redirect_uri=${encodeURIComponent(LIN_URI)}&client_id=`
 
-export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
+export const Step2 = () => {
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
   const linClientIdRef = useRef<string>()
@@ -35,7 +34,6 @@ export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
       const found = tokens.find((t) => t.name == 'linear' || t.name == 'jira')
       if (found) {
         setCurrentToken(found)
-        setStep(3)
       }
     }
     init()
@@ -48,7 +46,6 @@ export const Step2 = ({ setStep }: { setStep: StateUpdater<number> }) => {
         .connectToken(LIN_URI, code, service)
         .then((token) => {
           setCurrentToken(token)
-          setStep(3)
         })
         .catch((err) => {
           logger.error(err)
