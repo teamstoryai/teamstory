@@ -98,6 +98,8 @@ defmodule TeamstoryWeb.Router do
     get "/connect/repos/fetch_orgs", ConnectReposController, :fetch_orgs
     get "/connect/repos/fetch_repos", ConnectReposController, :fetch_repos
 
+    get "/query/repo/:query", QueryReposController, :query
+
     get "/subinfo", BillingController, :info
     get "/billing/info", BillingController, :info
     post "/billing/new", BillingController, :new

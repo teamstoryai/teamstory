@@ -6,11 +6,11 @@ Wants=nginx.service
 
 [Service]
 Type=simple
-User=app
-Group=app
-EnvironmentFile=/home/app/.secrets
-WorkingDirectory=/home/app/sites/blue
-ExecStart=/home/app/sites/blue/scripts/start.sh
+User=timsu
+Group=timsu
+EnvironmentFile=/home/timsu/.secrets
+WorkingDirectory=/home/timsu/sites/blue
+ExecStart=/home/timsu/sites/blue/scripts/start.sh
 KillMode=mixed
 Restart=on-failure
 

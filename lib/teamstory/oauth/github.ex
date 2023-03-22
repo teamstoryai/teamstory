@@ -43,6 +43,10 @@ defmodule Teamstory.Github do
     get("https://api.github.com/orgs/#{org}/repos", token_header(token))
   end
 
+  def pulls(token, repo, params \\ %{}) do
+    get("https://api.github.com/repos/#{repo}/pulls", token_header(token), params)
+  end
+
   ###
 
   def configs, do: Application.get_env(:teamstory, Teamstory.Github)
@@ -51,7 +55,7 @@ defmodule Teamstory.Github do
     [{"Content-Type", content_type}, {"Accept", "application/json"}]
   end
 
-  def token_header(token, content_type \\ "application/x-www-form-urlencoded") do
+  def token_header(token, content_type \\ "application/vnd.github+json") do
     std_headers(content_type) ++ [{"Authorization", "Bearer #{token}"}]
   end
 

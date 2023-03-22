@@ -1,19 +1,9 @@
-import linearLogo from '@/images/linear.png'
-import jiraLogo from '@/images/jira.png'
-import { ConnectButton } from './ConnectButton'
-import { config } from '@/config'
-import useOAuthPopup from '@/hooks/useOAuthPopup'
-import { StateUpdater, useEffect, useState } from 'preact/hooks'
-import { projectStore } from '@/stores/projectStore'
-import { tokenStore } from '@/stores/tokenStore'
-import { logger, toTitleCase } from '@/utils'
-import ErrorMessage from '@/components/core/ErrorMessage'
-import { OAuthToken } from '@/models'
+import { useEffect, useState } from 'preact/hooks'
+import { logger } from '@/utils'
 import { API } from '@/api'
-import Input from '@/components/core/Input'
 import Submit from '@/components/core/Submit'
 
-export const Step3 = ({ setStep }: { setStep: StateUpdater<number> }) => {
+export const Step3 = () => {
   const [whatsImportant, setWhatsImportant] = useState('')
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 

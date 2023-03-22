@@ -18,7 +18,7 @@ defmodule Teamstory.Connections.IssueTracker do
     issue_tracker
     |> cast(attrs, [:uuid, :service, :project, :project_id, :base_url, :deleted_at])
     |> Teamstory.Repo.generate_uuid()
-    |> validate_required([:uuid, :service, :project, :project_id])
-    |> unique_constraint([:project_id, :base_url], "+ issue tracker already exists")
+    |> validate_required([:uuid, :service, :project, :project_id, :base_url])
+    |> unique_constraint([:project_id, :base_url], message: "+ issue tracker already exists")
   end
 end

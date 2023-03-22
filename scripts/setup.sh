@@ -3,7 +3,7 @@
 # Needs to be run as root
 
 sudo apt-get update
-sudo apt-get install -y ntp git emacs-nox zsh nginx wget unzip postgresql-13 build-essential
+sudo apt-get install -y ntp git emacs-nox zsh nginx wget unzip postgresql-13 build-essential memcached
 sudo apt-get upgrade -y
 sudo apt autoremove -y
 sudo systemctl enable --now ntp
@@ -63,6 +63,7 @@ sudo systemctl daemon-reload
 
 sudo systemctl enable --now postgresql@13-main
 sudo systemctl enable --now nginx
+sudo systemctl enable --now memcached
 sudo systemctl enable teamstory-blue
 
 echo "Do the following to set up postgres:"
@@ -77,3 +78,5 @@ cp scripts/secrets.example.env ~/.secrets
 emacs ~/.secrets
 
 mix ecto.create
+./scripts/build.sh
+mix phx.server

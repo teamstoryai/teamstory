@@ -1,4 +1,4 @@
-import { useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 
 import Helmet from '@/components/core/Helmet'
 import AppHeader from '@/components/layout/AppHeader'
@@ -9,6 +9,9 @@ import { useStore } from '@nanostores/preact'
 import { Step1 } from './Step1'
 import { Step2 } from './Step2'
 import { Step3 } from '@/screens/setup/Step3'
+import { connectStore } from '@/stores/connectStore'
+import { tokenStore } from '@/stores/tokenStore'
+import AppBody from '@/components/layout/AppBody'
 
 type Props = {
   path: string
@@ -17,6 +20,15 @@ type Props = {
 const ProjectSetup = (props: Props) => {
   const project = useStore(projectStore.currentProject)
   const [step, setStep] = useState(1)
+
+  const tokens = useStore(tokenStore.tokens)
+  const repos = useStore(connectStore.repos)
+
+  useEffect(() => {
+    const doneStep2 = tokens.find((t) => t.name == 'linear' || t.name == 'jira')
+    if (step < 3 && doneStep2) setStep(3)
+    else if (step < 2 && repos.length > 0) setStep(2)
+  }, [step, tokens, repos])
 
   if (!project) return <div>Please select a project</div>
 
@@ -31,13 +43,13 @@ const ProjectSetup = (props: Props) => {
           </h1>
         </div>
       </AppHeader>
-      <div class="flex flex-col grow w-full px-6 mt-4 mx-2">
-        <Step1 setStep={setStep} />
+      <AppBody>
+        <Step1 />
 
-        {step >= 2 && <Step2 setStep={setStep} />}
+        {step >= 2 && <Step2 />}
 
-        {step >= 3 && <Step3 setStep={setStep} />}
-      </div>
+        {step >= 3 && <Step3 />}
+      </AppBody>
     </>
   )
 }

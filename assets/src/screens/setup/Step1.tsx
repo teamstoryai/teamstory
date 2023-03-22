@@ -27,7 +27,7 @@ enum ConnectState {
   RepoSelected,
   ConnectAnother,
 }
-export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
+export const Step1 = () => {
   const [state, setState] = useState<ConnectState>(ConnectState.NotConnected)
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
@@ -42,17 +42,8 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
     async function init() {
       API.clientId('github').then((id) => (ghClientIdRef.current = id.client_id))
 
-      // check if we have connections
-      const tokenPromise = tokenStore.fetchTokens()
-      const repos = await connectStore.loadConnectedRepos()
-      if (repos.length > 0) {
-        setState(ConnectState.RepoSelected)
-        setStep(2)
-        return
-      }
-
       // check if we have tokens
-      const tokens = await tokenPromise
+      const tokens = tokenStore.tokens.get()
       const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
       if (found) {
         setCurrentToken(found)
@@ -69,7 +60,6 @@ export const Step1 = ({ setStep }: { setStep: StateUpdater<number> }) => {
       .then(() => {
         setCurrentToken(undefined)
         setState(ConnectState.RepoSelected)
-        setStep((step) => Math.max(step, 2))
       })
       .catch(setError)
   }

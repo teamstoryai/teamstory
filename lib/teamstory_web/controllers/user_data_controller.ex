@@ -10,7 +10,6 @@ defmodule TeamstoryWeb.UserDataController do
   def get_user_data(conn, %{"key" => key} = params) do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn) do
       {_, user_data} = user_data_helper(user, params, key)
-      IO.inspect(user_data)
       json(conn, %{data: user_data && user_data.value})
     end
   end
@@ -19,7 +18,6 @@ defmodule TeamstoryWeb.UserDataController do
   def set_user_data(conn, %{"key" => key, "data" => data} = params) do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn) do
       {project, user_data} = user_data_helper(user, params, key)
-      IO.inspect(user_data)
 
       result =
         if !user_data do
