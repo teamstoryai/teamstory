@@ -1,5 +1,6 @@
 import DataModule from '@/modules/DataModule'
-import github, { PullRequest } from '@/query/github'
+import github from '@/query/github'
+import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
@@ -12,11 +13,9 @@ type Props = {
   query: string
 }
 
-type PR = PullRequest & { repo: string }
-
 const PullRequestsModule = (props: Props) => {
   const [error, setError] = useState('')
-  const [prData, setPrData] = useState<{ [repo: string]: PR[] }>({})
+  const [prData, setPrData] = useState<{ [repo: string]: QueryPullRequest[] }>({})
   const repos = useStore(connectStore.repos)
 
   const fetchData = (clear?: boolean) => {
@@ -54,7 +53,7 @@ const PullRequestsModule = (props: Props) => {
               href={pr.html_url}
               target="_blank"
               rel="noreferrer"
-              key={pr.id}
+              key={pr.number}
               class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
             >
               {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
@@ -62,12 +61,12 @@ const PullRequestsModule = (props: Props) => {
               {!pr.closed_at && (
                 <div class="text-gray-500 text-xs">
                   #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                  {pr.user?.login}
+                  {pr.user.name}
                 </div>
               )}
               {pr.closed_at && (
                 <div class="text-gray-500 text-xs">
-                  #{pr.number} by {pr.user?.login} was merged{' '}
+                  #{pr.number} by {pr.user.name} was merged{' '}
                   {formatDistance(new Date(pr.closed_at), new Date())} ago
                 </div>
               )}

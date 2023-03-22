@@ -5,7 +5,7 @@ export enum ProjectRole {
 
 export type ProjectMeta = {
   // onboarded?
-  ob?: boolean
+  ob?: number
 }
 
 export class Project {

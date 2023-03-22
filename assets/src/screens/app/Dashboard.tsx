@@ -10,7 +10,7 @@ import { Project } from '@/models'
 import { route } from 'preact-router'
 import { paths } from '@/config'
 import PullRequestsModule from '@/modules/PullRequestsModule'
-import { sub } from 'date-fns'
+import { format, sub } from 'date-fns'
 import { tokenStore } from '@/stores/tokenStore'
 import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
@@ -51,9 +51,11 @@ const Dashboard = (props: Props) => {
     query: 'is:open is:pr draft:false',
   }
 
+  const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
+
   const prModule2 = {
     title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${sub(new Date(), { days: 2 }).toISOString()}`,
+    query: `is:merged is:pr merged:>${recentKey}`,
   }
 
   const issuesModule1 = {
@@ -63,7 +65,7 @@ const Dashboard = (props: Props) => {
 
   const issuesModule2 = {
     title: 'Recently Completed',
-    completedAfter: sub(new Date(), { days: 2 }),
+    completedAfter: recentKey,
   }
 
   return (

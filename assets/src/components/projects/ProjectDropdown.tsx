@@ -51,14 +51,14 @@ const ProjectDropdown = () => {
           pillsOpen ? 'flex flex-col left-0 absolute p-2 rounded border' : 'hidden flex-1'
         )}
       >
-        <div class="uppercase font-bold text-gray-400 text-xs">Select Project</div>
+        <div class="uppercase font-bold text-gray-600 text-xs">Select Project</div>
         {projects.map((p, i) => (
           <div
             key={p.id}
             className={classNames(
               p.id == currentProject?.id
                 ? 'bg-gray-300 text-gray-900'
-                : 'bg-gray-100 text-gray-400',
+                : 'bg-gray-100 text-gray-600',
               'hover:bg-gray-400 hover:text-gray-900 cursor-pointer rounded-md px-4 py-2',
               'overflow-hidden whitespace-nowrap text-ellipsis text-sm min-w-[40px]'
             )}
@@ -73,7 +73,7 @@ const ProjectDropdown = () => {
         ))}
         <div
           className={classNames(
-            'text-gray-400 text-sm flex',
+            'text-gray-600 text-sm flex',
             'hover:bg-gray-400 hover:text-gray-900 cursor-pointer rounded-md p-2',
             'overflow-hidden whitespace-nowrap'
           )}

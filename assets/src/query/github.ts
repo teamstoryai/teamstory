@@ -1,18 +1,5 @@
+import { QueryPullRequest } from '@/query/types'
 import axios from 'axios'
-
-export type PullRequest = {
-  id: number
-  number: number
-  title: string
-  user: {
-    avatar_url: string
-    login: string
-  } | null
-  html_url: string
-  closed_at: string | null
-  updated_at: string
-  created_at: string
-}
 
 export type PaginatedResult<T> = {
   incomplete_results: boolean
@@ -27,7 +14,7 @@ class Github {
     this.token = token
   }
 
-  pulls = async (repo: string, query: string): Promise<PaginatedResult<PullRequest>> => {
+  pulls = async (repo: string, query: string): Promise<PaginatedResult<QueryPullRequest>> => {
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await axios.get('https://api.github.com/search/issues?q=' + q, {
       headers: {
@@ -35,6 +22,16 @@ class Github {
         Authorization: `Bearer ${this.token}`,
       },
     })
+
+    const data: QueryPullRequest[] = response.data.items.map((item: any) => ({
+      ...item,
+      user: {
+        id: item.user?.login,
+        name: item.user?.login,
+      },
+      repo,
+    }))
+    response.data.items = data
     return response.data
   }
 }

@@ -25,6 +25,8 @@ class ConnectStore {
 
   repos = atom<Repository[]>([])
 
+  fakeMode = false
+
   // --- actions
 
   fetchOrgs = async (service: string) => {
@@ -39,6 +41,7 @@ class ConnectStore {
   }
 
   loadConnectedRepos = async () => {
+    if (this.fakeMode) return this.repos.get()
     const project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.repos.list(project)

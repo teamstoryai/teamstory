@@ -34,4 +34,7 @@ export class UserMeta {
 
   /** onboarded */
   ob?: number
+
+  /** hide fake data */
+  hf?: boolean
 }

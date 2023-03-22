@@ -10,6 +10,8 @@ import { logger } from '@/utils'
 
 export type ProjectMap = { [id: string]: Project }
 
+export type ProjectSwitchListener = (project: Project) => void
+
 class ProjectStore {
   // --- stores
 
@@ -20,6 +22,10 @@ class ProjectStore {
   projectMap = map<ProjectMap>({})
 
   currentProject = atom<Project | undefined>()
+
+  // --- variables
+
+  projectSwitchListeners: ProjectSwitchListener[] = []
 
   // --- actions
 
@@ -44,6 +50,7 @@ class ProjectStore {
       }
       if (!currentProject) currentProject = projects[0]
       store.set(currentProject)
+      if (currentProject) this.projectSwitchListeners.forEach((l) => l(currentProject!))
     }
   )
 
@@ -61,6 +68,7 @@ class ProjectStore {
           if (user?.meta?.lp != project.id) {
             authStore.updateUser({ meta: { lp: project.id } })
           }
+          this.projectSwitchListeners.forEach((l) => l(project))
 
           return project
         }
