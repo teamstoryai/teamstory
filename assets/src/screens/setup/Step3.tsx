@@ -2,6 +2,10 @@ import { useEffect, useState } from 'preact/hooks'
 import { logger } from '@/utils'
 import { API } from '@/api'
 import Submit from '@/components/core/Submit'
+import { projectStore } from '@/stores/projectStore'
+import { Project } from '@/models'
+import { route } from 'preact-router'
+import { paths } from '@/config'
 
 export const Step3 = () => {
   const [whatsImportant, setWhatsImportant] = useState('')
@@ -17,7 +21,14 @@ export const Step3 = () => {
     e.preventDefault()
     setSaveState('saving')
     API.setUserData('setup', { whatsImportant })
-      .then((e) => setSaveState('saved'))
+      .then(async (e) => {
+        const project = projectStore.currentProject.get()
+        if (project && !Project.meta(project).ob) {
+          await projectStore.updateProject(project, { meta: { ob: 1 } })
+        }
+        setSaveState('saved')
+        route(paths.DASHBOARD)
+      })
       .catch((e) => {
         logger.error(e)
         setSaveState('error')
@@ -31,16 +42,13 @@ export const Step3 = () => {
       ? 'Saved'
       : saveState == 'error'
       ? 'Error Saving'
-      : 'Save'
+      : 'Next'
 
   return (
     <div class="mb-12">
       <h1 class="text-lg my-2">3. Onboarding</h1>
 
-      <p class="text-gray-700">
-        Awesome! We will contact you when your dashboard is ready. If you have some time, please
-        tell us what you're hoping for in a team dashboard:
-      </p>
+      <p class="text-gray-700">Please tell us what you're hoping for in using Teamstory:</p>
 
       <form onSubmit={onSubmit} class="mt-2 max-w-lg">
         <textarea
@@ -52,14 +60,6 @@ export const Step3 = () => {
 
         <Submit disabled={saveState == 'saving'} label={saveLabel} />
       </form>
-
-      <p class="text-gray-700 my-2">
-        If it's been a few days, please reach out to{' '}
-        <a href="mailto:support@teamstory.ai" class="text-blue-700 hover:underline">
-          support@teamstory.ai
-        </a>
-        .
-      </p>
     </div>
   )
 }

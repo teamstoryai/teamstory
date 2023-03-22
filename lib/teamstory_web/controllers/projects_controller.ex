@@ -43,9 +43,17 @@ defmodule TeamstoryWeb.ProjectsController do
     attrs = Utils.params_to_attrs(params, ["name", "deleted_at", "archived_at"])
 
     with user <- Guardian.Plug.current_resource(conn),
-         {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid),
-         {:ok, project} <- Projects.update_project(project, attrs) do
-      render(conn, "get.json", project: project, user: user)
+         {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid) do
+      attrs =
+        if params["meta"] do
+          Map.put(attrs, "meta", project.meta |> Utils.updated_meta_field(params["meta"]))
+        else
+          attrs
+        end
+
+      with {:ok, project} <- Projects.update_project(project, attrs) do
+        render(conn, "get.json", project: project, user: user)
+      end
     end
   end
 
