@@ -10,6 +10,8 @@ import ErrorMessage from '@/components/core/ErrorMessage'
 import { OAuthToken } from '@/models'
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { API } from '@/api'
+import { LinearClient } from '@linear/sdk'
+import Pressable from '@/components/core/Pressable'
 
 const LIN_SCOPES = 'read'
 const LIN_URI = location.origin + '/oauth/linear'
@@ -17,10 +19,37 @@ const LINEAR_URL =
   'https://linear.app/oauth/authorize?response_type=code&actor=application' +
   `&scope=${LIN_SCOPES}&redirect_uri=${encodeURIComponent(LIN_URI)}&client_id=`
 
+type Project = {
+  id: string
+  name: string
+  key: string
+}
+
 export const Step2 = () => {
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
   const linClientIdRef = useRef<string>()
+
+  const [projects, setProjects] = useState<any[]>([])
+
+  useEffect(() => {
+    if (!currentToken) return
+
+    if (currentToken.name == 'linear') {
+      const client = new LinearClient({ accessToken: currentToken.access })
+      client.teams().then((teams) => {
+        logger.info('teams', teams)
+        if (teams.nodes.length <= 1) return
+        setProjects(
+          teams.nodes.map((t) => ({
+            id: t.id,
+            name: t.name,
+            key: t.key,
+          }))
+        )
+      })
+    }
+  }, [currentToken])
 
   useEffect(() => {
     const project = projectStore.currentProject.get()
@@ -67,6 +96,20 @@ export const Step2 = () => {
           {toTitleCase(currentToken.name)}
           <CheckIcon class="h-4 w-4 text-green-600 ml-2" />
         </div>
+      )}
+
+      {projects && (
+        <>
+          <div>Select one or more {currentToken?.name == 'linear' ? 'teams' : 'projects'}:</div>
+          <div class="flex flex-col gap-2 mt-2">
+            {projects.map((p) => (
+              <Pressable onClick={() => {}} key={p.id} className="flex-row">
+                {p.name}
+                <span class="text-gray-500 ml-2">({p.key})</span>
+              </Pressable>
+            ))}
+          </div>
+        </>
       )}
 
       {!currentToken && (

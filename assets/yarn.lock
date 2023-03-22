@@ -429,6 +429,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-typed-document-node/core@npm:^3.1.0":
+  version: 3.2.0
+  resolution: "@graphql-typed-document-node/core@npm:3.2.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: fa44443accd28c8cf4cb96aaaf39d144a22e8b091b13366843f4e97d19c7bfeaf609ce3c7603a4aeffe385081eaf8ea245d078633a7324c11c5ec4b2011bb76d
+  languageName: node
+  linkType: hard
+
 "@headlessui/react@npm:^1.6.6":
   version: 1.6.6
   resolution: "@headlessui/react@npm:1.6.6"
@@ -497,6 +506,17 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.0.3
     "@jridgewell/sourcemap-codec": ^1.4.10
   checksum: b9537b9630ffb631aef9651a085fe361881cde1772cd482c257fe3c78c8fd5388d681f504a9c9fe1081b1c05e8f75edf55ee10fdb58d92bbaa8dbf6a7bd6b18c
+  languageName: node
+  linkType: hard
+
+"@linear/sdk@npm:^2.6.0":
+  version: 2.6.0
+  resolution: "@linear/sdk@npm:2.6.0"
+  dependencies:
+    "@graphql-typed-document-node/core": ^3.1.0
+    graphql: ^15.4.0
+    isomorphic-unfetch: ^3.1.0
+  checksum: 384cf2946facedbb262c40d3441d6bcac0c7f2fa8916f81200de8ad31948afef5dcd9b1dfcd83c8d47d2643428c3c513d2a26563fd49b27bf7ae18b1f211616a
   languageName: node
   linkType: hard
 
@@ -721,6 +741,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"acorn@npm:^8.4.0":
+  version: 8.8.2
+  resolution: "acorn@npm:8.8.2"
+  bin:
+    acorn: bin/acorn
+  checksum: f790b99a1bf63ef160c967e23c46feea7787e531292bb827126334612c234ed489a0dc2c7ba33156416f0ffa8d25bf2b0fdb7f35c2ba60eb3e960572bece4001
+  languageName: node
+  linkType: hard
+
 "agent-base@npm:6, agent-base@npm:^6.0.2":
   version: 6.0.2
   resolution: "agent-base@npm:6.0.2"
@@ -819,6 +848,7 @@ __metadata:
     "@event-calendar/time-grid": ^0.13.4
     "@headlessui/react": ^1.6.6
     "@heroicons/react": ^2.0.16
+    "@linear/sdk": ^2.6.0
     "@nanostores/preact": ^0.1.3
     "@popperjs/core": ^2.11.6
     "@preact/preset-vite": ^2.1.5
@@ -833,6 +863,7 @@ __metadata:
     date-fns: ^2.29.3
     events: ^3.3.0
     husky: ^8.0.3
+    isomorphic-fetch: ^3.0.0
     linkify-react: ^4.0.2
     linkifyjs: ^4.0.2
     lodash: ^4.17.21
@@ -857,6 +888,7 @@ __metadata:
     uuid: ^9.0.0
     vite: ^3.1.4
     vite-plugin-chunk-split: ^0.2.5
+    vite-plugin-externals: ^0.6.2
   languageName: unknown
   linkType: soft
 
@@ -1393,6 +1425,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"es-module-lexer@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "es-module-lexer@npm:0.4.1"
+  checksum: c33ee30390812df875e419783cf37f3a32b73daabbb1f8a08fe9282fe0777b0a8064a219a34a253cb954b3308bbd4227e17da9e8ec253d309a83b4c90b2e9388
+  languageName: node
+  linkType: hard
+
 "esbuild-android-64@npm:0.15.10":
   version: 0.15.10
   resolution: "esbuild-android-64@npm:0.15.10"
@@ -1742,6 +1781,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-extra@npm:^10.0.0":
+  version: 10.1.0
+  resolution: "fs-extra@npm:10.1.0"
+  dependencies:
+    graceful-fs: ^4.2.0
+    jsonfile: ^6.0.1
+    universalify: ^2.0.0
+  checksum: dc94ab37096f813cc3ca12f0f1b5ad6744dfed9ed21e953d72530d103cea193c2f81584a39e9dee1bea36de5ee66805678c0dddc048e8af1427ac19c00fffc50
+  languageName: node
+  linkType: hard
+
 "fs-minipass@npm:^2.0.0, fs-minipass@npm:^2.1.0":
   version: 2.1.0
   resolution: "fs-minipass@npm:2.1.0"
@@ -1868,10 +1918,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.2.6":
+"graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.6":
   version: 4.2.11
   resolution: "graceful-fs@npm:4.2.11"
   checksum: ac85f94da92d8eb6b7f5a8b20ce65e43d66761c55ce85ac96df6865308390da45a8d3f0296dd3a663de65d30ba497bd46c696cc1e248c72b13d6d567138a4fc7
+  languageName: node
+  linkType: hard
+
+"graphql@npm:^15.4.0":
+  version: 15.8.0
+  resolution: "graphql@npm:15.8.0"
+  checksum: 423325271db8858428641b9aca01699283d1fe5b40ef6d4ac622569ecca927019fce8196208b91dd1d8eb8114f00263fe661d241d0eb40c10e5bfd650f86ec5e
   languageName: node
   linkType: hard
 
@@ -2152,6 +2209,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"isomorphic-fetch@file:./node_modules/axios::locator=app%40workspace%3A.":
+  version: 0.27.2
+  resolution: "isomorphic-fetch@file:./node_modules/axios#./node_modules/axios::hash=6cb22d&locator=app%40workspace%3A."
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: d3565ca08e9fafc63aa4faacf57d629db01ecb825d989ffda1f710cd85f9b481e0f7219379fec2ce3f2a0dc0b690302b5bf9f00c4c45c241ca213d678c2fb449
+  languageName: node
+  linkType: hard
+
+"isomorphic-unfetch@file:./node_modules/axios::locator=app%40workspace%3A.":
+  version: 0.27.2
+  resolution: "isomorphic-unfetch@file:./node_modules/axios#./node_modules/axios::hash=317cea&locator=app%40workspace%3A."
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 105379e7623a38ec7539d073cdde9d9dd06629fd2749a15a09fd468be556ec1ca3b8fc602177a0ad3518b270d244347cc9f1fc5b190052a3aaa4477c1c463a43
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -2174,6 +2251,19 @@ __metadata:
   bin:
     json5: lib/cli.js
   checksum: 74b8a23b102a6f2bf2d224797ae553a75488b5adbaee9c9b6e5ab8b510a2fc6e38f876d4c77dea672d4014a44b2399e15f2051ac2b37b87f74c0c7602003543b
+  languageName: node
+  linkType: hard
+
+"jsonfile@npm:^6.0.1":
+  version: 6.1.0
+  resolution: "jsonfile@npm:6.1.0"
+  dependencies:
+    graceful-fs: ^4.1.6
+    universalify: ^2.0.0
+  dependenciesMeta:
+    graceful-fs:
+      optional: true
+  checksum: 7af3b8e1ac8fe7f1eccc6263c6ca14e1966fcbc74b618d3c78a0a2075579487547b94f72b7a1114e844a1e15bb00d440e5d1720bfc4612d790a6f285d5ea8354
   languageName: node
   linkType: hard
 
@@ -2248,7 +2338,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"magic-string@npm:^0.25.2":
+"magic-string@npm:^0.25.2, magic-string@npm:^0.25.7":
   version: 0.25.9
   resolution: "magic-string@npm:0.25.9"
   dependencies:
@@ -3408,6 +3498,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"universalify@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "universalify@npm:2.0.0"
+  checksum: 2406a4edf4a8830aa6813278bab1f953a8e40f2f63a37873ffa9a3bc8f9745d06cc8e88f3572cb899b7e509013f7f6fcc3e37e8a6d914167a5381d8440518c44
+  languageName: node
+  linkType: hard
+
 "update-browserslist-db@npm:^1.0.4":
   version: 1.0.4
   resolution: "update-browserslist-db@npm:1.0.4"
@@ -3453,6 +3550,20 @@ __metadata:
   peerDependencies:
     vite: ">=2.0.0"
   checksum: db124367ad5db4f8180910297accddb8902eef23166ff5e29d640bd68492fcdde08f555f6087fc065086e2ed3ab871f64d1a94e8e8e63f55a761bdca952bd67b
+  languageName: node
+  linkType: hard
+
+"vite-plugin-externals@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "vite-plugin-externals@npm:0.6.2"
+  dependencies:
+    acorn: ^8.4.0
+    es-module-lexer: ^0.4.1
+    fs-extra: ^10.0.0
+    magic-string: ^0.25.7
+  peerDependencies:
+    vite: ">=2.0.0"
+  checksum: 585dcc432a7c3032b32516d8c30cd58e79578925a535eef0e9fe5a0d06c0efdd47bfe700129e89a2c6008380546f68427a3f122e48d0e602c775dec84737df96
   languageName: node
   linkType: hard
 

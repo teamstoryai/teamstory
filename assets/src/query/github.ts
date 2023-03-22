@@ -26,7 +26,7 @@ class Github {
     this.token = token
   }
 
-  issues = async (repo: string, query: string): Promise<PaginatedResult<PullRequest>> => {
+  pulls = async (repo: string, query: string): Promise<PaginatedResult<PullRequest>> => {
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await axios.get('https://api.github.com/search/issues?q=' + q, {
       headers: {
