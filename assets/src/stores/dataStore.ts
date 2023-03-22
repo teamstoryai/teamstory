@@ -25,24 +25,33 @@ type PullRequest = {
   state: string
 }
 
-type Cache = { [key: string]: any }
+type Cache<T> = { [key: string]: T }
 
 class DataStore {
   // --- stores
 
   initialized = atom(false)
 
-  cache: Cache = {}
+  cache: Cache<any> = {}
+
+  inProgress: Cache<Promise<any>> = {}
 
   // --- actions
 
-  cacheRead = async (key: string, fetch: () => Promise<any>) => {
+  cacheRead = async <T>(key: string, fetch: () => Promise<T>): Promise<T> => {
     if (this.cache[key]) {
       return this.cache[key]
+    } else if (this.inProgress[key] != undefined) {
+      return await this.inProgress[key]
     } else {
-      const result = await fetch()
-      this.cache[key] = result
-      return result
+      try {
+        const promise = (this.inProgress[key] = fetch())
+        const result = await promise
+        this.cache[key] = result
+        return result
+      } finally {
+        delete this.inProgress[key]
+      }
     }
   }
 
@@ -52,7 +61,6 @@ class DataStore {
 
   initTokens = async () => {
     const tokens = tokenStore.tokens.get()
-    console.log('init tokens', tokens)
     tokens.forEach((token) => {
       if (token.name == 'github') {
         github.setToken(token.access)

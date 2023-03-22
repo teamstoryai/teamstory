@@ -1,12 +1,13 @@
 import axios from 'axios'
 
 export type PullRequest = {
+  id: number
   title: string
   user: {
     avatar_url: string
     login: string
   } | null
-  url: string
+  html_url: string
   closed_at: string | null
   updated_at: string
   created_at: string
