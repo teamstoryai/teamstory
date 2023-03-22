@@ -98,7 +98,7 @@ export const Step2 = () => {
         </div>
       )}
 
-      {projects && (
+      {projects && projects.length > 0 && (
         <>
           <div>Select one or more {currentToken?.name == 'linear' ? 'teams' : 'projects'}:</div>
           <div class="flex flex-col gap-2 mt-2">

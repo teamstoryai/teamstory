@@ -26,6 +26,8 @@ class UIStore {
 
   calendarDate = atom<Date>(new Date())
 
+  initialized = atom<boolean>(false)
+
   loadedAt: number = Date.now()
 
   // --- actions
@@ -41,8 +43,10 @@ class UIStore {
       authStore.updateUser({ timezone })
     }
 
-    tokenStore.fetchTokens().then(() => dataStore.initTokens())
-    connectStore.loadConnectedRepos()
+    Promise.all([
+      tokenStore.fetchTokens().then(() => dataStore.initTokens()),
+      connectStore.loadConnectedRepos(),
+    ]).then(() => this.initialized.set(true))
   }
 }
 
