@@ -47,13 +47,13 @@ const Dashboard = (props: Props) => {
   const today = new Date()
 
   const prModule1 = {
-    title: 'Active Pull Requests',
+    title: 'Open Pull Requests',
     query: 'is:open is:pr draft:false',
   }
 
   const prModule2 = {
     title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${sub(new Date(), { days: 1 }).toISOString()}`,
+    query: `is:merged is:pr merged:>${sub(new Date(), { days: 2 }).toISOString()}`,
   }
 
   const issuesModule = {

@@ -2,6 +2,7 @@ import axios from 'axios'
 
 export type PullRequest = {
   id: number
+  number: number
   title: string
   user: {
     avatar_url: string

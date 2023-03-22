@@ -4,6 +4,7 @@ import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
 import { useStore } from '@nanostores/preact'
+import { formatDistance } from 'date-fns'
 import { useEffect, useState } from 'preact/hooks'
 
 type Props = {
@@ -58,6 +59,18 @@ const PullRequestsModule = (props: Props) => {
             >
               {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
               <div class="text-gray-800">{pr.title}</div>
+              {!pr.closed_at && (
+                <div class="text-gray-500 text-xs">
+                  #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
+                  {pr.user?.login}
+                </div>
+              )}
+              {pr.closed_at && (
+                <div class="text-gray-500 text-xs">
+                  #{pr.number} by {pr.user?.login} was merged{' '}
+                  {formatDistance(new Date(pr.closed_at), new Date())} ago
+                </div>
+              )}
             </a>
           ))}
       </div>
