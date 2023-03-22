@@ -58,12 +58,12 @@ export default ({ showHideButton }: { showHideButton?: boolean }) => {
 function Links() {
   let navigation = [
     { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
-    { name: 'Learning Log', href: paths.REPORTS, icon: SparklesIcon },
-    { name: 'Past 2 Weeks', href: paths.REPORTS, icon: ChevronDoubleLeftIcon },
-    { name: 'Past Month', href: paths.REPORTS, icon: CalendarDaysIcon },
-    { name: 'Past Quarter', href: paths.REPORTS, icon: Squares2X2Icon },
-    { name: 'Team Members', href: paths.REPORTS, icon: UsersIcon },
-    { name: 'Ask Tally', href: paths.REPORTS, icon: ChatBubbleLeftEllipsisIcon },
+    { name: 'Learning Log', href: paths.LEARNING, icon: SparklesIcon },
+    { name: 'Past 2 Weeks', href: paths.PAST_WEEKS, icon: ChevronDoubleLeftIcon },
+    { name: 'Past Month', href: paths.PAST_MONTH, icon: CalendarDaysIcon },
+    { name: 'Past Quarter', href: paths.PAST_QUARTER, icon: Squares2X2Icon },
+    { name: 'Team Members', href: paths.TEAM, icon: UsersIcon },
+    { name: 'Ask Tally', href: paths.ASK_TALLY, icon: ChatBubbleLeftEllipsisIcon },
   ] as NavItem[]
 
   return (

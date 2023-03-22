@@ -13,7 +13,17 @@ export const paths = {
 
   PROJECTS: '/app/projects',
 
-  REPORTS: '/app/reports',
+  LEARNING: '/app/learning',
+
+  PAST_WEEKS: '/app/past_weeks',
+
+  PAST_MONTH: '/app/past_month',
+
+  PAST_QUARTER: '/app/past_quarter',
+
+  TEAM: '/app/team',
+
+  ASK_TALLY: '/app/ask_tally',
 
   SETUP: '/app/setup',
 
