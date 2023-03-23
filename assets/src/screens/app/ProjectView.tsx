@@ -18,6 +18,7 @@ import { projectStore } from '@/stores/projectStore'
 import { makeInitials, unwrapError } from '@/utils'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { useStore } from '@nanostores/preact'
+import AppBody from '@/components/layout/AppBody'
 
 type Props = {
   id?: string
@@ -39,6 +40,24 @@ const ProjectSettings = ({ id }: Props) => {
 
   const projectArgs = { project, isAdmin }
 
+  if (project.id == 'fake') {
+    return (
+      <>
+        <Helmet title={`Project | ${project.name}`} />
+        <AppHeader>
+          <h1 className="text-2xl font-semibold text-gray-900">{project.name}</h1>
+        </AppHeader>
+
+        <AppBody>
+          <div className="font-semibold text-gray-900">
+            This is a sample project and has no settings.
+          </div>
+          <div className="h-8" />
+        </AppBody>
+      </>
+    )
+  }
+
   return (
     <>
       <Helmet title={`Project | ${project.name}`} />
@@ -46,9 +65,7 @@ const ProjectSettings = ({ id }: Props) => {
         <h1 className="text-2xl font-semibold text-gray-900">{project.name}</h1>
       </AppHeader>
 
-      <div class="w-full max-w-2xl px-6 pb-6">
-        <div className="h-8" />
-
+      <AppBody>
         <ProjectSetup {...projectArgs} />
 
         <div className="h-12" />
@@ -64,7 +81,7 @@ const ProjectSettings = ({ id }: Props) => {
         <div className="h-6" />
 
         {isAdmin && (
-          <div className="max-w-7xl mt-20 mx-auto px-4 sm:px-6 md:px-8">
+          <div>
             <h1 className="text-xl font-semibold text-gray-900 mb-5">Dangerous Stuff</h1>
             <div className="flex gap-8 flex-col md:flex-row">
               <ArchiveProject {...projectArgs} />
@@ -74,7 +91,7 @@ const ProjectSettings = ({ id }: Props) => {
         )}
 
         <DeleteProjectModal />
-      </div>
+      </AppBody>
     </>
   )
 }
@@ -93,7 +110,7 @@ function Members({ project, isAdmin }: ProjectArgs) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+    <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">Collaborators</h1>
@@ -178,7 +195,7 @@ function ProjectSetup({ project }: ProjectArgs) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+    <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">Project Setup</h1>
@@ -227,7 +244,7 @@ function RenameProject({ project }: ProjectArgs) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+    <div>
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">Rename Project</h1>
@@ -285,7 +302,7 @@ function InviteCollaborator({ project }: ProjectArgs) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+    <div>
       <div className="bg-white shadow sm:rounded-lg mt-8">
         <div className="px-4 py-5 sm:p-6">
           <h3 className="text-lg font-medium leading-6 text-gray-900">Invite Collaborator</h3>

@@ -26,8 +26,8 @@ const ProjectSetup = (props: Props) => {
 
   useEffect(() => {
     const doneStep2 = tokens.find((t) => t.name == 'linear' || t.name == 'jira')
-    if (step < 3 && doneStep2) setStep(3)
-    else if (step < 2 && repos.length > 0) setStep(2)
+    if (step == 2 && doneStep2) setStep(3)
+    else if (step == 1 && repos.length > 0) setStep(2)
   }, [step, tokens, repos])
 
   if (!project) return <div>Please select a project</div>

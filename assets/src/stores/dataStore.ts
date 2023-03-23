@@ -37,6 +37,10 @@ class DataStore {
 
   inProgress: Cache<Promise<any>> = {}
 
+  // --- variables
+
+  fakeMode = false
+
   // --- actions
 
   cacheRead = async <T>(key: string, fetch: () => Promise<T>): Promise<T> => {
@@ -45,6 +49,7 @@ class DataStore {
     } else if (this.inProgress[key] != undefined) {
       return await this.inProgress[key]
     } else {
+      if (this.fakeMode) throw new Error('unhandled fake data: ' + key)
       try {
         const promise = (this.inProgress[key] = fetch())
         const result = await promise
@@ -57,6 +62,7 @@ class DataStore {
   }
 
   clear = (key: string) => {
+    if (this.fakeMode) return
     delete this.cache[key]
   }
 

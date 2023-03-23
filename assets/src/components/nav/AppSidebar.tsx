@@ -6,8 +6,22 @@ import ProjectDropdown from '@/components/projects/ProjectDropdown'
 import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { classNames } from '@/utils'
-import { ChartBarIcon, HomeIcon } from '@heroicons/react/24/outline'
+import {
+  CalendarDaysIcon,
+  ChartBarIcon,
+  ChartBarSquareIcon,
+  ChatBubbleLeftEllipsisIcon,
+  ChatBubbleLeftIcon,
+  ChevronDoubleLeftIcon,
+  ChevronLeftIcon,
+  HomeIcon,
+  SparklesIcon,
+  Squares2X2Icon,
+  UsersIcon,
+} from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
+import icon_2weeks from '@/images/icon_2weeks.png'
+import icon_quarter from '@/images/icon_quarter.png'
 
 type NavItem = {
   name: string
@@ -44,7 +58,12 @@ export default ({ showHideButton }: { showHideButton?: boolean }) => {
 function Links() {
   let navigation = [
     { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
-    { name: 'Reports', href: paths.REPORTS, icon: ChartBarIcon },
+    { name: 'Learning Log', href: paths.LEARNING, icon: SparklesIcon },
+    { name: 'Past 2 Weeks', href: paths.PAST_WEEKS, icon: ChevronDoubleLeftIcon },
+    { name: 'Past Month', href: paths.PAST_MONTH, icon: CalendarDaysIcon },
+    { name: 'Past Quarter', href: paths.PAST_QUARTER, icon: Squares2X2Icon },
+    { name: 'Team Members', href: paths.TEAM, icon: UsersIcon },
+    { name: 'Ask Tally', href: paths.ASK_TALLY, icon: ChatBubbleLeftEllipsisIcon },
   ] as NavItem[]
 
   return (

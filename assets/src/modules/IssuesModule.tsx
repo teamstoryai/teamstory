@@ -1,46 +1,37 @@
 import DataModule from '@/modules/DataModule'
-import github, { PullRequest } from '@/query/github'
-import { connectStore } from '@/stores/connectStore'
-import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
-import { useStore } from '@nanostores/preact'
 import { useEffect, useState } from 'preact/hooks'
-import { LinearClient } from '@linear/sdk'
-import type { IssueFilter, Issue } from '@linear/sdk/dist/_generated_documents'
+import type { Issue } from '@linear/sdk/dist/_generated_documents'
 import linear from '@/query/linear'
+import { dataStore } from '@/stores/dataStore'
+import { QueryIssue } from '@/query/types'
 
 type Props = {
   title: string
   before?: string
   after?: string
   open?: boolean
+  completedAfter?: string
 }
 
 const IssuesModule = (props: Props) => {
   const [error, setError] = useState('')
-  const [issues, setIssues] = useState<Issue[]>([])
+  const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    const filter = props.open
-      ? {
-          startedAt: {
-            null: false,
-          },
-          completedAt: {
-            null: true,
-          },
-        }
-      : undefined
+    const { title, ...issueProps } = props
+    const key = 'issues:' + JSON.stringify(issueProps)
+    if (clear) dataStore.clear(key)
 
-    linear.client
-      .issues({
-        after: props.after,
-        before: props.before,
-        filter,
-      })
+    dataStore
+      .cacheRead(key, () => linear.issues(issueProps))
       .then((issues) => {
         logger.info('issues', issues)
-        setIssues(issues.nodes as any[])
+        setIssues(issues)
+      })
+      .catch((e) => {
+        logger.error(e)
+        setError(unwrapError(e))
       })
   }
 

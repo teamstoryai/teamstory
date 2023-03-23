@@ -10,7 +10,7 @@ import { Project } from '@/models'
 import { route } from 'preact-router'
 import { paths } from '@/config'
 import PullRequestsModule from '@/modules/PullRequestsModule'
-import { sub } from 'date-fns'
+import { format, sub } from 'date-fns'
 import { tokenStore } from '@/stores/tokenStore'
 import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
@@ -51,14 +51,21 @@ const Dashboard = (props: Props) => {
     query: 'is:open is:pr draft:false',
   }
 
+  const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
+
   const prModule2 = {
     title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${sub(new Date(), { days: 2 }).toISOString()}`,
+    query: `is:merged is:pr merged:>${recentKey}`,
   }
 
-  const issuesModule = {
-    title: 'Active Issues',
+  const issuesModule1 = {
+    title: 'Issues In Progress',
     open: true,
+  }
+
+  const issuesModule2 = {
+    title: 'Recently Completed',
+    completedAfter: recentKey,
   }
 
   return (
@@ -75,11 +82,12 @@ const Dashboard = (props: Props) => {
       <AppBody>
         <DailyPrompt date={today} />
 
-        <div class="flex flex-wrap -mx-4 my-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -mx-4 my-4">
           <PullRequestsModule {...prModule1} />
           <PullRequestsModule {...prModule2} />
 
-          <IssuesModule {...issuesModule} />
+          <IssuesModule {...issuesModule1} />
+          <IssuesModule {...issuesModule2} />
         </div>
       </AppBody>
     </>

@@ -16,6 +16,7 @@ import { ConnectButton } from './ConnectButton'
 import { projectStore } from '@/stores/projectStore'
 import { config } from '@/config'
 import { API } from '@/api'
+import { uiStore } from '@/stores/uiStore'
 
 const GH_SCOPES = 'user:email,repo,read:org'
 export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=`
@@ -32,26 +33,24 @@ export const Step1 = () => {
   const [error, setError] = useState<string>()
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
   const ghClientIdRef = useRef<string>()
-
   const repos = useStore(connectStore.repos)
+  const initialized = useStore(uiStore.initialized)
 
   useEffect(() => {
-    const project = projectStore.currentProject.get()
-    if (!project) return
-
-    async function init() {
-      API.clientId('github').then((id) => (ghClientIdRef.current = id.client_id))
-
-      // check if we have tokens
-      const tokens = tokenStore.tokens.get()
-      const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
-      if (found) {
-        setCurrentToken(found)
-        setState(ConnectState.Connected)
-      }
-    }
-    init()
+    API.clientId('github').then((id) => (ghClientIdRef.current = id.client_id))
   }, [])
+
+  useEffect(() => {
+    if (!initialized) return
+    const tokens = tokenStore.tokens.get()
+    const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
+    if (!repos.length && found) {
+      setCurrentToken(found)
+      setState(ConnectState.Connected)
+    } else if (repos.length) {
+      setState(ConnectState.RepoSelected)
+    }
+  }, [initialized])
 
   const addRepo = (org: OrgData, repo: RepoData) => {
     setError(undefined)
@@ -214,6 +213,21 @@ function SelectRepository({
                 </Pressable>
               ))}
             </div>
+            <div class="mt-2 p-2 bg-blue-100 border border-blue-200 rounded-md text-sm text-gray-600">
+              If you don't see your organization here, you'll have to re-authorize the Github app:
+              <ol class="list-decimal ml-5">
+                <li>
+                  On{' '}
+                  <a href="https://github.com" target="_blank" class="cursor-pointer underline">
+                    github.com
+                  </a>
+                  , navigate to the User Menu (top right) &gt; Settings &gt; Applications.
+                </li>
+                <li>Go to the "Authorized OAuth Apps" tab and click on Teamstory</li>
+                <li>Find your organization(s) and click on Grant.</li>
+                <li>Refresh this page.</li>
+              </ol>
+            </div>
           </>
         )}
       </div>
@@ -243,11 +257,11 @@ function SelectRepository({
                   <Pressable
                     onClick={() => addRepo(currentOrg!, repo)}
                     key={repo.id}
-                    className="flex-row"
+                    className="flex-row text-sm text-gray-800"
                   >
                     {repo.full_name}
-                    {repo.private && <LockClosedIcon class="ml-2 w-4 h-4" />}
-                    {repo.fork && <ForkIcon class="ml-2 w-4 h-4" />}
+                    {repo.private && <LockClosedIcon class="ml-1 w-3 h-3" />}
+                    {repo.fork && <ForkIcon class="ml-1 w-4 h-4" />}
                   </Pressable>
                 ))}
                 {!repos.length && (

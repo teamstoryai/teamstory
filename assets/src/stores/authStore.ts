@@ -9,6 +9,7 @@ import { uiStore } from '@/stores/uiStore'
 import { logger } from '@/utils'
 
 import { projectStore } from './projectStore'
+import { initFakeData } from '@/stores/fakeData'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/serviceworker.js')
@@ -43,7 +44,7 @@ class AuthStore {
     this.authTokens.set(tokens)
 
     const { access, refresh } = tokens || {}
-    if (!tokens?.access) throw 'Tokens were invalid'
+    if (!tokens?.access) throw new Error('Tokens were invalid')
 
     const response = (await API.projects.list()) as ProjectsResponse
     logger.debug('AUTH - logged in', response)
@@ -58,6 +59,7 @@ class AuthStore {
     const user = User.fromJSON(response.user)
     this.loggedInUser.set(user)
     projectStore.updateProjects(response.items.map(Project.fromJSON))
+    if (!User.meta(user).hf) initFakeData()
     projectStore.updateCurrentProject(user)
 
     if (!projectStore.activeProjects.get().length && location.pathname != paths.PROJECTS) {

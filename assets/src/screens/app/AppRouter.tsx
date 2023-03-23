@@ -13,7 +13,12 @@ export default () => (
   <Router>
     <ProjectSetup path={paths.SETUP} />
     <Dashboard path={paths.DASHBOARD} />
-    <Reports path={paths.REPORTS} />
+    <Reports path={paths.LEARNING} />
+    <Reports path={paths.PAST_WEEKS} />
+    <Reports path={paths.PAST_MONTH} />
+    <Reports path={paths.PAST_QUARTER} />
+    <Reports path={paths.TEAM} />
+    <Reports path={paths.ASK_TALLY} />
     <ProjectsList path={paths.PROJECTS} />
     <ProjectView path={paths.PROJECTS + '/:id'} />
     <Settings path={paths.SETTINGS} />
