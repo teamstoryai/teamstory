@@ -12,16 +12,16 @@ env:
   ELIXIR_VERSION: 1.12.3
   OTP_VERSION: 24.0.6
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   # frontend javascript compiling / tests
   frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel ongoing deployments
-        uses: styfle/cancel-workflow-action@0.5.0
-        with:
-          access_token: ${{ github.token }}
       - uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v2
