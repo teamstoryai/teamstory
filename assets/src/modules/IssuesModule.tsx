@@ -1,4 +1,4 @@
-import DataModule from '@/modules/DataModule'
+import DataModule from '@/modules/ModuleCard'
 import { logger, unwrapError } from '@/utils'
 import { useEffect, useState } from 'preact/hooks'
 import type { Issue } from '@linear/sdk/dist/_generated_documents'
@@ -6,7 +6,8 @@ import linear from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue } from '@/query/types'
 
-type Props = {
+export type IssuesModuleProps = {
+  module: string
   title: string
   before?: string
   after?: string
@@ -14,12 +15,12 @@ type Props = {
   completedAfter?: string
 }
 
-const IssuesModule = (props: Props) => {
+const IssuesModule = (props: IssuesModuleProps) => {
   const [error, setError] = useState('')
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    const { title, ...issueProps } = props
+    const { module, title, ...issueProps } = props
     const key = 'issues:' + JSON.stringify(issueProps)
     if (clear) dataStore.clear(key)
 

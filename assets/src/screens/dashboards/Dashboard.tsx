@@ -16,6 +16,8 @@ import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
 import Loader from '@/components/core/Loader'
 import IssuesModule from '@/modules/IssuesModule'
+import { DataModuleProps } from '@/modules/DataModule'
+import ModuleGroup from '@/modules/ModuleGroup'
 
 type Props = {
   path: string
@@ -45,28 +47,30 @@ const Dashboard = (props: Props) => {
     )
 
   const today = new Date()
-
-  const prModule1 = {
-    title: 'Open Pull Requests',
-    query: 'is:open is:pr draft:false',
-  }
-
   const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
 
-  const prModule2 = {
-    title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${recentKey}`,
-  }
-
-  const issuesModule1 = {
-    title: 'Issues In Progress',
-    open: true,
-  }
-
-  const issuesModule2 = {
-    title: 'Recently Completed',
-    completedAfter: recentKey,
-  }
+  const modules: DataModuleProps[] = [
+    {
+      module: 'pull_requests',
+      title: 'Open Pull Requests',
+      query: 'is:open is:pr draft:false',
+    },
+    {
+      module: 'pull_requests',
+      title: 'Recently Merged Pull Requests',
+      query: `is:merged is:pr merged:>${recentKey}`,
+    },
+    {
+      module: 'issues',
+      title: 'Issues In Progress',
+      open: true,
+    },
+    {
+      module: 'issues',
+      title: 'Recently Completed',
+      completedAfter: recentKey,
+    },
+  ]
 
   return (
     <>
@@ -83,11 +87,7 @@ const Dashboard = (props: Props) => {
         <DailyPrompt date={today} />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -mx-4 my-4">
-          <PullRequestsModule {...prModule1} />
-          <PullRequestsModule {...prModule2} />
-
-          <IssuesModule {...issuesModule1} />
-          <IssuesModule {...issuesModule2} />
+          <ModuleGroup modules={modules} />
         </div>
       </AppBody>
     </>

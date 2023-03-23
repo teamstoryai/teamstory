@@ -1,4 +1,4 @@
-import DataModule from '@/modules/DataModule'
+import DataModule from '@/modules/ModuleCard'
 import github from '@/query/github'
 import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
@@ -8,12 +8,12 @@ import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
 import { useEffect, useState } from 'preact/hooks'
 
-type Props = {
+export type PullRequestsModuleProps = {
   title: string
   query: string
 }
 
-const PullRequestsModule = (props: Props) => {
+const PullRequestsModule = (props: PullRequestsModuleProps) => {
   const [error, setError] = useState('')
   const [prData, setPrData] = useState<{ [repo: string]: QueryPullRequest[] }>({})
   const repos = useStore(connectStore.repos)

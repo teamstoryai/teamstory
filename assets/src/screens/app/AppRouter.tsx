@@ -5,7 +5,7 @@ import { paths } from '@/config'
 import ProjectsList from '@/screens/app/ProjectsList'
 import ProjectView from '@/screens/app/ProjectView'
 import Settings from '@/screens/app/Settings'
-import Dashboard from '@/screens/app/Dashboard'
+import Dashboard from '@/screens/dashboards/Dashboard'
 import Reports from '@/screens/app/Reports'
 import ProjectSetup from '@/screens/setup/ProjectSetup'
 

@@ -1,30 +1,19 @@
-import ErrorMessage from '@/components/core/ErrorMessage'
-import Pressable from '@/components/core/Pressable'
-import { ArrowPathIcon } from '@heroicons/react/24/outline'
-import { RenderableProps } from 'preact'
+import IssuesModule, { IssuesModuleProps } from '@/modules/IssuesModule'
+import PullRequestsModule, { PullRequestsModuleProps } from '@/modules/PullRequestsModule'
 
-type Props = {
-  title: string
-  refresh?: () => void
-  error?: string | Error
-}
+export type DataModuleProps =
+  | ({ module: 'issues' } & IssuesModuleProps)
+  | ({ module: 'pull_requests' } & PullRequestsModuleProps)
 
-const DataModule = ({ title, refresh, children, error }: RenderableProps<Props>) => {
-  return (
-    <div class="flex flex-col m-2 p-4 border border-gray-200 rounded-md flex-1 min-w-[400px] shadow">
-      <div class="flex items-center mb-2">
-        <h1 class="flex-1 text-lg font-semibold text-gray-800">{title}</h1>
-        {refresh && (
-          <Pressable onClick={refresh} tooltip="Refresh data">
-            <ArrowPathIcon class="h-4 w-4 text-gray-400" />
-          </Pressable>
-        )}
-      </div>
-
-      {children}
-      <ErrorMessage error={error} />
-    </div>
-  )
+function DataModule(props: DataModuleProps) {
+  switch (props.module) {
+    case 'issues':
+      return <IssuesModule {...props} />
+    case 'pull_requests':
+      return <PullRequestsModule {...props} />
+    default:
+      return null
+  }
 }
 
 export default DataModule
