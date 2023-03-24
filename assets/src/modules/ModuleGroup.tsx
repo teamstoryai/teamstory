@@ -6,11 +6,11 @@ export type ModuleGroupProps = {
 
 const ModuleGroup = ({ modules }: ModuleGroupProps) => {
   return (
-    <div>
+    <>
       {modules.map((module, i) => (
         <DataModule {...module} key={i} />
       ))}
-    </div>
+    </>
   )
 }
 

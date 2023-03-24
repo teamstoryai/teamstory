@@ -15,6 +15,8 @@ import AppBody from '@/components/layout/AppBody'
 import Loader from '@/components/core/Loader'
 import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
+import PageTitle from '@/components/layout/PageTitle'
+import Button from '@/components/core/Button'
 
 type Props = {
   title: string
@@ -36,14 +38,10 @@ const PastDashboard = (props: Props) => {
       <Helmet title={props.title} />
 
       <AppHeader>
-        <div class="flex flex-1 gap-2 items-center relative overflow-hidden">
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            {props.title}
-          </h1>
-        </div>
+        <PageTitle title={props.title}></PageTitle>
       </AppHeader>
       <AppBody>
-        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -mx-4 my-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -ml-4">
           <ModuleGroup modules={props.modules} />
         </div>
       </AppBody>

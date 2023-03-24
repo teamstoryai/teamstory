@@ -2,17 +2,13 @@ import DataModule from '@/modules/ModuleCard'
 import { logger, unwrapError } from '@/utils'
 import { useEffect, useState } from 'preact/hooks'
 import type { Issue } from '@linear/sdk/dist/_generated_documents'
-import linear from '@/query/linear'
+import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue } from '@/query/types'
 
 export type IssuesModuleProps = {
-  module: string
   title: string
-  before?: string
-  after?: string
-  open?: boolean
-  completedAfter?: string
+  filters: IssueFilters
 }
 
 const IssuesModule = (props: IssuesModuleProps) => {
@@ -20,12 +16,12 @@ const IssuesModule = (props: IssuesModuleProps) => {
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    const { module, title, ...issueProps } = props
-    const key = 'issues:' + JSON.stringify(issueProps)
+    const { filters } = props
+    const key = 'issues:' + JSON.stringify(filters)
     if (clear) dataStore.clear(key)
 
     dataStore
-      .cacheRead(key, () => linear.issues(issueProps))
+      .cacheRead(key, () => linear.issues(filters))
       .then((issues) => {
         logger.info('issues', issues)
         setIssues(issues)
