@@ -1,6 +1,7 @@
 import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { DataModuleProps } from '@/modules/DataModule'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
+import { dateToHumanDate, dateToYMD, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 
 type Props = {
   path: string
@@ -8,25 +9,30 @@ type Props = {
 
 const PastTwoWeeks = (props: Props) => {
   const today = new Date()
-  const keyMonday = isMonday(today) ? today : previousMonday(today)
-  const startDate = sub(previousMonday(keyMonday), { weeks: 2 })
-  const endDate = add(startDate, { days: 13 })
+  const { startDate, endDate } = pastTwoWeeksDates(today)
 
-  const ymdFormat = 'yyyy-MM-dd'
-  const localeFormat = 'ccc MMM d' + (isSameYear(startDate, today) ? '' : ', yyyy')
-
-  const startDateStr = format(startDate, ymdFormat)
-  const endDateStr = format(endDate, ymdFormat)
-
-  const title = `Past Two Weeks (${format(startDate, localeFormat)} - ${format(
+  const { startDateStr, endDateStr, startDateHuman, endDateHuman } = renderDates(
+    startDate,
     endDate,
-    localeFormat
-  )})`
+    today
+  )
+
+  const { startDate: prevStart, endDate: prevEnd } = pastTwoWeeksDates(startDate)
+
+  const title = `Past Two Weeks (${startDateHuman} - ${endDateHuman})`
 
   const modules: DataModuleProps[] = [
     {
       module: 'stats',
-      title: 'Summary',
+      title: 'Issues Completed',
+      currentPeriod: {
+        completedAfter: startDateStr,
+        completedBefore: endDateStr,
+      },
+      prevPeriod: {
+        completedAfter: dateToYMD(prevStart),
+        completedBefore: dateToYMD(prevEnd),
+      },
     },
     {
       module: 'notes',

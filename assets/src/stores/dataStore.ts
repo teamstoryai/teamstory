@@ -7,6 +7,7 @@ import { connectStore } from '@/stores/connectStore'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
 import { assertIsDefined } from '@/utils'
+import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { atom } from 'nanostores'
 
 type User = {
@@ -49,7 +50,7 @@ class DataStore {
     } else if (this.inProgress[key] != undefined) {
       return await this.inProgress[key]
     } else {
-      if (this.fakeMode) throw new Error('unhandled fake data: ' + key)
+      if (this.fakeMode) throw new Error('unhandled fake data ' + key)
       try {
         const promise = (this.inProgress[key] = fetch())
         const result = await promise
@@ -81,3 +82,26 @@ class DataStore {
 
 export const dataStore = new DataStore()
 if (config.dev) (window as any)['dataStore'] = dataStore
+
+export function pastTwoWeeksDates(start: Date) {
+  const keyMonday = isMonday(start) ? start : previousMonday(start)
+  const startDate = sub(keyMonday, { weeks: 2 })
+  const endDate = add(startDate, { days: 13 })
+  return { startDate, endDate }
+}
+
+export function dateToYMD(date: Date) {
+  return date.toISOString().split('T')[0]
+}
+
+export function dateToHumanDate(date: Date, referenceDate: Date) {
+  const localeFormat = 'ccc MMM d' + (isSameYear(date, referenceDate) ? '' : ', yyyy')
+  return format(date, localeFormat)
+}
+
+export function renderDates(startDate: Date, endDate: Date, today: Date) {
+  const [startDateStr, endDateStr] = [startDate, endDate].map(dateToYMD)
+  const startDateHuman = dateToHumanDate(startDate, endDate)
+  const endDateHuman = dateToHumanDate(endDate, today)
+  return { startDateStr, endDateStr, startDateHuman, endDateHuman }
+}

@@ -24,25 +24,28 @@ class Linear {
   issues = async (props: IssueFilters = {}): Promise<QueryIssue[]> => {
     const filter: IssueFilter = {}
     if (props.open) {
-      filter.completedAt = { null: true }
+      filter.completedAt = { ...filter.completedAt, null: true }
     }
     if (props.started) {
-      filter.startedAt = { null: false }
+      filter.startedAt = { ...filter.startedAt, null: false }
     }
     if (props.createdBefore) {
-      filter.createdAt = { lte: new Date(props.createdBefore) }
+      filter.createdAt = { ...filter.createdAt, lte: new Date(props.createdBefore) }
     }
     if (props.createdAfter) {
-      filter.createdAt = { gte: new Date(props.createdAfter) }
+      filter.createdAt = { ...filter.createdAt, gte: new Date(props.createdAfter) }
     }
     if (props.completedBefore) {
-      filter.completedAt = { lte: new Date(props.completedBefore) }
+      filter.completedAt = {
+        ...filter.completedAt,
+        lte: new Date(props.completedBefore),
+      }
     }
     if (props.completedAfter) {
-      filter.completedAt = { gte: new Date(props.completedAfter) }
+      filter.completedAt = { ...filter.completedAt, gte: new Date(props.completedAfter) }
     }
     if (props.label) {
-      filter.labels = { some: { name: { eqIgnoreCase: props.label } } }
+      filter.labels = { ...filter.labels, some: { name: { eqIgnoreCase: props.label } } }
     }
 
     const result = await this.client.issues({
@@ -50,7 +53,11 @@ class Linear {
       before: props.before,
       filter,
     })
-    return result.nodes
+
+    return result.nodes.map((issue) => ({
+      ...issue,
+      labels: async () => (await issue.labels()).nodes.map((n) => n.name),
+    }))
   }
 }
 

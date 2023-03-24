@@ -26,13 +26,9 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
         .cacheRead(key, () => github.pulls(repo.name, props.query))
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
-          logger.debug(key, items)
           setPrData((prData) => ({ ...prData, [repo.name]: items }))
         })
-        .catch((e) => {
-          logger.error(e)
-          setError(unwrapError(e))
-        })
+        .catch(setError)
     })
   }
 

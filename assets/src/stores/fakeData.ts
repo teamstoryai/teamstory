@@ -1,9 +1,9 @@
 import { Project, Repository } from '@/models'
 import { QueryIssue, QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
-import { dataStore } from '@/stores/dataStore'
+import { dataStore, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
-import { format, sub } from 'date-fns'
+import { add, format, isMonday, previousMonday, sub } from 'date-fns'
 
 export function initFakeData() {
   // add fake project
@@ -30,7 +30,9 @@ function onSwitchProject(project: Project) {
 
   if (isFake) {
     connectStore.repos.set(repos)
+    const today = new Date()
 
+    // --- for dashboard
     const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]].map(
       titleToFeature(0, { startedAt: sub(today, { days: -1 }) })
     )
@@ -39,12 +41,9 @@ function onSwitchProject(project: Project) {
         completedAt: sub(today, { days: -1 }),
       })
     )
-
     dataStore.cache['issues:{"open":true}'] = openIssues
-    const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
-
+    const recentKey = format(sub(today, { days: 2 }), 'yyyy-MM-dd')
     dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
-
     const openPulls: QueryPullRequest[] = [pullTitles[0], pullTitles[1]].map(titleToPull(0, {}))
     dataStore.cache['rocketship/ship:pr:is:open is:pr draft:false'] = { items: openPulls }
     const closedPulls: QueryPullRequest[] = [pullTitles[2], pullTitles[3]].map(
@@ -55,6 +54,30 @@ function onSwitchProject(project: Project) {
     dataStore.cache[`rocketship/ship:pr:is:merged is:pr merged:>${recentKey}`] = {
       items: closedPulls,
     }
+
+    // --- for past 2 weeks
+
+    const { startDate, endDate } = pastTwoWeeksDates(today)
+    const { startDateStr, endDateStr } = renderDates(startDate, endDate, today)
+
+    const finishedIssues: QueryIssue[] = bugs
+      .slice(4)
+      .concat(features.slice(4))
+      .map(titleToFeature(0, { completedAt: sub(today, { days: -1 }) }))
+
+    // dataStore.cache['issues:{"open":true}'] = openIssues
+    // const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
+    // dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
+    // const openPulls: QueryPullRequest[] = [pullTitles[0], pullTitles[1]].map(titleToPull(0, {}))
+    // dataStore.cache['rocketship/ship:pr:is:open is:pr draft:false'] = { items: openPulls }
+    // const closedPulls: QueryPullRequest[] = [pullTitles[2], pullTitles[3]].map(
+    //   titleToPull(-5, {
+    //     closed_at: sub(today, { days: -1 }).toISOString(),
+    //   })
+    // )
+    // dataStore.cache[`rocketship/ship:pr:is:merged is:pr merged:>${recentKey}`] = {
+    //   items: closedPulls,
+    // }
   }
 }
 

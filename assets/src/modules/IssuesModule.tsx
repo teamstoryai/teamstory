@@ -12,7 +12,7 @@ export type IssuesModuleProps = {
 }
 
 const IssuesModule = (props: IssuesModuleProps) => {
-  const [error, setError] = useState('')
+  const [error, setError] = useState<Error>()
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
@@ -22,14 +22,8 @@ const IssuesModule = (props: IssuesModuleProps) => {
 
     dataStore
       .cacheRead(key, () => linear.issues(filters))
-      .then((issues) => {
-        logger.info('issues', issues)
-        setIssues(issues)
-      })
-      .catch((e) => {
-        logger.error(e)
-        setError(unwrapError(e))
-      })
+      .then(setIssues)
+      .catch(setError)
   }
 
   useEffect(() => {

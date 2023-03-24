@@ -28,7 +28,7 @@ const ModuleCard = ({ title, refresh, children, error, className }: RenderablePr
         )}
       </div>
 
-      {children}
+      {!error && children}
       <ErrorMessage error={error} />
     </div>
   )

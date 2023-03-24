@@ -69,6 +69,7 @@ export type QueryIssue = {
   startedAt?: Date
   completedAt?: Date
   url: string
+  labels?: () => Promise<string[]>
 }
 
 export type QueryPullRequest = {
