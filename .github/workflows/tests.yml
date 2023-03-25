@@ -9,8 +9,8 @@ on:
 env:
   MIX_ENV: test
   ECTO_TEST_URL: 'pg://postgres:postgres@localhost:5432/teamstory_test'
-  ELIXIR_VERSION: 1.12.3
-  OTP_VERSION: 24.0.6
+  ELIXIR_VERSION: '1.14'
+  OTP_VERSION: '25'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
