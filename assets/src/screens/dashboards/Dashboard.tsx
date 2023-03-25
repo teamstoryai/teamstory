@@ -45,7 +45,8 @@ const Dashboard = (props: Props) => {
     )
 
   const today = new Date()
-  const recentKey = format(sub(new Date(), { days: 5 }), 'yyyy-MM-dd')
+  const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
+  const lastMonth = sub(today, { months: 1 })
 
   const modules: DataModuleProps[] = [
     {
@@ -57,6 +58,16 @@ const Dashboard = (props: Props) => {
       module: 'pull_requests',
       title: 'Recently Merged Pull Requests',
       query: `is:merged is:pr merged:>${recentKey}`,
+    },
+    {
+      module: 'gantt',
+      title: 'Activity Timeline',
+      filters: {
+        custom: {
+          updatedAt: { gt: lastMonth },
+          or: [{ startedAt: { null: false } }, { completedAt: { null: false } }],
+        },
+      },
     },
     {
       module: 'issues',
@@ -85,7 +96,7 @@ const Dashboard = (props: Props) => {
       <AppBody>
         <DailyPrompt date={today} />
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -ml-4 my-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 -ml-4 my-4">
           <ModuleGroup modules={modules} />
         </div>
       </AppBody>

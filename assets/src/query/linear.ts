@@ -12,6 +12,7 @@ export type IssueFilters = {
   completedAfter?: string
   completedBefore?: string
   label?: string
+  custom?: IssueFilter
 }
 
 class Linear {
@@ -46,6 +47,9 @@ class Linear {
     }
     if (props.label) {
       filter.labels = { ...filter.labels, some: { name: { eqIgnoreCase: props.label } } }
+    }
+    if (props.custom) {
+      Object.assign(filter, props.custom)
     }
 
     const result = await this.client.issues({

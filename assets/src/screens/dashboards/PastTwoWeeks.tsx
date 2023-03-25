@@ -42,6 +42,10 @@ const PastTwoWeeks = (props: Props) => {
     {
       module: 'gantt',
       title: 'Activity Timeline',
+      filters: {
+        completedAfter: startDateStr,
+        completedBefore: endDateStr,
+      },
     },
     {
       module: 'pull_requests',

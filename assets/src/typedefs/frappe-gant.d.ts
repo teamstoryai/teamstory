@@ -41,5 +41,7 @@ declare module 'frappe-gantt' {
 
   export default class Gantt {
     constructor(container: string | HTLMElement, tasks: Task[], options?: GanttOptions)
+
+    refresh(tasks: Task[])
   }
 }
