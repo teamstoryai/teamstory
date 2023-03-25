@@ -18,7 +18,7 @@ set -e
 DIR=sites/$DEPLOY_VERSION
 
 # build & start new server
-gcloud compute ssh teamstory-00 "cd $DIR; git fetch && git reset --hard origin/production && \
+gcloud compute ssh teamstory-00 --command "cd $DIR; git fetch && git reset --hard origin/production && \
   ./scripts/build.sh && \
   sudo systemctl restart teamstory-$DEPLOY_VERSION && \
   sleep 5 && \
