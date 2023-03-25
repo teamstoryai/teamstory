@@ -33,7 +33,7 @@ const IssuesModule = (props: IssuesModuleProps) => {
   const refresh = () => fetchData(true)
 
   return (
-    <DataModule title={props.title} refresh={refresh} error={error}>
+    <DataModule title={props.title} count={issues.length} refresh={refresh} error={error}>
       <div class="flex flex-col w-full gap-2">
         {Object.values(issues)
           .flat()

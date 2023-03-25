@@ -39,35 +39,35 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
 
   const refresh = () => fetchData(true)
 
+  const flattened = Object.values(prData).flat()
+
   return (
-    <DataModule title={props.title} refresh={refresh} error={error}>
+    <DataModule title={props.title} refresh={refresh} error={error} count={flattened.length}>
       <div class="flex flex-col w-full gap-2">
-        {Object.values(prData)
-          .flat()
-          .map((pr) => (
-            <a
-              href={pr.html_url}
-              target="_blank"
-              rel="noreferrer"
-              key={pr.number}
-              class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
-            >
-              {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
-              <div class="text-gray-800">{pr.title}</div>
-              {!pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                  {pr.user.name}
-                </div>
-              )}
-              {pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} by {pr.user.name} was merged{' '}
-                  {formatDistance(new Date(pr.closed_at), new Date())} ago
-                </div>
-              )}
-            </a>
-          ))}
+        {flattened.map((pr) => (
+          <a
+            href={pr.html_url}
+            target="_blank"
+            rel="noreferrer"
+            key={pr.number}
+            class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
+          >
+            {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
+            <div class="text-gray-800">{pr.title}</div>
+            {!pr.closed_at && (
+              <div class="text-gray-500 text-xs">
+                #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
+                {pr.user.name}
+              </div>
+            )}
+            {pr.closed_at && (
+              <div class="text-gray-500 text-xs">
+                #{pr.number} by {pr.user.name} was merged{' '}
+                {formatDistance(new Date(pr.closed_at), new Date())} ago
+              </div>
+            )}
+          </a>
+        ))}
       </div>
     </DataModule>
   )

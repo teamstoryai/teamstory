@@ -64,11 +64,29 @@ function onSwitchProject(project: Project) {
     const { startDateStr, endDateStr } = renderDates(startDate, endDate, today)
 
     const finishedIssues: QueryIssue[] = bugs
-      .slice(4)
-      .concat(features.slice(4))
-      .map(titleToFeature(0, { completedAt: sub(today, { days: -1 }) }))
+      .slice(4, 10)
+      .map(
+        titleToFeature(-20, {
+          completedAt: sub(today, { days: -14 }),
+          labels: () => Promise.resolve(['bug']),
+        })
+      )
+      .concat(
+        features.slice(4, 9).map(
+          titleToFeature(-14, {
+            completedAt: sub(today, { days: -14 }),
+            labels: () => Promise.resolve(['feature']),
+          })
+        )
+      )
 
-    // dataStore.cache['issues:{"open":true}'] = openIssues
+    dataStore.cache[
+      `issues:{"completedAfter":"${startDateStr}","completedBefore":"${endDateStr}"}`
+    ] = finishedIssues
+    dataStore.cache[`issues:{"completedAfter":"2023-02-21","completedBefore":"2023-03-06"}`] =
+      openIssues
+
+    //
     // const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
     // dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
     // const openPulls: QueryPullRequest[] = [pullTitles[0], pullTitles[1]].map(titleToPull(0, {}))

@@ -32,7 +32,6 @@ const StatsModule = (props: StatsModuleProps) => {
   const fetchData = () => {
     Promise.all([getStats(props.prevPeriod), getStats(props.currentPeriod)])
       .then(([prevStats, stats]) => {
-        console.log('meowy', props, prevStats, stats)
         const statsArray: Stat[] = []
         for (const [label, count] of Object.entries(stats)) {
           const prev = prevStats[label] || 0
@@ -66,7 +65,9 @@ const StatsModule = (props: StatsModuleProps) => {
           <dd class="mt-1 flex items-baseline justify-between md:block lg:flex">
             <div class="flex items-baseline text-2xl font-semibold text-indigo-600">
               {stat.count}
-              <span class="ml-2 text-sm font-medium text-gray-500">from {stat.prev}</span>
+              {stat.prev ? (
+                <span class="ml-2 text-sm font-medium text-gray-500">from {stat.prev}</span>
+              ) : null}
             </div>
 
             <div
