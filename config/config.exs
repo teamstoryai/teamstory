@@ -103,8 +103,8 @@ config :teamstory, Teamstory.Auth.Guardian,
   token_ttl: %{"access" => {3, :day}, "refresh" => {12, :week}}
 
 config :teamstory, Teamstory.Auth.OAuth,
-  google_client_id: System.get_env("LN_GOOGLE_ID"),
-  google_client_secret: System.get_env("LN_GOOGLE_SECRET")
+  google_client_id: System.get_env("TS_GOOGLE_ID"),
+  google_client_secret: System.get_env("TS_GOOGLE_SECRET")
 
 redis_url = System.get_env("REDIS_URL") || "redis://127.0.0.1:6379/0"
 
