@@ -8,24 +8,24 @@ import { add, format, isMonday, previousMonday, sub } from 'date-fns'
 
 export const fakeProject: Project = {
   id: 'fake',
-  name: 'Rocketship Inc',
+  name: 'Rocket Inc (sample)',
   meta: {
     ob: 1,
   },
 }
 
 export function initFakeData() {
-  // add fake project
-  projectStore.activeProjects.set([...projectStore.activeProjects.get(), fakeProject])
-  projectStore.projects.set([...projectStore.projects.get(), fakeProject])
+  const projects = projectStore.activeProjects.get()
+  if (projects.find((p) => p.id == 'fake')) return
 
+  // add fake project
+  projectStore.activeProjects.set([...projects, fakeProject])
   projectStore.addListener(onSwitchProject)
 }
 
 const today = new Date()
 
 function onSwitchProject(project: Project) {
-  logger.info('onSwitchProject', project.id)
   const isFake = project.id == 'fake'
   dataStore.fakeMode = isFake
   connectStore.fakeMode = isFake

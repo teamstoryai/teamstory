@@ -32,7 +32,6 @@ const Dashboard = (props: Props) => {
   }, [projectParam, project])
 
   useEffect(() => {
-    console.log('meowy', project)
     if (!project) return
     if (!Project.meta(project).ob) route(paths.SETUP)
   }, [project])

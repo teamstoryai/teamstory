@@ -67,7 +67,9 @@ class ProjectStore {
       const projectId = typeof projectOrId == 'string' ? projectOrId : projectOrId.id
 
       if (store.get()?.id != projectId) {
-        const project: Project | undefined = this.projects.get().find((p) => p.id == projectId)
+        const project: Project | undefined = this.activeProjects
+          .get()
+          .find((p) => p.id == projectId)
         if (project) {
           this.projectSwitchListeners.forEach((l) => l(project))
           store.set(project)
@@ -108,7 +110,7 @@ class ProjectStore {
     this.updateProjects(projects)
     this.setCurrentProject(project)
 
-    location.href = paths.SETUP
+    route(paths.SETUP)
   })
 
   deleteProject = async (project: Project) => {

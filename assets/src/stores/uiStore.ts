@@ -46,13 +46,18 @@ class UIStore {
 
     const currentProject = projectStore.currentProject.get()
     if (currentProject && currentProject.id != 'fake') {
-      Promise.all([
-        tokenStore.fetchTokens().then(() => dataStore.initTokens()),
-        connectStore.loadConnectedRepos(),
-      ]).then(() => this.initialized.set(true))
+      this.loadTokens()
     } else {
       this.initialized.set(true)
     }
+  }
+
+  loadTokens = () => {
+    this.initialized.set(false)
+    Promise.all([
+      tokenStore.fetchTokens().then(() => dataStore.initTokens()),
+      connectStore.loadConnectedRepos(),
+    ]).then(() => this.initialized.set(true))
   }
 }
 

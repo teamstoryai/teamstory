@@ -9,13 +9,14 @@ import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
 import { projectStore } from '@/stores/projectStore'
+import { RenderableProps } from 'preact'
 
 type Props = {
   title: string
   modules: DataModuleProps[]
 }
 
-const PastDashboard = (props: Props) => {
+const PastDashboard = (props: RenderableProps<Props>) => {
   const initialized = useStore(dataStore.initialized)
   useStore(projectStore.currentProject)
 
@@ -34,6 +35,7 @@ const PastDashboard = (props: Props) => {
         <PageTitle title={props.title}></PageTitle>
       </AppHeader>
       <AppBody>
+        {props.children}
         <div class="grid grid-cols-1 lg:grid-cols-2 -ml-4">
           <ModuleGroup modules={props.modules} />
         </div>
