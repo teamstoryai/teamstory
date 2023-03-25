@@ -5,18 +5,18 @@ import { dataStore, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
 import { add, format, isMonday, previousMonday, sub } from 'date-fns'
 
+export const fakeProject: Project = {
+  id: 'fake',
+  name: 'Rocketship Inc',
+  meta: {
+    ob: 1,
+  },
+}
+
 export function initFakeData() {
   // add fake project
-
-  const project: Project = {
-    id: 'fake',
-    name: 'Rocketship Inc',
-    meta: {
-      ob: 1,
-    },
-  }
-  projectStore.activeProjects.set([...projectStore.activeProjects.get(), project])
-  projectStore.projects.set([...projectStore.projects.get(), project])
+  projectStore.activeProjects.set([...projectStore.activeProjects.get(), fakeProject])
+  projectStore.projects.set([...projectStore.projects.get(), fakeProject])
 
   projectStore.addListener(onSwitchProject)
 }
@@ -24,7 +24,6 @@ export function initFakeData() {
 const today = new Date()
 
 function onSwitchProject(project: Project) {
-  console.trace('fako dato ' + project.name)
   const isFake = project.id == 'fake'
   dataStore.fakeMode = isFake
   connectStore.fakeMode = isFake
