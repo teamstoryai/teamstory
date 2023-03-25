@@ -3,6 +3,7 @@ import { QueryIssue, QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
+import { logger } from '@/utils'
 import { add, format, isMonday, previousMonday, sub } from 'date-fns'
 
 export const fakeProject: Project = {
@@ -24,6 +25,7 @@ export function initFakeData() {
 const today = new Date()
 
 function onSwitchProject(project: Project) {
+  logger.info('onSwitchProject', project.id)
   const isFake = project.id == 'fake'
   dataStore.fakeMode = isFake
   connectStore.fakeMode = isFake

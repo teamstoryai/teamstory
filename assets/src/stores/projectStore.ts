@@ -7,6 +7,7 @@ import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { uiStore } from '@/stores/uiStore'
 import { logger } from '@/utils'
+import { fakeProject } from '@/stores/fakeData'
 
 export type ProjectMap = { [id: string]: Project }
 
