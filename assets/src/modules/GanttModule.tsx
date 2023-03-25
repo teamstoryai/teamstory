@@ -22,12 +22,10 @@ const GanttModule = (props: GanttModuleProps) => {
 
     const { filters } = props
     const key = 'issues:' + JSON.stringify(filters)
-    console.log('meowy', key)
 
     dataStore
       .cacheRead(key, () => linear.issues(filters))
       .then((issues) => {
-        console.log('tasks', issues)
         const tasks = issues
           .map((issue) => {
             try {
