@@ -60,10 +60,5 @@
     "vite": "^3.1.4",
     "vite-plugin-chunk-split": "^0.2.5",
     "vite-plugin-externals": "^0.6.2"
-  },
-  "resolutions": {
-    "isomorphic-fetch": "./node_modules/axios",
-    "isomorphic-unfetch": "./node_modules/axios",
-    "node-fetch": "./node_modules/axios"
   }
 }
