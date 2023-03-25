@@ -41,7 +41,7 @@ const PastDashboard = (props: Props) => {
         <PageTitle title={props.title}></PageTitle>
       </AppHeader>
       <AppBody>
-        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -ml-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 -ml-4">
           <ModuleGroup modules={props.modules} />
         </div>
       </AppBody>
