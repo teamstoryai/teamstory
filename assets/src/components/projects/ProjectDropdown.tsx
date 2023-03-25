@@ -64,7 +64,6 @@ const ProjectDropdown = () => {
             )}
             onClick={() => {
               projectStore.setCurrentProject(p)
-              route(paths.DASHBOARD)
               setPillsOpen(false)
             }}
           >

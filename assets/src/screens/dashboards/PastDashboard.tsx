@@ -1,22 +1,14 @@
-import { useEffect } from 'preact/hooks'
-
 import Helmet from '@/components/core/Helmet'
-import DailyPrompt from '@/components/dashboard/DailyPrompt'
 import AppHeader from '@/components/layout/AppHeader'
 
-import { projectStore } from '@/stores/projectStore'
 import { useStore } from '@nanostores/preact'
-import { Project } from '@/models'
-import { route } from 'preact-router'
-import { paths } from '@/config'
-import { format, sub } from 'date-fns'
 import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
 import Loader from '@/components/core/Loader'
 import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
-import Button from '@/components/core/Button'
+import { projectStore } from '@/stores/projectStore'
 
 type Props = {
   title: string
@@ -25,6 +17,7 @@ type Props = {
 
 const PastDashboard = (props: Props) => {
   const initialized = useStore(dataStore.initialized)
+  useStore(projectStore.currentProject)
 
   if (!initialized)
     return (

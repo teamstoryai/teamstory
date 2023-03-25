@@ -59,7 +59,6 @@ class AuthStore {
     const user = User.fromJSON(response.user)
     this.loggedInUser.set(user)
     projectStore.updateProjects(response.items.map(Project.fromJSON))
-    if (!User.meta(user).hf) initFakeData()
     projectStore.updateCurrentProject(user)
 
     if (!projectStore.activeProjects.get().length && location.pathname != paths.PROJECTS) {

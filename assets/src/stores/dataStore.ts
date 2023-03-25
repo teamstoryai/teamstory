@@ -4,6 +4,7 @@ import { Repository } from '@/models'
 import github from '@/query/github'
 import linear from '@/query/linear'
 import { connectStore } from '@/stores/connectStore'
+import { initFakeData } from '@/stores/fakeData'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
 import { assertIsDefined } from '@/utils'
@@ -68,6 +69,15 @@ class DataStore {
   }
 
   initTokens = async () => {
+    projectStore.addListener(() => {
+      const shouldSetInitialized = this.initialized.get()
+      if (shouldSetInitialized) this.initialized.set(false)
+      this.cache = {}
+      this.inProgress = {}
+      if (shouldSetInitialized) setTimeout(() => this.initialized.set(true), 10)
+    })
+    initFakeData()
+
     const tokens = tokenStore.tokens.get()
     tokens.forEach((token) => {
       if (token.name == 'github') {

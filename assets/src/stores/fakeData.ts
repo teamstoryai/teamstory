@@ -18,12 +18,13 @@ export function initFakeData() {
   projectStore.activeProjects.set([...projectStore.activeProjects.get(), project])
   projectStore.projects.set([...projectStore.projects.get(), project])
 
-  projectStore.projectSwitchListeners.push(onSwitchProject)
+  projectStore.addListener(onSwitchProject)
 }
 
 const today = new Date()
 
 function onSwitchProject(project: Project) {
+  console.trace('fako dato ' + project.name)
   const isFake = project.id == 'fake'
   dataStore.fakeMode = isFake
   connectStore.fakeMode = isFake
