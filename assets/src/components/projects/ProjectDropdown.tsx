@@ -28,7 +28,7 @@ const ProjectDropdown = () => {
     <div class="relative">
       <div
         className={classNames(
-          'm-1 flex items-center text-gray-900 text-sm whitespace-nowrap',
+          'mx-1 mt-4 mb-2 flex items-center text-gray-900 text-sm whitespace-nowrap',
           'hover:bg-gray-300/50 hover:text-gray-900 cursor-pointer rounded-md px-1 py-3',
           'block'
         )}
@@ -64,7 +64,6 @@ const ProjectDropdown = () => {
             )}
             onClick={() => {
               projectStore.setCurrentProject(p)
-              route(paths.DASHBOARD)
               setPillsOpen(false)
             }}
           >

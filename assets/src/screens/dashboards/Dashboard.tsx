@@ -9,13 +9,13 @@ import { useStore } from '@nanostores/preact'
 import { Project } from '@/models'
 import { route } from 'preact-router'
 import { paths } from '@/config'
-import PullRequestsModule from '@/modules/PullRequestsModule'
 import { format, sub } from 'date-fns'
-import { tokenStore } from '@/stores/tokenStore'
 import { dataStore } from '@/stores/dataStore'
 import AppBody from '@/components/layout/AppBody'
 import Loader from '@/components/core/Loader'
-import IssuesModule from '@/modules/IssuesModule'
+import { DataModuleProps } from '@/modules/DataModule'
+import ModuleGroup from '@/modules/ModuleGroup'
+import PageTitle from '@/components/layout/PageTitle'
 
 type Props = {
   path: string
@@ -45,49 +45,48 @@ const Dashboard = (props: Props) => {
     )
 
   const today = new Date()
+  const recentKey = format(sub(new Date(), { days: 5 }), 'yyyy-MM-dd')
 
-  const prModule1 = {
-    title: 'Open Pull Requests',
-    query: 'is:open is:pr draft:false',
-  }
-
-  const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
-
-  const prModule2 = {
-    title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${recentKey}`,
-  }
-
-  const issuesModule1 = {
-    title: 'Issues In Progress',
-    open: true,
-  }
-
-  const issuesModule2 = {
-    title: 'Recently Completed',
-    completedAfter: recentKey,
-  }
+  const modules: DataModuleProps[] = [
+    {
+      module: 'pull_requests',
+      title: 'Open Pull Requests',
+      query: 'is:open is:pr draft:false',
+    },
+    {
+      module: 'pull_requests',
+      title: 'Recently Merged Pull Requests',
+      query: `is:merged is:pr merged:>${recentKey}`,
+    },
+    {
+      module: 'issues',
+      title: 'Issues In Progress',
+      filters: { started: true },
+    },
+    {
+      module: 'issues',
+      title: 'Recently Completed',
+      filters: { completedAfter: recentKey },
+    },
+    {
+      module: 'issues',
+      title: 'New Bugs',
+      filters: { open: true, label: 'bug', createdAfter: recentKey },
+    },
+  ]
 
   return (
     <>
       <Helmet title={'Dashboard'} />
 
       <AppHeader>
-        <div class="flex flex-1 gap-2 items-center relative overflow-hidden">
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            Dashboard
-          </h1>
-        </div>
+        <PageTitle title="Dashboard" />
       </AppHeader>
       <AppBody>
         <DailyPrompt date={today} />
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -mx-4 my-4">
-          <PullRequestsModule {...prModule1} />
-          <PullRequestsModule {...prModule2} />
-
-          <IssuesModule {...issuesModule1} />
-          <IssuesModule {...issuesModule2} />
+        <div class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 -ml-4 my-4">
+          <ModuleGroup modules={modules} />
         </div>
       </AppBody>
     </>

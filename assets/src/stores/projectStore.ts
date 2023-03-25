@@ -27,6 +27,11 @@ class ProjectStore {
 
   projectSwitchListeners: ProjectSwitchListener[] = []
 
+  addListener = (listener: ProjectSwitchListener) => {
+    if (this.projectSwitchListeners.includes(listener)) return
+    this.projectSwitchListeners.push(listener)
+  }
+
   // --- actions
 
   updateProjects = action(this.projects, 'updateProjects', (store, projects: Project[]) => {
@@ -49,8 +54,8 @@ class ProjectStore {
         currentProject = projects.find((p) => p.id == lastProjectId)
       }
       if (!currentProject) currentProject = projects[0]
-      store.set(currentProject)
       if (currentProject) this.projectSwitchListeners.forEach((l) => l(currentProject!))
+      store.set(currentProject)
     }
   )
 
@@ -63,12 +68,12 @@ class ProjectStore {
       if (store.get()?.id != projectId) {
         const project: Project | undefined = this.projects.get().find((p) => p.id == projectId)
         if (project) {
+          this.projectSwitchListeners.forEach((l) => l(project))
           store.set(project)
           const user = authStore.loggedInUser.get()
           if (user?.meta?.lp != project.id) {
             authStore.updateUser({ meta: { lp: project.id } })
           }
-          this.projectSwitchListeners.forEach((l) => l(project))
 
           return project
         }

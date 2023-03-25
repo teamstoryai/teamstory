@@ -1,4 +1,4 @@
-import DataModule from '@/modules/DataModule'
+import DataModule from '@/modules/ModuleCard'
 import github from '@/query/github'
 import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
@@ -8,12 +8,12 @@ import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
 import { useEffect, useState } from 'preact/hooks'
 
-type Props = {
+export type PullRequestsModuleProps = {
   title: string
   query: string
 }
 
-const PullRequestsModule = (props: Props) => {
+const PullRequestsModule = (props: PullRequestsModuleProps) => {
   const [error, setError] = useState('')
   const [prData, setPrData] = useState<{ [repo: string]: QueryPullRequest[] }>({})
   const repos = useStore(connectStore.repos)
@@ -26,13 +26,9 @@ const PullRequestsModule = (props: Props) => {
         .cacheRead(key, () => github.pulls(repo.name, props.query))
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
-          logger.debug(key, items)
           setPrData((prData) => ({ ...prData, [repo.name]: items }))
         })
-        .catch((e) => {
-          logger.error(e)
-          setError(unwrapError(e))
-        })
+        .catch(setError)
     })
   }
 
@@ -43,35 +39,35 @@ const PullRequestsModule = (props: Props) => {
 
   const refresh = () => fetchData(true)
 
+  const flattened = Object.values(prData).flat()
+
   return (
-    <DataModule title={props.title} refresh={refresh} error={error}>
+    <DataModule title={props.title} refresh={refresh} error={error} count={flattened.length}>
       <div class="flex flex-col w-full gap-2">
-        {Object.values(prData)
-          .flat()
-          .map((pr) => (
-            <a
-              href={pr.html_url}
-              target="_blank"
-              rel="noreferrer"
-              key={pr.number}
-              class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
-            >
-              {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
-              <div class="text-gray-800">{pr.title}</div>
-              {!pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                  {pr.user.name}
-                </div>
-              )}
-              {pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} by {pr.user.name} was merged{' '}
-                  {formatDistance(new Date(pr.closed_at), new Date())} ago
-                </div>
-              )}
-            </a>
-          ))}
+        {flattened.map((pr) => (
+          <a
+            href={pr.html_url}
+            target="_blank"
+            rel="noreferrer"
+            key={pr.number}
+            class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
+          >
+            {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
+            <div class="text-gray-800">{pr.title}</div>
+            {!pr.closed_at && (
+              <div class="text-gray-500 text-xs">
+                #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
+                {pr.user.name}
+              </div>
+            )}
+            {pr.closed_at && (
+              <div class="text-gray-500 text-xs">
+                #{pr.number} by {pr.user.name} was merged{' '}
+                {formatDistance(new Date(pr.closed_at), new Date())} ago
+              </div>
+            )}
+          </a>
+        ))}
       </div>
     </DataModule>
   )
