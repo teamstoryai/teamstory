@@ -35,27 +35,26 @@ const IssuesModule = (props: IssuesModuleProps) => {
   return (
     <DataModule title={props.title} count={issues.length} refresh={refresh} error={error}>
       <div class="flex flex-col w-full gap-2">
-        {Object.values(issues)
-          .flat()
-          .map((issue) => (
-            <a
-              href={issue.url}
-              target="_blank"
-              rel="noreferrer"
-              key={issue.id}
-              class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
-            >
-              <div class="text-sm flex gap-2">
-                <div class="text-teal-500">{issue.identifier}</div>
-                {issue.user && (
-                  <div class="text-gray-500">
-                    &bull; <DeferredUser promise={issue.user()} />
-                  </div>
-                )}
-              </div>
-              <div class="text-gray-800">{issue.title}</div>
-            </a>
-          ))}
+        {issues.map((issue) => (
+          <a
+            href={issue.url}
+            target="_blank"
+            rel="noreferrer"
+            key={issue.id}
+            class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
+          >
+            <div class="text-sm flex gap-2">
+              <div class="text-teal-500">{issue.identifier}</div>
+              {issue.user && (
+                <div class="text-gray-500">
+                  &bull; <DeferredUser promise={issue.user()} />
+                </div>
+              )}
+            </div>
+            <div class="text-gray-800">{issue.title}</div>
+          </a>
+        ))}
+        {!issues.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}
       </div>
     </DataModule>
   )

@@ -115,12 +115,7 @@ class ProjectStore {
 
   deleteProject = async (project: Project) => {
     this.updateProject(project, { deleted_at: new Date().toISOString() })
-
-    const projects = this.projects.get().filter((p) => p.id != project.id)
-    this.projects.set(projects)
-    const newCurrentProject = projects[0]
-    this.currentProject.set(newCurrentProject)
-    route(paths.PROJECTS + '/' + newCurrentProject.id)
+    location.href = paths.PROJECTS
   }
 
   updateProject = async (project: Project, updates: Partial<Project>) => {

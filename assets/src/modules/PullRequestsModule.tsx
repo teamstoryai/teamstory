@@ -68,6 +68,7 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
             )}
           </a>
         ))}
+        {!flattened.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}
       </div>
     </DataModule>
   )
