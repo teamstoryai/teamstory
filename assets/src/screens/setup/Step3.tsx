@@ -14,7 +14,7 @@ export const Step3 = () => {
 
   useEffect(() => {
     API.getUserData('setup').then((data) => {
-      setWhatsImportant(data.whatsImportant || '')
+      if (data) setWhatsImportant(data.whatsImportant || '')
     })
   }, [])
 
