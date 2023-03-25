@@ -21,21 +21,26 @@ jobs:
   frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./assets
     steps:
       - uses: actions/checkout@v2
       - name: Setup Node.js
         uses: actions/setup-node@v2
+        working-directory: ./assets
         with:
           node-version: 16
           cache: 'yarn'
       - name: Check for console.log
+        working-directory: ./assets
         run: |
-          ! grep -r 'console\..*(' assets/src
+          ! grep -r 'console\..*(' src
       - name: Install JS dependencies (workspace)
         run: |
-          cd assets && yarn install --immutable --mode=skip-build
+          yarn install --immutable --mode=skip-build
       - name: Typescript Compile
-        run: cd assets && yarn tsc
+        run: yarn tsc
 
   backend:
     name: Elixir Tests
