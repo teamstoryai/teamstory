@@ -4,7 +4,7 @@ import { useEffect, useState } from 'preact/hooks'
 import type { Issue } from '@linear/sdk/dist/_generated_documents'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
-import { QueryIssue } from '@/query/types'
+import { QueryIssue, QueryUser } from '@/query/types'
 
 export type IssuesModuleProps = {
   title: string
@@ -45,13 +45,30 @@ const IssuesModule = (props: IssuesModuleProps) => {
               key={issue.id}
               class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
             >
-              <div class="text-sm text-teal-500">{issue.identifier}</div>
+              <div class="text-sm flex gap-2">
+                <div class="text-teal-500">{issue.identifier}</div>
+                {issue.user && (
+                  <div class="text-gray-500">
+                    &bull; <DeferredUser promise={issue.user()} />
+                  </div>
+                )}
+              </div>
               <div class="text-gray-800">{issue.title}</div>
             </a>
           ))}
       </div>
     </DataModule>
   )
+}
+
+const DeferredUser = ({ promise }: { promise: Promise<QueryUser> }) => {
+  const [user, setUser] = useState<QueryUser>()
+  useEffect(() => {
+    promise.then(setUser).catch(logger.error)
+  }, [promise])
+
+  if (!user) return null
+  return <>{user.name}</>
 }
 
 export default IssuesModule

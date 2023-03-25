@@ -41,9 +41,12 @@ function onSwitchProject(project: Project) {
         completedAt: sub(today, { days: -1 }),
       })
     )
-    dataStore.cache['issues:{"open":true}'] = openIssues
-    const recentKey = format(sub(today, { days: 2 }), 'yyyy-MM-dd')
+    dataStore.cache['issues:{"started":true}'] = openIssues
+    const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
     dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
+    dataStore.cache[`issues:{"open":true,"label":"bug","createdAfter":"${recentKey}"}`] = [
+      recentIssues[0],
+    ]
     const openPulls: QueryPullRequest[] = [pullTitles[0], pullTitles[1]].map(titleToPull(0, {}))
     dataStore.cache['rocketship/ship:pr:is:open is:pr draft:false'] = { items: openPulls }
     const closedPulls: QueryPullRequest[] = [pullTitles[2], pullTitles[3]].map(
@@ -89,6 +92,7 @@ const titleToFeature =
     title,
     createdAt: sub(today, { days: 3 - i }),
     url: '',
+    user: () => Promise.resolve(teamMembers[Math.abs(idx + i) % teamMembers.length]),
     ...props,
   })
 

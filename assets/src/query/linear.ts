@@ -56,6 +56,13 @@ class Linear {
 
     return result.nodes.map((issue) => ({
       ...issue,
+      user: !issue.assignee
+        ? undefined
+        : () =>
+            issue.assignee!.then((assignee) => ({
+              id: assignee.id,
+              name: assignee.name,
+            })),
       labels: async () => (await issue.labels()).nodes.map((n) => n.name),
     }))
   }
