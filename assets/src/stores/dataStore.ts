@@ -68,7 +68,7 @@ class DataStore {
     delete this.cache[key]
   }
 
-  initTokens = async () => {
+  initListeners = () => {
     projectStore.addListener(() => {
       const shouldSetInitialized = this.initialized.get()
       if (shouldSetInitialized) this.initialized.set(false)
@@ -77,7 +77,9 @@ class DataStore {
       if (shouldSetInitialized) setTimeout(() => this.initialized.set(true), 10)
     })
     initFakeData()
+  }
 
+  initTokens = async () => {
     const tokens = tokenStore.tokens.get()
     tokens.forEach((token) => {
       if (token.name == 'github') {

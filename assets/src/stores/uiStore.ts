@@ -44,6 +44,8 @@ class UIStore {
       authStore.updateUser({ timezone })
     }
 
+    dataStore.initListeners()
+
     const currentProject = projectStore.currentProject.get()
     if (currentProject && currentProject.id != 'fake') {
       this.loadTokens()
@@ -52,12 +54,13 @@ class UIStore {
     }
   }
 
-  loadTokens = () => {
+  loadTokens = async () => {
     this.initialized.set(false)
-    Promise.all([
+    await Promise.all([
       tokenStore.fetchTokens().then(() => dataStore.initTokens()),
       connectStore.loadConnectedRepos(),
-    ]).then(() => this.initialized.set(true))
+    ])
+    this.initialized.set(true)
   }
 }
 

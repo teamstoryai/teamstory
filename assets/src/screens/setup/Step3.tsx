@@ -27,9 +27,13 @@ export const Step3 = () => {
         if (project && !Project.meta(project).ob) {
           await projectStore.updateProject(project, { meta: { ob: 1 } })
         }
-        setSaveState('saved')
-        uiStore.loadTokens()
-        route(paths.DASHBOARD)
+        uiStore
+          .loadTokens()
+          .then(() => route(paths.DASHBOARD))
+          .catch((e) => {
+            logger.error(e)
+            setSaveState('error')
+          })
       })
       .catch((e) => {
         logger.error(e)
@@ -38,13 +42,7 @@ export const Step3 = () => {
   }
 
   const saveLabel =
-    saveState === 'saving'
-      ? 'Saving...'
-      : saveState == 'saved'
-      ? 'Saved'
-      : saveState == 'error'
-      ? 'Error Saving'
-      : 'Next'
+    saveState === 'saving' ? 'Saving...' : saveState == 'error' ? 'Error Saving' : 'Next'
 
   return (
     <div class="mb-12">

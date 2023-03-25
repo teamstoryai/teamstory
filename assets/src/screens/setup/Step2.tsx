@@ -12,6 +12,7 @@ import { CheckIcon } from '@heroicons/react/24/outline'
 import { API } from '@/api'
 import { LinearClient } from '@linear/sdk'
 import Pressable from '@/components/core/Pressable'
+import linear from '@/query/linear'
 
 const LIN_SCOPES = 'read'
 const LIN_URI = location.origin + '/oauth/linear'
@@ -75,6 +76,7 @@ export const Step2 = () => {
         .connectToken(LIN_URI, code, service)
         .then((token) => {
           setCurrentToken(token)
+          linear.setToken(token.access)
         })
         .catch((err) => {
           logger.error(err)
