@@ -64,6 +64,7 @@ const ProjectDropdown = () => {
             )}
             onClick={() => {
               projectStore.setCurrentProject(p)
+              uiStore.loadTokens()
               setPillsOpen(false)
             }}
           >

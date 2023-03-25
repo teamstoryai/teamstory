@@ -42,11 +42,15 @@ const PastTwoWeeks = (props: Props) => {
     {
       module: 'gantt',
       title: 'Activity Timeline',
+      filters: {
+        completedAfter: startDateStr,
+        completedBefore: endDateStr,
+      },
     },
     {
       module: 'pull_requests',
       title: 'Merged Pull Requests',
-      query: `is:merged is:pr merged:>=${startDateStr} merged:<=${endDateStr}`,
+      query: `is:merged is:pr merged:${startDateStr}..${endDateStr}`,
     },
     {
       module: 'issues',

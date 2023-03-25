@@ -8,6 +8,7 @@ import tracker from '@/stores/tracker'
 import { tokenStore } from '@/stores/tokenStore'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
+import { projectStore } from '@/stores/projectStore'
 
 const SLEEP_CHECK_INTERVAL = 30_000
 
@@ -43,6 +44,16 @@ class UIStore {
       authStore.updateUser({ timezone })
     }
 
+    const currentProject = projectStore.currentProject.get()
+    if (currentProject && currentProject.id != 'fake') {
+      this.loadTokens()
+    } else {
+      this.initialized.set(true)
+    }
+  }
+
+  loadTokens = () => {
+    this.initialized.set(false)
     Promise.all([
       tokenStore.fetchTokens().then(() => dataStore.initTokens()),
       connectStore.loadConnectedRepos(),

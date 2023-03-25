@@ -8,7 +8,11 @@ type Props = {
 const PastQuarter = (props: Props) => {
   const modules: DataModuleProps[] = []
 
-  return <PastDashboard title="Past Quarter" modules={modules} />
+  return (
+    <PastDashboard title="Past Quarter" modules={modules}>
+      <div>Coming Soon.</div>
+    </PastDashboard>
+  )
 }
 
 export default PastQuarter

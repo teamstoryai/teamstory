@@ -101,7 +101,7 @@ export function pastTwoWeeksDates(start: Date) {
 }
 
 export function dateToYMD(date: Date) {
-  return date.toISOString().split('T')[0]
+  return format(date, 'yyyy-MM-dd')
 }
 
 export function dateToHumanDate(date: Date, referenceDate: Date) {

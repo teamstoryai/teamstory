@@ -12,15 +12,33 @@ body,
   overscroll-behavior: none;
 }
 
-.fade-appear { opacity: 0 }
-.fade-appear-active { opacity: 1 }
-.fade-appear-done { opacity: 1 }
-.fade-enter { opacity: 0 }
-.fade-enter-active { opacity: 1 }
-.fade-enter-done { opacity: 1 }
-.fade-exit { opacity: 1 }
-.fade-exit-active { opacity: 0 }
-.fade-exit-done { opacity: 0 }
+.fade-appear {
+  opacity: 0;
+}
+.fade-appear-active {
+  opacity: 1;
+}
+.fade-appear-done {
+  opacity: 1;
+}
+.fade-enter {
+  opacity: 0;
+}
+.fade-enter-active {
+  opacity: 1;
+}
+.fade-enter-done {
+  opacity: 1;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+}
+.fade-exit-done {
+  opacity: 0;
+}
 
 .without-ring {
   @apply focus:ring-0 focus:ring-offset-0;
@@ -48,8 +66,8 @@ span.grippy {
   padding: 3px 4px;
   cursor: move;
   vertical-align: middle;
-  margin-top: -.7em;
-  margin-right: .3em;
+  margin-top: -0.7em;
+  margin-right: 0.3em;
   font-size: 12px;
   font-family: sans-serif;
   letter-spacing: 2px;
@@ -61,13 +79,36 @@ span.grippy::after {
 }
 
 .legal {
-  h1 { font-size: 32px; font-weight: bold; line-height: 48px; margin-bottom: 12px; }
-  h2 { font-size: 24px; font-weight: bold; line-height: 32px; margin: 20px 0; }
-  p { line-height: 24px; margin: 12px 0; }
-  ol, ul { list-style: inherit }
-  li { line-height: 24px; margin: 12px 0 12px 12px; }
-  a { color: #50567d }
-  a:hover { text-decoration: underline }
+  h1 {
+    font-size: 32px;
+    font-weight: bold;
+    line-height: 48px;
+    margin-bottom: 12px;
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 32px;
+    margin: 20px 0;
+  }
+  p {
+    line-height: 24px;
+    margin: 12px 0;
+  }
+  ol,
+  ul {
+    list-style: inherit;
+  }
+  li {
+    line-height: 24px;
+    margin: 12px 0 12px 12px;
+  }
+  a {
+    color: #50567d;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
 }
 
 .blink {
@@ -75,11 +116,13 @@ span.grippy::after {
 }
 
 @keyframes blinker {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
-
-ul[data-type="taskList"], .ProseMirror ul[data-type="taskList"] {
+ul[data-type='taskList'],
+.ProseMirror ul[data-type='taskList'] {
   list-style: none;
   padding: 0;
 
@@ -105,8 +148,9 @@ ul[data-type="taskList"], .ProseMirror ul[data-type="taskList"] {
   animation: dot-flashing 1s infinite linear alternate;
   animation-delay: 0.5s;
 }
-.dot-flashing::before, .dot-flashing::after {
-  content: "";
+.dot-flashing::before,
+.dot-flashing::after {
+  content: '';
   display: inline-block;
   position: absolute;
   top: 0;
@@ -136,7 +180,13 @@ ul[data-type="taskList"], .ProseMirror ul[data-type="taskList"] {
   0% {
     background-color: #9880ff;
   }
-  50%, 100% {
+  50%,
+  100% {
     background-color: rgba(152, 128, 255, 0.2);
   }
+}
+
+.gantt .today-highlight {
+  fill: #8ca8fd;
+  opacity: 0.5;
 }

@@ -16,6 +16,21 @@ defmodule TeamstoryWeb.ProjectsController do
   end
 
   # GET /projects/id
+  def show(conn, %{"id" => "fake"}) do
+    with user when is_map(user) <- Guardian.Plug.current_resource(conn) do
+      render(conn, "get.json",
+        project: %{
+          uuid: "fake",
+          name: "Rocketship",
+          archived_at: nil,
+          meta: %{ob: 1}
+        },
+        user: user,
+        members: []
+      )
+    end
+  end
+
   def show(conn, %{"id" => project_uuid}) do
     with user <- Guardian.Plug.current_resource(conn),
          {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid),

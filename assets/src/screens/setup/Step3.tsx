@@ -6,6 +6,7 @@ import { projectStore } from '@/stores/projectStore'
 import { Project } from '@/models'
 import { route } from 'preact-router'
 import { paths } from '@/config'
+import { uiStore } from '@/stores/uiStore'
 
 export const Step3 = () => {
   const [whatsImportant, setWhatsImportant] = useState('')
@@ -27,6 +28,7 @@ export const Step3 = () => {
           await projectStore.updateProject(project, { meta: { ob: 1 } })
         }
         setSaveState('saved')
+        uiStore.loadTokens()
         route(paths.DASHBOARD)
       })
       .catch((e) => {

@@ -7,6 +7,7 @@ import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { uiStore } from '@/stores/uiStore'
 import { logger } from '@/utils'
+import { fakeProject } from '@/stores/fakeData'
 
 export type ProjectMap = { [id: string]: Project }
 
@@ -66,7 +67,9 @@ class ProjectStore {
       const projectId = typeof projectOrId == 'string' ? projectOrId : projectOrId.id
 
       if (store.get()?.id != projectId) {
-        const project: Project | undefined = this.projects.get().find((p) => p.id == projectId)
+        const project: Project | undefined = this.activeProjects
+          .get()
+          .find((p) => p.id == projectId)
         if (project) {
           this.projectSwitchListeners.forEach((l) => l(project))
           store.set(project)
@@ -107,17 +110,12 @@ class ProjectStore {
     this.updateProjects(projects)
     this.setCurrentProject(project)
 
-    location.href = paths.SETUP
+    route(paths.SETUP)
   })
 
   deleteProject = async (project: Project) => {
     this.updateProject(project, { deleted_at: new Date().toISOString() })
-
-    const projects = this.projects.get().filter((p) => p.id != project.id)
-    this.projects.set(projects)
-    const newCurrentProject = projects[0]
-    this.currentProject.set(newCurrentProject)
-    route(paths.PROJECTS + '/' + newCurrentProject.id)
+    location.href = paths.PROJECTS
   }
 
   updateProject = async (project: Project, updates: Partial<Project>) => {
