@@ -46,7 +46,7 @@ const PastTwoWeeks = (props: Props) => {
     {
       module: 'pull_requests',
       title: 'Merged Pull Requests',
-      query: `is:merged is:pr merged:>=${startDateStr} merged:<=${endDateStr}`,
+      query: `is:merged is:pr merged:${startDateStr}..${endDateStr}`,
     },
     {
       module: 'issues',

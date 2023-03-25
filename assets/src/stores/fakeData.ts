@@ -85,8 +85,25 @@ function onSwitchProject(project: Project) {
     dataStore.cache[
       `issues:{"completedAfter":"${startDateStr}","completedBefore":"${endDateStr}"}`
     ] = finishedIssues
-    dataStore.cache[`issues:{"completedAfter":"2023-02-21","completedBefore":"2023-03-06"}`] =
-      openIssues
+    const { startDate: prevStart, endDate: prevEnd } = pastTwoWeeksDates(startDate)
+    const { startDateStr: prevStartStr, endDateStr: prevEndStr } = renderDates(
+      prevStart,
+      prevEnd,
+      today
+    )
+
+    dataStore.cache[
+      `issues:{"completedAfter":"${prevStartStr}","completedBefore":"${prevEndStr}"}`
+    ] = finishedIssues.slice(0, 5)
+
+    const mergedPulls: QueryPullRequest[] = pullTitles.slice(2, 12).map(
+      titleToPull(-18, {
+        closed_at: sub(today, { days: 12 }).toISOString(),
+      })
+    )
+    dataStore.cache[`rocketship/ship:pr:is:merged is:pr merged:${startDateStr}..${endDateStr}`] = {
+      items: mergedPulls,
+    }
 
     //
     // const recentKey = format(sub(new Date(), { days: 2 }), 'yyyy-MM-dd')
@@ -124,7 +141,7 @@ const titleToPull =
     user: teamMembers[Math.abs(idx + i) % teamMembers.length],
     html_url: 'https://github.com/r-spacex/SpaceX-API/pull/' + (200 + idx + i),
     updated_at: today.toISOString(),
-    created_at: sub(today, { days: 3 - i }).toISOString(),
+    created_at: sub(today, { days: idx - i }).toISOString(),
     repo: repos[0].name,
     ...props,
   })
