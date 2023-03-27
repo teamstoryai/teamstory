@@ -24,11 +24,11 @@ class Linear {
 
   issues = async (props: IssueFilters = {}): Promise<QueryIssue[]> => {
     const filter: IssueFilter = {}
-    if (props.open) {
-      filter.completedAt = { ...filter.completedAt, null: true }
+    if (props.open !== undefined) {
+      filter.completedAt = { ...filter.completedAt, null: props.open }
     }
-    if (props.started) {
-      filter.startedAt = { ...filter.startedAt, null: false }
+    if (props.started !== undefined) {
+      filter.startedAt = { ...filter.startedAt, null: !props.started }
     }
     if (props.createdBefore) {
       filter.createdAt = { ...filter.createdAt, lte: new Date(props.createdBefore) }

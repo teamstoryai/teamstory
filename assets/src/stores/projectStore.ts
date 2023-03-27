@@ -55,11 +55,10 @@ class ProjectStore {
         currentProject = projects.find((p) => p.id == lastProjectId)
       }
       if (!currentProject && lastProjectId == 'fake') {
-        initFakeData()
         currentProject = fakeProject
-        setTimeout(() => dataStore.initTokens(), 500)
       }
       if (!currentProject) currentProject = projects[0]
+      console.log('updato current projecto')
       if (currentProject) this.projectSwitchListeners.forEach((l) => l(currentProject!))
       store.set(currentProject)
     }

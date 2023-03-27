@@ -73,7 +73,7 @@ const Dashboard = (props: Props) => {
     {
       module: 'issues',
       title: 'Issues In Progress',
-      filters: { started: true },
+      filters: { started: true, open: true },
     },
     {
       module: 'issues',
@@ -87,7 +87,12 @@ const Dashboard = (props: Props) => {
     },
   ]
 
-  const suggestions = ['What is everyone working on?', 'Who might need help?', 'Who is overloaded?']
+  const suggestions = [
+    'What needs my attention?',
+    'What is everyone working on?',
+    'Who might need help?',
+    'Who is overloaded?',
+  ]
 
   return (
     <>

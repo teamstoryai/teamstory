@@ -71,7 +71,7 @@ class AuthStore {
 
   saveTokens = async (tokens: AuthTokenPair) => {
     logger.debug('AUTH —— saving tokens', tokens)
-    await localStorage.setItem(LS_AUTH_TOKENS, JSON.stringify(tokens))
+    localStorage.setItem(LS_AUTH_TOKENS, JSON.stringify(tokens))
   }
 
   updateTokens = action(this.authTokens, 'updateTokens', (store, tokens: AuthTokenPair) => {

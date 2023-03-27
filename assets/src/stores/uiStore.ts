@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import { config } from '@/config'
-import { User } from '@/models'
+import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { topicStore } from '@/stores/topicStore'
 import tracker from '@/stores/tracker'
@@ -9,6 +9,8 @@ import { tokenStore } from '@/stores/tokenStore'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
+import { fakeDataSwitchProject, initFakeData } from '@/stores/fakeData'
+import { logger } from '@/utils'
 
 const SLEEP_CHECK_INTERVAL = 30_000
 
@@ -44,21 +46,27 @@ class UIStore {
       authStore.updateUser({ timezone })
     }
 
-    dataStore.initListeners()
-
-    const currentProject = projectStore.currentProject.get()
-    if (currentProject && currentProject.id != 'fake') {
-      this.loadTokens()
-    } else {
-      this.initialized.set(true)
-    }
+    initFakeData()
   }
 
-  loadTokens = async () => {
+  setupProjectListener = () => {
+    projectStore.addListener(async (project: Project) => {
+      logger.info('project changed, clearing data cache', project.id)
+      dataStore.initialized.set(false)
+      dataStore.clearAll()
+      tokenStore.tokens.set([])
+      connectStore.clearRepos()
+      fakeDataSwitchProject(project)
+      await this.loadTokens(project)
+      dataStore.initTokens()
+    })
+  }
+
+  loadTokens = async (project: Project) => {
     this.initialized.set(false)
     await Promise.all([
-      tokenStore.fetchTokens().then(() => dataStore.initTokens()),
-      connectStore.loadConnectedRepos(),
+      tokenStore.fetchTokens(project).then(() => dataStore.initTokens()),
+      connectStore.loadConnectedRepos(project),
     ])
     this.initialized.set(true)
   }

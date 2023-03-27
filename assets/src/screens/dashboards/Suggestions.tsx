@@ -5,7 +5,7 @@ const Suggestions = ({ suggestions }: { suggestions: string[] }) => {
 
   return (
     <>
-      <div class="my-4 flex space-x-2">
+      <div class="my-4 flex gap-2 flex-wrap">
         {suggestions.map((s, i) => (
           <Pill onClick={() => setClicked(s)} key={i}>
             {s}
@@ -26,7 +26,8 @@ const Pill = ({ children, onClick }: { children: string; onClick: () => void }) 
   return (
     <div
       onClick={onClick}
-      class="px-2 py-1 rounded-full bg-gray-200 text-gray-700 text-sm cursor-pointer hover:bg-gray-300 border border-gray-500"
+      class="px-2 py-1 rounded-full bg-gray-200 text-gray-700 text-sm cursor-pointer
+        hover:bg-gray-300 border border-gray-500"
     >
       {children}
     </div>

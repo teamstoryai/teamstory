@@ -1,6 +1,6 @@
 import { API } from '@/api'
 import { config } from '@/config'
-import { Repository } from '@/models'
+import { Project, Repository } from '@/models'
 import { projectStore } from '@/stores/projectStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
@@ -40,9 +40,13 @@ class ConnectStore {
     return response as RepoData[]
   }
 
-  loadConnectedRepos = async () => {
+  clearRepos = () => {
+    this.repos.set([])
+  }
+
+  loadConnectedRepos = async (project?: Project) => {
     if (this.fakeMode) return this.repos.get()
-    const project = projectStore.currentProject.get()
+    if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.repos.list(project)
     const repos = response.items.map((i) => Repository.fromJSON(i))

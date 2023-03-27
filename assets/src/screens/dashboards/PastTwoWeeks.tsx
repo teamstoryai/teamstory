@@ -38,7 +38,7 @@ const PastTwoWeeks = (props: Props) => {
     {
       module: 'notes',
       key: `p2w-${startDateStr}`,
-      title: 'Notes',
+      title: 'Learnings',
     },
     {
       module: 'gantt',
@@ -61,9 +61,10 @@ const PastTwoWeeks = (props: Props) => {
   ]
 
   const suggestions = [
-    'What are the top 3 things we accomplished?',
-    'What was harder than expected?',
-    'Break down the work by person',
+    'Summarize what was done',
+    'What hidden work was not tracked?',
+    'What took a long time?',
+    'Break down work by person',
   ]
 
   return (

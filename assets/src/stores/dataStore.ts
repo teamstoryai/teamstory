@@ -7,7 +7,7 @@ import { connectStore } from '@/stores/connectStore'
 import { initFakeData } from '@/stores/fakeData'
 import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
-import { assertIsDefined } from '@/utils'
+import { assertIsDefined, logger } from '@/utils'
 import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { atom } from 'nanostores'
 
@@ -68,18 +68,12 @@ class DataStore {
     delete this.cache[key]
   }
 
-  initListeners = () => {
-    projectStore.addListener(() => {
-      const shouldSetInitialized = this.initialized.get()
-      if (shouldSetInitialized) this.initialized.set(false)
-      this.cache = {}
-      this.inProgress = {}
-      if (shouldSetInitialized) setTimeout(() => this.initialized.set(true), 10)
-    })
-    initFakeData()
+  clearAll = () => {
+    this.cache = {}
+    this.inProgress = {}
   }
 
-  initTokens = async () => {
+  initTokens = () => {
     const tokens = tokenStore.tokens.get()
     tokens.forEach((token) => {
       if (token.name == 'github') {
