@@ -65,21 +65,30 @@ function onSwitchProject(project: Project) {
     const { startDate, endDate } = pastTwoWeeksDates(today)
     const { startDateStr, endDateStr } = renderDates(startDate, endDate, today)
 
+    const randDates = (i: QueryIssue) => {
+      const start = sub(today, { days: 6 + Math.floor(Math.random() * 12) })
+      const end = add(start, { days: Math.floor(Math.random() * 12) })
+      if (end > today) return { ...i, startedAt: start, completedAt: today }
+      return { ...i, startedAt: start, completedAt: end }
+    }
+
     const finishedIssues: QueryIssue[] = bugs
       .slice(4, 10)
       .map(
         titleToFeature(-20, {
-          completedAt: sub(today, { days: -14 }),
           labels: () => Promise.resolve(['bug']),
         })
       )
+      .map(randDates)
       .concat(
-        features.slice(4, 9).map(
-          titleToFeature(-14, {
-            completedAt: sub(today, { days: -14 }),
-            labels: () => Promise.resolve(['feature']),
-          })
-        )
+        features
+          .slice(4, 9)
+          .map(
+            titleToFeature(-14, {
+              labels: () => Promise.resolve(['feature']),
+            })
+          )
+          .map(randDates)
       )
 
     dataStore.cache[
