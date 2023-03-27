@@ -26,7 +26,10 @@ const GanttModule = (props: GanttModuleProps) => {
     dataStore
       .cacheRead(key, () => linear.issues(filters))
       .then((issues) => {
+        issues.sort((a, b) => duration(b) - duration(a))
+
         const tasks = issues
+          .slice(0, 10)
           .map((issue) => {
             try {
               return issueToTask(issue)
@@ -38,9 +41,11 @@ const GanttModule = (props: GanttModuleProps) => {
           .filter(Boolean) as Task[]
         if (tasks.length == 0) return
         logger.info('GanttModule', 'tasks', tasks)
+
         const gantt = new Gantt(divRef.current, tasks, {
           view_mode: props.viewMode || 'Day',
           read_only: true,
+          popup_trigger: 'mouseover',
         })
         ;(window as any)['gantt'] = gantt
       })
@@ -59,9 +64,12 @@ const GanttModule = (props: GanttModuleProps) => {
 
 export default GanttModule
 
+const duration = (issue: QueryIssue) =>
+  issue.startedAt ? (issue.completedAt || new Date()).getTime() - issue.startedAt.getTime() : 0
+
 const issueToTask = (issue: QueryIssue): Task => ({
   id: issue.id,
-  name: issue.title,
+  name: `${issue.identifier} - ${issue.title}`,
   start: dateToYMD(issue.startedAt || issue.createdAt),
   end: dateToYMD(issue.completedAt || new Date()),
   progress: issue.completedAt ? 100 : 0,

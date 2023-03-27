@@ -31,6 +31,7 @@ declare module 'frappe-gantt' {
     view_mode?: ViewMode
     date_format?: string
     language?: string
+    popup_trigger?: 'click' | 'mouseover'
     read_only?: boolean
     custom_popup_html?: (task: Task) => string
     on_click?: (task: Task) => void
