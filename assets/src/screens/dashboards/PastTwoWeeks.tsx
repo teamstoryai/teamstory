@@ -2,6 +2,7 @@ import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns
 import { DataModuleProps } from '@/modules/DataModule'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
 import { dateToHumanDate, dateToYMD, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
+import Suggestions from '@/screens/dashboards/Suggestions'
 
 type Props = {
   path: string
@@ -59,7 +60,17 @@ const PastTwoWeeks = (props: Props) => {
     },
   ]
 
-  return <PastDashboard title={title} modules={modules} />
+  const suggestions = [
+    'What are the top 3 things we accomplished?',
+    'What was harder than expected?',
+    'Break down the work by person',
+  ]
+
+  return (
+    <PastDashboard title={title} modules={modules}>
+      <Suggestions suggestions={suggestions} />
+    </PastDashboard>
+  )
 }
 
 export default PastTwoWeeks

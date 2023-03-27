@@ -16,6 +16,7 @@ import Loader from '@/components/core/Loader'
 import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
+import Suggestions from '@/screens/dashboards/Suggestions'
 
 type Props = {
   path: string
@@ -64,7 +65,7 @@ const Dashboard = (props: Props) => {
       title: 'Activity Timeline',
       filters: {
         custom: {
-          updatedAt: { gt: lastMonth },
+          updatedAt: { gt: lastMonth as any },
           or: [{ startedAt: { null: false } }, { completedAt: { null: false } }],
         },
       },
@@ -86,6 +87,8 @@ const Dashboard = (props: Props) => {
     },
   ]
 
+  const suggestions = ['What is everyone working on?', 'Who might need help?', 'Who is overloaded?']
+
   return (
     <>
       <Helmet title={'Dashboard'} />
@@ -95,6 +98,8 @@ const Dashboard = (props: Props) => {
       </AppHeader>
       <AppBody>
         <DailyPrompt date={today} />
+
+        <Suggestions suggestions={suggestions} />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 -ml-4 my-4">
           <ModuleGroup modules={modules} />
