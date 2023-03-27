@@ -34,18 +34,27 @@ function onSwitchProject(project: Project) {
     connectStore.repos.set(repos)
     const today = new Date()
 
+    const randDates = (i: QueryIssue) => {
+      const start = sub(today, { days: 6 + Math.floor(Math.random() * 12) })
+      const end = add(start, { days: Math.floor(Math.random() * 12) })
+      if (end > today) return { ...i, startedAt: start, completedAt: today }
+      return { ...i, startedAt: start, completedAt: end }
+    }
+
     // --- for dashboard
-    const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]].map(
-      titleToFeature(0, { startedAt: sub(today, { days: -1 }) })
-    )
-    const recentIssues: QueryIssue[] = [bugs[2], features[2], bugs[3], features[3]].map(
-      titleToFeature(-6, {
-        completedAt: sub(today, { days: -1 }),
-      })
-    )
+    const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]]
+      .map(titleToFeature(0, {}))
+      .map(randDates)
+    const recentIssues: QueryIssue[] = [bugs[2], features[2], bugs[3], features[3]]
+      .map(titleToFeature(-6, {}))
+      .map(randDates)
     dataStore.cache['issues:{"started":true}'] = openIssues
     const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
+    const twoWeeksKey = format(sub(today, { days: 14 }), 'yyyy-MM-dd')
     dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
+    dataStore.cache[
+      `issues:{"custom":{"updatedAt":{"gt":"${twoWeeksKey}"},"or":[{"startedAt":{"null":false}},{"completedAt":{"null":false}}]}}`
+    ] = recentIssues
     dataStore.cache[`issues:{"open":true,"label":"bug","createdAfter":"${recentKey}"}`] = [
       recentIssues[0],
     ]
@@ -64,13 +73,6 @@ function onSwitchProject(project: Project) {
 
     const { startDate, endDate } = pastTwoWeeksDates(today)
     const { startDateStr, endDateStr } = renderDates(startDate, endDate, today)
-
-    const randDates = (i: QueryIssue) => {
-      const start = sub(today, { days: 6 + Math.floor(Math.random() * 12) })
-      const end = add(start, { days: Math.floor(Math.random() * 12) })
-      if (end > today) return { ...i, startedAt: start, completedAt: today }
-      return { ...i, startedAt: start, completedAt: end }
-    }
 
     const finishedIssues: QueryIssue[] = bugs
       .slice(4, 10)

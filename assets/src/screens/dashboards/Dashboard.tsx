@@ -46,7 +46,7 @@ const Dashboard = (props: Props) => {
 
   const today = new Date()
   const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
-  const lastMonth = sub(today, { months: 1 })
+  const lastMonth = format(sub(today, { days: 14 }), 'yyyy-MM-dd')
 
   const modules: DataModuleProps[] = [
     {
