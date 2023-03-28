@@ -22,6 +22,7 @@
     "copy-to-clipboard": "^3.3.2",
     "date-fns": "^2.29.3",
     "events": "^3.3.0",
+    "idb-keyval": "^6.2.0",
     "isomorphic-fetch": "^3.0.0",
     "linkify-react": "^4.0.2",
     "linkifyjs": "^4.0.2",

@@ -863,6 +863,7 @@ __metadata:
     date-fns: ^2.29.3
     events: ^3.3.0
     husky: ^8.0.3
+    idb-keyval: ^6.2.0
     isomorphic-fetch: ^3.0.0
     linkify-react: ^4.0.2
     linkifyjs: ^4.0.2
@@ -2034,6 +2035,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"idb-keyval@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "idb-keyval@npm:6.2.0"
+  dependencies:
+    safari-14-idb-fix: ^3.0.0
+  checksum: ddd58f95829ff734e3e83b29608709cdfba38e5795b1f6261ff1afc582ce48f475d0c827d7cf32aacbc5ea6b13d00c2d4a2f7240afccd5252565abeafbd7b990
+  languageName: node
+  linkType: hard
+
 "ieee754@npm:^1.2.1":
   version: 1.2.1
   resolution: "ieee754@npm:1.2.1"
@@ -3137,6 +3147,13 @@ __metadata:
   dependencies:
     tslib: ^2.1.0
   checksum: 61b4d4fd323c1043d8d6ceb91f24183b28bcf5def4f01ca111511d5c6b66755bc5578587fe714ef5d67cf4c9f2e26f4490d4e1d8cabf9bd5967687835e9866a2
+  languageName: node
+  linkType: hard
+
+"safari-14-idb-fix@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "safari-14-idb-fix@npm:3.0.0"
+  checksum: 30d5baf3d9a17b52842b2c3fd3f0001fde7095a36191b6140ac78c19e8e1ff4b2607b9beb3b066c6bec107ccb5399c96e29748a6f5fcd592425f806f5e36f759
   languageName: node
   linkType: hard
 
