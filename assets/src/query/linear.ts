@@ -12,6 +12,7 @@ export type IssueFilters = {
   completedAfter?: string
   completedBefore?: string
   label?: string
+  priority?: number // 1 = urgent, 2 = high, 3 = medium, 4 = low
   custom?: IssueFilter
 }
 
@@ -47,6 +48,9 @@ class Linear {
     }
     if (props.label) {
       filter.labels = { ...filter.labels, some: { name: { eqIgnoreCase: props.label } } }
+    }
+    if (props.priority !== undefined) {
+      filter.priority = { lte: props.priority, gt: 0 }
     }
     if (props.custom) {
       Object.assign(filter, props.custom)
