@@ -14,6 +14,15 @@ defmodule TeamstoryWeb.OAuthController do
     render(conn, "tokens.json", tokens: tokens)
   end
 
+  def get_service_token(conn, %{"services" => services, "project_id" => project_uuid})
+      when project_uuid != nil do
+    with user <- Guardian.Plug.current_resource(conn),
+         {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid) do
+      tokens = OAuthTokens.multiple_for_project(project, services)
+      render(conn, "tokens.json", tokens: tokens)
+    end
+  end
+
   def get_service_token(conn, %{"services" => services}) do
     user = Guardian.Plug.current_resource(conn)
     tokens = OAuthTokens.multiple_for_user(user, services)
