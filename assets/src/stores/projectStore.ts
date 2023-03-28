@@ -58,7 +58,6 @@ class ProjectStore {
         currentProject = fakeProject
       }
       if (!currentProject) currentProject = projects[0]
-      console.log('updato current projecto')
       if (currentProject) this.projectSwitchListeners.forEach((l) => l(currentProject!))
       store.set(currentProject)
     }
