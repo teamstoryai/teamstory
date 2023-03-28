@@ -2,13 +2,26 @@ import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns
 import { DataModuleProps } from '@/modules/DataModule'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
 import { dateToHumanDate, dateToYMD, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
-import Suggestions from '@/screens/dashboards/Suggestions'
+import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'
+import { useState } from 'preact/hooks'
 
 type Props = {
   path: string
 }
 
+const suggestions: Suggestion[] = [
+  { id: 'summary', label: 'Summarize what was done' },
+  { id: 'hidden', label: 'What hidden work was not tracked?' },
+  { id: 'slow', label: 'What took a long time?' },
+  { id: 'team', label: 'Break down work by person' },
+]
+
 const PastTwoWeeks = (props: Props) => {
+  const params = new URLSearchParams(location.search)
+  const [suggestion, setSuggestion] = useState<Suggestion | undefined>(
+    suggestionFromParams(params, suggestions)
+  )
+
   const today = new Date()
   const { startDate, endDate } = pastTwoWeeksDates(today)
 
@@ -60,16 +73,9 @@ const PastTwoWeeks = (props: Props) => {
     },
   ]
 
-  const suggestions = [
-    'Summarize what was done',
-    'What hidden work was not tracked?',
-    'What took a long time?',
-    'Break down work by person',
-  ]
-
   return (
     <PastDashboard title={title} modules={modules}>
-      <Suggestions suggestions={suggestions} />
+      <Suggestions {...{ suggestions, suggestion, setSuggestion }} />
     </PastDashboard>
   )
 }

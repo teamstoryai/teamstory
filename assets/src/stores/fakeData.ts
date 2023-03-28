@@ -78,7 +78,7 @@ export function fakeDataSwitchProject(project: Project) {
       .slice(4, 10)
       .map(
         titleToFeature(-20, {
-          labels: () => Promise.resolve(['bug']),
+          labels: () => Promise.resolve([{ name: 'bug', color: 'red' }]),
         })
       )
       .map(randDates(6))
@@ -87,7 +87,7 @@ export function fakeDataSwitchProject(project: Project) {
           .slice(4, 9)
           .map(
             titleToFeature(-14, {
-              labels: () => Promise.resolve(['feature']),
+              labels: () => Promise.resolve([{ name: 'feature', color: 'blue' }]),
             })
           )
           .map(randDates(6))
@@ -154,6 +154,7 @@ const titleToPull =
     updated_at: today.toISOString(),
     created_at: sub(today, { days: idx - i }).toISOString(),
     repo: repos[0].name,
+    comments: Math.floor(Math.random() * 3),
     ...props,
   })
 
