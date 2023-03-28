@@ -1,4 +1,4 @@
-import { LinearClient } from '@linear/sdk'
+import { IssueConnection, LinearClient } from '@linear/sdk'
 import { QueryIssue } from '@/query/types'
 import { IssueFilter } from '@linear/sdk/dist/_generated_documents'
 
@@ -56,28 +56,104 @@ class Linear {
       Object.assign(filter, props.custom)
     }
 
-    const result = await this.client.issues({
-      after: props.after,
-      before: props.before,
-      filter,
-    })
+    const response: any = await this.client.client.request(
+      `
+    query issues($after: String, $before: String, $filter: IssueFilter, $first: Int, $includeArchived: Boolean, $last: Int, $orderBy: PaginationOrderBy) {
+      issues(
+        after: $after
+        before: $before
+        filter: $filter
+        first: $first
+        includeArchived: $includeArchived
+        last: $last
+        orderBy: $orderBy
+      ) {
+        ...IssueConnection
+      }
+    }
+
+    fragment IssueConnection on IssueConnection {
+      __typename
+      nodes {
+        ...Issue
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+
+    fragment Issue on Issue {
+      __typename
+      trashed
+      url
+      identifier
+      priorityLabel
+      branchName
+      cycle {
+        id
+      }
+      dueDate
+      estimate
+      description
+      title
+      number
+      updatedAt
+      parent {
+        id
+      }
+      priority
+      project {
+        id
+        name
+      }
+      team {
+        id
+      }
+      archivedAt
+      createdAt
+      canceledAt
+      completedAt
+      startedAt
+      id
+      labels {
+        nodes {
+          id
+          name
+          color
+        }
+      }
+      assignee {
+        id
+        name
+      }
+      state {
+        id
+        name
+      }
+    }
+
+    fragment PageInfo on PageInfo {
+      __typename
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    `,
+      {
+        after: props.after,
+        before: props.before,
+        filter,
+      }
+    )
+
+    const result = response.issues
 
     ;(window as any)['issues'] = result
 
-    return result.nodes.map((issue) => ({
+    return result.nodes.map((issue: any) => ({
       ...issue,
-      user: !issue.assignee
-        ? undefined
-        : () =>
-            issue.assignee!.then((assignee) => ({
-              id: assignee.id,
-              name: assignee.name,
-            })),
-      labels: async () =>
-        (await issue.labels()).nodes.map((n) => ({
-          name: n.name,
-          color: n.color,
-        })),
+      labels: issue.labels.nodes,
     }))
   }
 }
