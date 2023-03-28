@@ -71,7 +71,7 @@ export function useIssues(
     fetchData()
   }, [])
 
-  const refresh = useCallback(() => fetchData(true), [])
+  const refresh = useCallback(() => fetchData(true), [filters])
 
   return { issues, refresh }
 }

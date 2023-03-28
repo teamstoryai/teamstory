@@ -92,7 +92,7 @@ export function usePullRequests(
     fetchData()
   }, [repos, query])
 
-  const refresh = useCallback(() => fetchData(true), [])
+  const refresh = useCallback(() => fetchData(true), [repos, query])
 
   return { data: allPRs, refresh }
 }
