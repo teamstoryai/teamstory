@@ -7,7 +7,7 @@ import { logger, unwrapError } from '@/utils'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
-import { StateUpdater, useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useCallback, useEffect, useRef, useState } from 'preact/hooks'
 
 export type PullRequestsModuleProps = {
   id?: string
@@ -66,7 +66,8 @@ export function usePullRequests(
   setError: StateUpdater<Error | undefined>,
   storeDataKey?: string
 ) {
-  const [prData, setPrData] = useState<{ [repo: string]: QueryPullRequest[] }>({})
+  const prData = useRef<{ [repo: string]: QueryPullRequest[] }>({})
+  const [allPRs, setAllPRs] = useState<QueryPullRequest[]>([])
   const repos = useStore(connectStore.repos)
 
   const fetchData = (clear?: boolean) => {
@@ -78,7 +79,9 @@ export function usePullRequests(
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
           dataStore.storeData(storeDataKey, items)
-          setPrData((prData) => ({ ...prData, [repo.name]: items }))
+
+          prData.current = { ...prData.current, [repo.name]: items }
+          setAllPRs(Object.values(prData.current).flat())
         })
         .catch(setError)
     })
@@ -89,10 +92,9 @@ export function usePullRequests(
     fetchData()
   }, [repos, query])
 
-  const refresh = () => fetchData(true)
+  const refresh = useCallback(() => fetchData(true), [])
 
-  const data = Object.values(prData).flat()
-  return { data, refresh }
+  return { data: allPRs, refresh }
 }
 
 export default PullRequestsModule

@@ -1,6 +1,6 @@
 import DataModule from '@/modules/ModuleCard'
 import { logger } from '@/utils'
-import { StateUpdater, useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
@@ -70,7 +70,7 @@ export function useIssues(
     fetchData()
   }, [])
 
-  const refresh = () => fetchData(true)
+  const refresh = useCallback(() => fetchData(true), [])
 
   return { issues, refresh }
 }

@@ -10,7 +10,7 @@ import { logger, unwrapError } from '@/utils'
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
-import { useEffect, useState } from 'preact/hooks'
+import { StateUpdater, useEffect, useState } from 'preact/hooks'
 
 export type TeamCurrentModuleProps = {
   title: string
@@ -33,37 +33,7 @@ const NONE_USER = 'none'
 
 const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
   const [error, setError] = useState<Error>()
-  const [userInfos, setUserInfos] = useState<UserInfoMap>({})
-
-  const { data: openPulls } = usePullRequests(props.openPulls, setError)
-  const { data: mergedPulls } = usePullRequests(props.mergedPulls, setError)
-  const { issues: openIssues } = useIssues(props.openIssues, setError)
-
-  useEffect(() => {
-    openPulls.forEach((pr) => {
-      const id = pr.user.id
-      if (!userInfos[id]) userInfos[id] = new UserInfo(pr.user)
-      userInfos[id].openPulls.push(pr)
-    })
-    mergedPulls.forEach((pr) => {
-      const id = pr.user.id
-      if (!userInfos[id]) userInfos[id] = new UserInfo(pr.user)
-      userInfos[id].mergedPulls.push(pr)
-    })
-    Promise.all(
-      openIssues.map(async (issue) => {
-        const assignee = issue.assignee
-        const id = assignee?.id || NONE_USER
-        if (!userInfos[id])
-          userInfos[id] = new UserInfo(assignee || { id: NONE_USER, name: 'No User' })
-        userInfos[id].openIssues.push(issue)
-      })
-    ).then(() => {
-      setUserInfos(userInfos)
-    })
-  }, [openPulls, mergedPulls, openIssues])
-
-  console.log('meowy', userInfos, openIssues)
+  const userInfos = calculateUserInfoMap(props, setError)
 
   const keys = Object.keys(userInfos).sort((a, b) => {
     const aInfo = userInfos[a]
@@ -86,6 +56,43 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
       })}
     </DataModule>
   )
+}
+
+function calculateUserInfoMap(
+  props: TeamCurrentModuleProps,
+  setError: StateUpdater<Error | undefined>
+) {
+  const [userInfos, setUserInfos] = useState<UserInfoMap>({})
+
+  const { data: openPulls } = usePullRequests(props.openPulls, setError)
+  const { data: mergedPulls } = usePullRequests(props.mergedPulls, setError)
+  const { issues: openIssues } = useIssues(props.openIssues, setError)
+
+  useEffect(() => {
+    const map: UserInfoMap = {}
+    openPulls.forEach((pr) => {
+      const id = pr.user.id
+      if (!map[id]) map[id] = new UserInfo(pr.user)
+      map[id].openPulls.push(pr)
+    })
+    mergedPulls.forEach((pr) => {
+      const id = pr.user.id
+      if (!map[id]) map[id] = new UserInfo(pr.user)
+      map[id].mergedPulls.push(pr)
+    })
+    Promise.all(
+      openIssues.map(async (issue) => {
+        const assignee = issue.assignee
+        const id = assignee?.id || NONE_USER
+        if (!map[id]) map[id] = new UserInfo(assignee || { id: NONE_USER, name: 'No User' })
+        map[id].openIssues.push(issue)
+      })
+    ).then(() => {
+      setUserInfos(map)
+    })
+  }, [openPulls, mergedPulls, openIssues])
+
+  return userInfos
 }
 
 export default TeamCurrentModule
