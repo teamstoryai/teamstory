@@ -62,6 +62,8 @@ class Linear {
       filter,
     })
 
+    ;(window as any)['issues'] = result
+
     return result.nodes.map((issue) => ({
       ...issue,
       user: !issue.assignee

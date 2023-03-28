@@ -1,7 +1,6 @@
 import DataModule from '@/modules/ModuleCard'
-import { logger, unwrapError } from '@/utils'
-import { useEffect, useState } from 'preact/hooks'
-import type { Issue } from '@linear/sdk/dist/_generated_documents'
+import { logger } from '@/utils'
+import { StateUpdater, useEffect, useState } from 'preact/hooks'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
@@ -14,27 +13,8 @@ export type IssuesModuleProps = {
 
 const IssuesModule = (props: IssuesModuleProps) => {
   const [error, setError] = useState<Error>()
-  const [issues, setIssues] = useState<QueryIssue[]>([])
 
-  const fetchData = (clear?: boolean) => {
-    const { filters } = props
-    const key = 'issues:' + JSON.stringify(filters)
-    if (clear) dataStore.clear(key)
-
-    dataStore
-      .cacheRead(key, () => linear.issues(filters))
-      .then((items) => {
-        dataStore.storeData(props.id, items)
-        setIssues(items)
-      })
-      .catch(setError)
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const refresh = () => fetchData(true)
+  const { issues, refresh } = useIssues(props.filters, setError, props.id)
 
   return (
     <DataModule title={props.title} count={issues.length} refresh={refresh} error={error}>
@@ -66,6 +46,36 @@ const IssuesModule = (props: IssuesModuleProps) => {
       </div>
     </DataModule>
   )
+}
+
+export function useIssues(
+  filters: IssueFilters,
+  setError: StateUpdater<Error | undefined>,
+  storeDataKey?: string
+) {
+  const [issues, setIssues] = useState<QueryIssue[]>([])
+
+  const fetchData = (clear?: boolean) => {
+    const key = 'issues:' + JSON.stringify(filters)
+    if (clear) dataStore.clear(key)
+
+    console.log('issues fetchin', key)
+    dataStore
+      .cacheRead(key, () => linear.issues(filters))
+      .then((items) => {
+        dataStore.storeData(storeDataKey, items)
+        setIssues(items)
+      })
+      .catch(setError)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const refresh = () => fetchData(true)
+
+  return { issues, refresh }
 }
 
 const DeferredUser = ({ promise }: { promise: Promise<QueryUser> }) => {

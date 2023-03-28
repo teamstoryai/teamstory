@@ -92,7 +92,7 @@ if (config.dev) (window as any)['dataStore'] = dataStore
 export function pastTwoWeeksDates(start: Date) {
   const keyMonday = isMonday(start) ? start : previousMonday(start)
   const startDate = sub(keyMonday, { weeks: 2 })
-  const endDate = add(startDate, { days: 13 })
+  const endDate = add(startDate, { days: 14 })
   return { startDate, endDate }
 }
 
