@@ -29,7 +29,7 @@ const IssuesModule = (props: IssuesModuleProps) => {
           >
             <div class="text-sm flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
-              {issue.priority && <Priority issue={issue} />}
+              {issue.priority ? <Priority issue={issue} /> : null}
               {issue.assignee && (
                 <>
                   <div>&bull;</div>
@@ -71,7 +71,7 @@ export function useIssues(
     fetchData()
   }, [])
 
-  const refresh = useCallback(() => fetchData(true), [])
+  const refresh = useCallback(() => fetchData(true), [filters])
 
   return { issues, refresh }
 }
