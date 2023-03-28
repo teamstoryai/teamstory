@@ -49,7 +49,7 @@ export default function ({ children }: RenderableProps<{}>) {
       <div
         className={classNames(
           !sidebarHidden ? 'md:ml-52 xl:ml-72' : '',
-          'flex flex-col min-h-full print:h-auto bg-white'
+          'flex flex-col min-h-full print:h-auto bg-gray-50'
         )}
       >
         <div className="flex-1 flex">
