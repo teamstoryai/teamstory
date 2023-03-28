@@ -4,7 +4,7 @@ import { QueryIssue } from '@/query/types'
 import { dataStore, dateToYMD } from '@/stores/dataStore'
 import { logger } from '@/utils'
 
-import Gantt, { Task } from 'frappe-gantt'
+import Gantt, { Task } from '@/gantt'
 import { useEffect, useRef, useState } from 'preact/hooks'
 
 export type GanttModuleProps = {
@@ -46,6 +46,7 @@ const GanttModule = (props: GanttModuleProps) => {
           view_mode: props.viewMode || 'Day',
           read_only: true,
           popup_trigger: 'mouseover',
+          footer_padding: 0,
         })
         ;(window as any)['gantt'] = gantt
       })

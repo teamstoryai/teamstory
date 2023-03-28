@@ -862,7 +862,6 @@ __metadata:
     copy-to-clipboard: ^3.3.2
     date-fns: ^2.29.3
     events: ^3.3.0
-    frappe-gantt: "git+https://github.com/teamstoryai/gantt.git#master"
     husky: ^8.0.3
     isomorphic-fetch: ^3.0.0
     linkify-react: ^4.0.2
@@ -1780,13 +1779,6 @@ __metadata:
   version: 4.2.0
   resolution: "fraction.js@npm:4.2.0"
   checksum: 8c76a6e21dedea87109d6171a0ac77afa14205794a565d71cb10d2925f629a3922da61bf45ea52dbc30bce4d8636dc0a27213a88cbd600eab047d82f9a3a94c5
-  languageName: node
-  linkType: hard
-
-"frappe-gantt@git+https://github.com/teamstoryai/gantt.git#master":
-  version: 0.6.1
-  resolution: "frappe-gantt@https://github.com/teamstoryai/gantt.git#commit=dda7506450a22676fd7f714b1bb31627a615226d"
-  checksum: a00126e48a8624190396d0a33db63619f45f944f360be93336dbc9abce8fef1f37d27a63ef0fef0c1ee93eef3d20d8082421ae89b92ea72d8beffc0e3bdfb323
   languageName: node
   linkType: hard
 
