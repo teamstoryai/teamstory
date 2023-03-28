@@ -7,6 +7,7 @@ import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
 
 export type IssuesModuleProps = {
+  id?: string
   title: string
   filters: IssueFilters
 }
@@ -22,7 +23,10 @@ const IssuesModule = (props: IssuesModuleProps) => {
 
     dataStore
       .cacheRead(key, () => linear.issues(filters))
-      .then(setIssues)
+      .then((items) => {
+        dataStore.storeData(props.id, items)
+        setIssues(items)
+      })
       .catch(setError)
   }
 

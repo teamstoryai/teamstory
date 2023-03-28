@@ -39,6 +39,8 @@ class DataStore {
 
   inProgress: Cache<Promise<any>> = {}
 
+  dataById: Cache<any> = {}
+
   // --- variables
 
   fakeMode = false
@@ -83,6 +85,10 @@ class DataStore {
       }
     })
     this.initialized.set(true)
+  }
+
+  storeData = (key: string | undefined, data: any) => {
+    if (key) this.dataById[key] = data
   }
 }
 

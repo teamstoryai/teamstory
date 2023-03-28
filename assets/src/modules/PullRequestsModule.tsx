@@ -10,6 +10,7 @@ import { formatDistance } from 'date-fns'
 import { useEffect, useState } from 'preact/hooks'
 
 export type PullRequestsModuleProps = {
+  id?: string
   title: string
   query: string
 }
@@ -27,6 +28,7 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
         .cacheRead(key, () => github.pulls(repo.name, props.query))
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
+          dataStore.storeData(props.id, items)
           setPrData((prData) => ({ ...prData, [repo.name]: items }))
         })
         .catch(setError)
