@@ -67,7 +67,11 @@ class Linear {
               id: assignee.id,
               name: assignee.name,
             })),
-      labels: async () => (await issue.labels()).nodes.map((n) => n.name),
+      labels: async () =>
+        (await issue.labels()).nodes.map((n) => ({
+          name: n.name,
+          color: n.color,
+        })),
     }))
   }
 }
