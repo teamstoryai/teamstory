@@ -70,9 +70,9 @@ export type QueryIssue = {
   identifier: string
   title: string
   description?: string
-  createdAt: Date
-  startedAt?: Date
-  completedAt?: Date
+  createdAt: string
+  startedAt?: string
+  completedAt?: string
   url: string
   assignee?: QueryUser
   labels?: QueryLabel[]
