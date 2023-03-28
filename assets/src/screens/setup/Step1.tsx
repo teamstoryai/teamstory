@@ -66,6 +66,7 @@ export const Step1 = () => {
   useOAuthPopup(
     (data) => {
       const { service, code } = data
+      if (service != 'github' && service != 'gitlab') return
       setState(ConnectState.Loading)
       tokenStore
         .connectToken('', code, service)

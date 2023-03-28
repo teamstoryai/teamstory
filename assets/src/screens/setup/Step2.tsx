@@ -72,6 +72,7 @@ export const Step2 = () => {
   useOAuthPopup(
     (data) => {
       const { service, code } = data
+      if (service != 'linear' && service != 'jira') return
       tokenStore
         .connectToken(LIN_URI, code, service)
         .then((token) => {

@@ -2,7 +2,7 @@ defmodule TeamstoryWeb.OAuthController do
   use TeamstoryWeb, :controller
   require Logger
 
-  alias Teamstory.{OAuthTokens, Google, Utils}
+  alias Teamstory.{OAuthTokens, Google, Utils, Projects}
 
   action_fallback TeamstoryWeb.FallbackController
 
@@ -12,6 +12,15 @@ defmodule TeamstoryWeb.OAuthController do
     tokens = OAuthTokens.all_for_user(user, service)
 
     render(conn, "tokens.json", tokens: tokens)
+  end
+
+  def get_service_token(conn, %{"services" => services, "project_id" => project_uuid})
+      when project_uuid != nil do
+    with user <- Guardian.Plug.current_resource(conn),
+         {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid) do
+      tokens = OAuthTokens.multiple_for_project(project, services)
+      render(conn, "tokens.json", tokens: tokens)
+    end
   end
 
   def get_service_token(conn, %{"services" => services}) do
@@ -34,17 +43,28 @@ defmodule TeamstoryWeb.OAuthController do
   end
 
   # GET /oauth/connect
-  def connect_service(conn, %{
-        "service" => service,
-        "code" => code,
-        "redirect_uri" => redirect_uri
-      }) do
+  def connect_service(
+        conn,
+        %{
+          "service" => service,
+          "code" => code,
+          "redirect_uri" => redirect_uri
+        } = params
+      ) do
     user = Guardian.Plug.current_resource(conn)
     service_obj = OAuthTokens.get_service(service)
 
     with {:ok, result} <- service_obj.exchange_code_for_token(code, redirect_uri) do
       result = service_obj.add_profile_email(result)
-      new_params = %{"service" => service}
+
+      project_id =
+        if params["project_id"] do
+          {:ok, project} = Projects.project_by_uuid(params["project_id"])
+          project.id
+        end
+
+      new_params = %{"service" => service, "project_id" => project_id}
+
       {:ok, token} = save_oauth_token(user, Map.merge(result, new_params))
       render(conn, "token.json", token: token)
     else
@@ -111,7 +131,8 @@ defmodule TeamstoryWeb.OAuthController do
          "service" => service,
          "access" => access,
          "refresh" => refresh,
-         "expires_in" => expires_in
+         "expires_in" => expires_in,
+         "project_id" => project_id
        }) do
     expires_at = if expires_in, do: Timex.shift(Timex.now(), seconds: expires_in)
 
@@ -122,6 +143,7 @@ defmodule TeamstoryWeb.OAuthController do
       access: access,
       refresh: refresh,
       expires_at: expires_at,
+      project_id: project_id,
       synced_at: nil,
       deleted_at: nil
     }

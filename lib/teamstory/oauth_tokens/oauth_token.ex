@@ -14,6 +14,7 @@ defmodule Teamstory.OAuthTokens.OAuthToken do
     field :refresh, :string
 
     belongs_to :user, Teamstory.Users.User
+    belongs_to :project, Teamstory.Projects.Project
 
     timestamps()
   end
@@ -21,7 +22,17 @@ defmodule Teamstory.OAuthTokens.OAuthToken do
   @doc false
   def changeset(oauth_token, attrs) do
     oauth_token
-    |> cast(attrs, [:user_id, :email, :access, :expires_at, :deleted_at, :name, :refresh, :meta])
+    |> cast(attrs, [
+      :user_id,
+      :project_id,
+      :email,
+      :access,
+      :expires_at,
+      :deleted_at,
+      :name,
+      :refresh,
+      :meta
+    ])
     |> validate_required([:user_id, :name])
   end
 end
