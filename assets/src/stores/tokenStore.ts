@@ -3,6 +3,7 @@ import { atom } from 'nanostores'
 import { API } from '@/api'
 import { OAuthToken, Project } from '@/models'
 import { authStore } from '@/stores/authStore'
+import { projectStore } from '@/stores/projectStore'
 
 class TokenStore {
   // --- stores
@@ -25,7 +26,8 @@ class TokenStore {
   }
 
   connectToken = async (redirect: string, code: string, service: string) => {
-    const response = await API.connectOAuthToken(redirect, code, service)
+    const project = projectStore.currentProject.get()
+    const response = await API.connectOAuthToken(redirect, code, service, project)
     this.addToken(response.item)
     return response.item
   }

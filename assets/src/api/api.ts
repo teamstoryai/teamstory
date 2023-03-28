@@ -258,12 +258,14 @@ class APIService {
   async connectOAuthToken(
     redirectUri: string,
     code: string,
-    service: string
+    service: string,
+    project?: Project
   ): Promise<R.ItemResponse<OAuthToken>> {
     const response = await this.axios.post(`${this.endpoint}/oauth/connect`, {
       service,
       code,
       redirect_uri: redirectUri,
+      project_id: project?.id,
     })
     return response.data
   }

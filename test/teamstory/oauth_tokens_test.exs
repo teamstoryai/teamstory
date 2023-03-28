@@ -8,7 +8,22 @@ defmodule Teamstory.OAuthTokensTest do
 
     import Teamstory.OAuthTokensFixtures
 
-    @invalid_attrs %{access: nil, deleted_at: nil, expires_at: nil, meta: nil, name: nil, refresh: nil}
+    @invalid_attrs %{
+      access: nil,
+      deleted_at: nil,
+      expires_at: nil,
+      meta: nil,
+      name: nil,
+      refresh: nil
+    }
+
+    test "create and retrieve project tokens" do
+      oauth_token = oauth_token_fixture(%{project_id: 1, name: "foobs"})
+      assert oauth_token.project_id == 1
+
+      tokens = OAuthTokens.multiple_for_project(%{id: 1}, [oauth_token.name])
+      assert tokens == [oauth_token]
+    end
 
     test "list_oauth_tokens/0 returns all oauth_tokens" do
       oauth_token = oauth_token_fixture()
@@ -21,7 +36,14 @@ defmodule Teamstory.OAuthTokensTest do
     end
 
     test "create_oauth_token/1 with valid data creates a oauth_token" do
-      valid_attrs = %{access: "some access", user_id: 1, expires_at: ~U[2022-10-19 23:40:00Z], meta: %{}, name: "some name", refresh: "some refresh"}
+      valid_attrs = %{
+        access: "some access",
+        user_id: 1,
+        expires_at: ~U[2022-10-19 23:40:00Z],
+        meta: %{},
+        name: "some name",
+        refresh: "some refresh"
+      }
 
       assert {:ok, %OAuthToken{} = oauth_token} = OAuthTokens.create_oauth_token(valid_attrs)
       assert oauth_token.access == "some access"
@@ -37,9 +59,19 @@ defmodule Teamstory.OAuthTokensTest do
 
     test "update_oauth_token/2 with valid data updates the oauth_token" do
       oauth_token = oauth_token_fixture()
-      update_attrs = %{access: "some updated access", deleted_at: ~U[2022-10-20 23:40:00Z], expires_at: ~U[2022-10-20 23:40:00Z], meta: %{}, name: "some updated name", refresh: "some updated refresh"}
 
-      assert {:ok, %OAuthToken{} = oauth_token} = OAuthTokens.update_oauth_token(oauth_token, update_attrs)
+      update_attrs = %{
+        access: "some updated access",
+        deleted_at: ~U[2022-10-20 23:40:00Z],
+        expires_at: ~U[2022-10-20 23:40:00Z],
+        meta: %{},
+        name: "some updated name",
+        refresh: "some updated refresh"
+      }
+
+      assert {:ok, %OAuthToken{} = oauth_token} =
+               OAuthTokens.update_oauth_token(oauth_token, update_attrs)
+
       assert oauth_token.access == "some updated access"
       assert oauth_token.deleted_at == ~U[2022-10-20 23:40:00Z]
       assert oauth_token.expires_at == ~U[2022-10-20 23:40:00Z]
@@ -50,7 +82,10 @@ defmodule Teamstory.OAuthTokensTest do
 
     test "update_oauth_token/2 with invalid data returns error changeset" do
       oauth_token = oauth_token_fixture()
-      assert {:error, %Ecto.Changeset{}} = OAuthTokens.update_oauth_token(oauth_token, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               OAuthTokens.update_oauth_token(oauth_token, @invalid_attrs)
+
       assert oauth_token == OAuthTokens.get_oauth_token!(oauth_token.id)
     end
 

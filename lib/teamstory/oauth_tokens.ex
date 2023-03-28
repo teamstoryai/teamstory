@@ -28,6 +28,16 @@ defmodule Teamstory.OAuthTokens do
     )
   end
 
+  def multiple_for_project(project, names) do
+    Repo.all(
+      from t in OAuthToken,
+        where:
+          t.project_id == ^project.id and t.name in ^names and
+            is_nil(t.deleted_at),
+        order_by: [desc: :id]
+    )
+  end
+
   @spec find_for_email(atom | %{:id => any, optional(any) => any}, any, any) :: any
   def find_for_email(user, email, name) do
     Repo.one(
