@@ -1,13 +1,7 @@
-import { API } from '@/api'
 import { config } from '@/config'
-import { Repository } from '@/models'
 import github from '@/query/github'
 import linear from '@/query/linear'
-import { connectStore } from '@/stores/connectStore'
-import { initFakeData } from '@/stores/fakeData'
-import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
-import { assertIsDefined, logger } from '@/utils'
 import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { atom } from 'nanostores'
 

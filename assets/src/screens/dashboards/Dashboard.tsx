@@ -17,7 +17,12 @@ import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
 import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'
-import { DashboardMain, NeedsAttention } from '@/screens/dashboards/dashboards'
+import {
+  ComingSoonModules,
+  DashboardModules,
+  NeedsAttentionModules,
+  TeamCurrentModules,
+} from '@/screens/dashboards/dashboards'
 
 type Props = {
   path: string
@@ -55,8 +60,17 @@ const Dashboard = (props: Props) => {
   const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
   const lastMonth = format(sub(today, { days: 14 }), 'yyyy-MM-dd')
 
+  const suggestionId = suggestion?.id
   const modules: DataModuleProps[] =
-    suggestion?.id == 'attention' ? NeedsAttention(recentKey) : DashboardMain(recentKey, lastMonth)
+    suggestionId == 'attention'
+      ? NeedsAttentionModules(recentKey)
+      : suggestionId == 'team'
+      ? TeamCurrentModules(recentKey)
+      : suggestionId == 'help'
+      ? ComingSoonModules()
+      : suggestionId == 'overloaded'
+      ? ComingSoonModules()
+      : DashboardModules(recentKey, lastMonth)
 
   return (
     <>

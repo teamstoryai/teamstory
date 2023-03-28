@@ -31,21 +31,15 @@ const Suggestions = ({
     history.pushState({}, '', url.toString())
   }
 
-  if (suggestion) {
-    return (
-      <div class="my-4 flex gap-2 flex-wrap">
-        <Pill selected onClick={() => setSuggestionAndUrl(undefined)}>
-          {suggestion.label}
-        </Pill>
-      </div>
-    )
-  }
-
   return (
     <>
       <div class="my-4 flex gap-2 flex-wrap">
         {suggestions.map((s, i) => (
-          <Pill onClick={() => setSuggestionAndUrl(s)} key={i}>
+          <Pill
+            selected={s.id == suggestion?.id}
+            onClick={() => setSuggestionAndUrl(s.id == suggestion?.id ? undefined : s)}
+            key={i}
+          >
             {s.label}
           </Pill>
         ))}

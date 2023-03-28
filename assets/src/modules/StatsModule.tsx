@@ -98,7 +98,7 @@ const getStats = async (filters: IssueFilters) => {
   for (const issue of issues) {
     const labels = await issue.labels?.()
     labels?.forEach((label) => {
-      stats[label] = (stats[label] || 0) + 1
+      stats[label.name] = (stats[label.name] || 0) + 1
     })
     if (!labels || !labels.length) {
       stats[NO_LABEL] = (stats[NO_LABEL] || 0) + 1
