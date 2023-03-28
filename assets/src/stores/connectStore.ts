@@ -1,6 +1,6 @@
 import { API } from '@/api'
 import { config } from '@/config'
-import { Project, Repository } from '@/models'
+import { IssueProject, Project, Repository } from '@/models'
 import { projectStore } from '@/stores/projectStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
@@ -25,23 +25,18 @@ class ConnectStore {
 
   repos = atom<Repository[]>([])
 
+  projects = atom<IssueProject[]>([])
+
   fakeMode = false
 
   // --- actions
 
-  fetchOrgs = async (service: string) => {
-    const response = await API.fetchOrgs(service)
-    return response as OrgData[]
-  }
-
-  fetchRepos = async (service: string, org: { login: string; type?: string }) => {
-    const orgId = org.type == 'user' ? '<user>' : org.login
-    const response = await API.fetchRepos(service, orgId)
-    return response as RepoData[]
-  }
-
   clearRepos = () => {
     this.repos.set([])
+  }
+
+  loadConnections = async () => {
+    await Promise.all([this.loadConnectedRepos(), this.loadConnectedProjects()])
   }
 
   loadConnectedRepos = async (project?: Project) => {
@@ -66,6 +61,25 @@ class ConnectStore {
     const repo = Repository.fromJSON(response.item)
     this.repos.set([...this.repos.get(), repo])
     return repo
+  }
+
+  loadConnectedProjects = async (project?: Project) => {
+    if (this.fakeMode) return this.projects.get()
+    if (!project) project = projectStore.currentProject.get()
+    assertIsDefined(project, 'project')
+    const response = await API.issue_projects.list(project)
+    const projects = response.items.map((i) => IssueProject.fromJSON(i))
+    this.projects.set(projects)
+    return projects
+  }
+
+  addProject = async (service: string, data: IssueProject) => {
+    const project = projectStore.currentProject.get()
+    assertIsDefined(project, 'project')
+    const response = await API.repos.create(project, data)
+    const proj = IssueProject.fromJSON(response.item)
+    this.projects.set([...this.projects.get(), proj])
+    return proj
   }
 }
 
