@@ -29,12 +29,10 @@ const IssuesModule = (props: IssuesModuleProps) => {
           >
             <div class="text-sm flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
-              {issue.user && (
+              {issue.assignee && (
                 <>
                   <div>&bull;</div>
-                  <div>
-                    <DeferredUser promise={issue.user()} />
-                  </div>
+                  <div>{issue.assignee.name}</div>
                 </>
               )}
               {issue.labels && <Labels labels={issue.labels} />}
@@ -59,7 +57,6 @@ export function useIssues(
     const key = 'issues:' + JSON.stringify(filters)
     if (clear) dataStore.clear(key)
 
-    console.log('issues fetchin', key)
     dataStore
       .cacheRead(key, () => linear.issues(filters))
       .then((items) => {
@@ -78,28 +75,13 @@ export function useIssues(
   return { issues, refresh }
 }
 
-const DeferredUser = ({ promise }: { promise: Promise<QueryUser> }) => {
-  const [user, setUser] = useState<QueryUser>()
-  useEffect(() => {
-    promise.then(setUser).catch(logger.error)
-  }, [promise])
-
-  if (!user) return null
-  return <>{user.name}</>
-}
-
-const Labels = ({ labels }: { labels: () => Promise<QueryLabel[]> }) => {
-  const [labelsData, setLabelsData] = useState<QueryLabel[]>()
-  useEffect(() => {
-    labels().then(setLabelsData).catch(logger.error)
-  }, [labels])
-
-  if (!labelsData || labelsData.length == 0) return null
+const Labels = ({ labels }: { labels: QueryLabel[] }) => {
+  if (!labels || labels.length == 0) return null
 
   return (
     <>
       <div>&bull;</div>
-      {labelsData.map((label, i) => (
+      {labels.map((label, i) => (
         <span key={i} style={{ color: label.color }}>
           {label.name}
         </span>

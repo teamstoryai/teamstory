@@ -78,7 +78,7 @@ export function fakeDataSwitchProject(project: Project) {
       .slice(4, 10)
       .map(
         titleToFeature(-20, {
-          labels: () => Promise.resolve([{ name: 'bug', color: 'red' }]),
+          labels: [{ name: 'bug', color: 'red' }],
         })
       )
       .map(randDates(6))
@@ -87,7 +87,7 @@ export function fakeDataSwitchProject(project: Project) {
           .slice(4, 9)
           .map(
             titleToFeature(-14, {
-              labels: () => Promise.resolve([{ name: 'feature', color: 'blue' }]),
+              labels: [{ name: 'feature', color: 'blue' }],
             })
           )
           .map(randDates(6))
@@ -140,7 +140,7 @@ const titleToFeature =
     title,
     createdAt: sub(today, { days: 3 - i }),
     url: '',
-    user: () => Promise.resolve(teamMembers[Math.abs(idx + i) % teamMembers.length]),
+    assignee: teamMembers[Math.abs(idx + i) % teamMembers.length],
     ...props,
   })
 

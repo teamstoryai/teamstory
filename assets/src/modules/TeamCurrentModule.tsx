@@ -52,7 +52,7 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
     })
     Promise.all(
       openIssues.map(async (issue) => {
-        const assignee = await issue.user?.()
+        const assignee = issue.assignee
         const id = assignee?.id || NONE_USER
         if (!userInfos[id])
           userInfos[id] = new UserInfo(assignee || { id: NONE_USER, name: 'No User' })
