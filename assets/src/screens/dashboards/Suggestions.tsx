@@ -28,6 +28,7 @@ const Suggestions = ({
     setSuggestion(suggestion)
     const url = new URL(location.href)
     if (suggestion) url.searchParams.set('s', suggestion.id)
+    else url.searchParams.delete('s')
     history.pushState({}, '', url.toString())
   }
 

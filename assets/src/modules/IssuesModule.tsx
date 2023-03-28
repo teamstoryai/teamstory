@@ -1,7 +1,6 @@
 import DataModule from '@/modules/ModuleCard'
-import { logger, unwrapError } from '@/utils'
-import { useEffect, useState } from 'preact/hooks'
-import type { Issue } from '@linear/sdk/dist/_generated_documents'
+import { logger } from '@/utils'
+import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
@@ -14,27 +13,8 @@ export type IssuesModuleProps = {
 
 const IssuesModule = (props: IssuesModuleProps) => {
   const [error, setError] = useState<Error>()
-  const [issues, setIssues] = useState<QueryIssue[]>([])
 
-  const fetchData = (clear?: boolean) => {
-    const { filters } = props
-    const key = 'issues:' + JSON.stringify(filters)
-    if (clear) dataStore.clear(key)
-
-    dataStore
-      .cacheRead(key, () => linear.issues(filters))
-      .then((items) => {
-        dataStore.storeData(props.id, items)
-        setIssues(items)
-      })
-      .catch(setError)
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const refresh = () => fetchData(true)
+  const { issues, refresh } = useIssues(props.filters, setError, props.id)
 
   return (
     <DataModule title={props.title} count={issues.length} refresh={refresh} error={error}>
@@ -49,12 +29,11 @@ const IssuesModule = (props: IssuesModuleProps) => {
           >
             <div class="text-sm flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
-              {issue.user && (
+              {issue.priority && <Priority issue={issue} />}
+              {issue.assignee && (
                 <>
                   <div>&bull;</div>
-                  <div>
-                    <DeferredUser promise={issue.user()} />
-                  </div>
+                  <div>{issue.assignee.name}</div>
                 </>
               )}
               {issue.labels && <Labels labels={issue.labels} />}
@@ -68,32 +47,56 @@ const IssuesModule = (props: IssuesModuleProps) => {
   )
 }
 
-const DeferredUser = ({ promise }: { promise: Promise<QueryUser> }) => {
-  const [user, setUser] = useState<QueryUser>()
-  useEffect(() => {
-    promise.then(setUser).catch(logger.error)
-  }, [promise])
+export function useIssues(
+  filters: IssueFilters,
+  setError: StateUpdater<Error | undefined>,
+  storeDataKey?: string
+) {
+  const [issues, setIssues] = useState<QueryIssue[]>([])
 
-  if (!user) return null
-  return <>{user.name}</>
+  const fetchData = (clear?: boolean) => {
+    const key = 'issues:' + JSON.stringify(filters)
+    if (clear) dataStore.clear(key)
+
+    dataStore
+      .cacheRead(key, () => linear.issues(filters))
+      .then((items) => {
+        dataStore.storeData(storeDataKey, items)
+        setIssues(items)
+      })
+      .catch(setError)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  const refresh = useCallback(() => fetchData(true), [])
+
+  return { issues, refresh }
 }
 
-const Labels = ({ labels }: { labels: () => Promise<QueryLabel[]> }) => {
-  const [labelsData, setLabelsData] = useState<QueryLabel[]>()
-  useEffect(() => {
-    labels().then(setLabelsData).catch(logger.error)
-  }, [labels])
-
-  if (!labelsData || labelsData.length == 0) return null
+const Labels = ({ labels }: { labels: QueryLabel[] }) => {
+  if (!labels || labels.length == 0) return null
 
   return (
     <>
       <div>&bull;</div>
-      {labelsData.map((label, i) => (
+      {labels.map((label, i) => (
         <span key={i} style={{ color: label.color }}>
           {label.name}
         </span>
       ))}
+    </>
+  )
+}
+
+const Priority = ({ issue }: { issue: QueryIssue }) => {
+  const color = issue.priority == 1 ? 'red' : issue.priority == 2 ? 'orange' : 'green'
+  return (
+    <>
+      <div>&bull;</div>
+      <span style={{ color: color }}>{issue.priorityLabel}</span>
     </>
   )
 }

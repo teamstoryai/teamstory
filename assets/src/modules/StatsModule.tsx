@@ -97,7 +97,7 @@ const getStats = async (filters: IssueFilters) => {
   const key = 'issues:' + JSON.stringify(filters)
   const issues = await dataStore.cacheRead(key, () => linear.issues(filters))
   for (const issue of issues) {
-    const labels = await issue.labels?.()
+    const labels = issue.labels
     labels?.forEach((label) => {
       stats[label.name] = (stats[label.name] || 0) + 1
     })

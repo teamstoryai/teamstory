@@ -33,13 +33,16 @@ export function fakeDataSwitchProject(project: Project) {
     connectStore.repos.set(repos)
     const today = new Date()
 
-    const randDates = (offset: number, skipCompleted?: boolean) => (i: QueryIssue) => {
-      const start = sub(today, { days: offset + Math.floor(Math.random() * 12) })
-      if (skipCompleted) return { ...i, startedAt: start }
-      const end = add(start, { days: Math.floor(Math.random() * 12) })
-      if (end > today) return { ...i, startedAt: start, completedAt: today }
-      return { ...i, startedAt: start, completedAt: end }
-    }
+    const randDates =
+      (offset: number, skipCompleted?: boolean) =>
+      (i: QueryIssue): QueryIssue => {
+        const start = sub(today, { days: offset + Math.floor(Math.random() * 12) })
+        if (skipCompleted) return { ...i, startedAt: start.toISOString() }
+        const end = add(start, { days: Math.floor(Math.random() * 12) })
+        if (end > today)
+          return { ...i, startedAt: start.toISOString(), completedAt: today.toISOString() }
+        return { ...i, startedAt: start.toISOString(), completedAt: end.toISOString() }
+      }
 
     // --- for dashboard
     const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]]
@@ -78,7 +81,7 @@ export function fakeDataSwitchProject(project: Project) {
       .slice(4, 10)
       .map(
         titleToFeature(-20, {
-          labels: () => Promise.resolve([{ name: 'bug', color: 'red' }]),
+          labels: [{ name: 'bug', color: 'red' }],
         })
       )
       .map(randDates(6))
@@ -87,7 +90,7 @@ export function fakeDataSwitchProject(project: Project) {
           .slice(4, 9)
           .map(
             titleToFeature(-14, {
-              labels: () => Promise.resolve([{ name: 'feature', color: 'blue' }]),
+              labels: [{ name: 'feature', color: 'blue' }],
             })
           )
           .map(randDates(6))
@@ -138,9 +141,9 @@ const titleToFeature =
     id: `${idx + i}`,
     identifier: `SPACE-${181 + Math.floor(idx + i * 2.5)}`,
     title,
-    createdAt: sub(today, { days: 3 - i }),
+    createdAt: sub(today, { days: 3 - i }).toISOString(),
     url: '',
-    user: () => Promise.resolve(teamMembers[Math.abs(idx + i) % teamMembers.length]),
+    assignee: teamMembers[Math.abs(idx + i) % teamMembers.length],
     ...props,
   })
 

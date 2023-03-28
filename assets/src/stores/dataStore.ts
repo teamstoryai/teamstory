@@ -4,6 +4,8 @@ import linear from '@/query/linear'
 import { tokenStore } from '@/stores/tokenStore'
 import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { atom } from 'nanostores'
+import { get, set } from 'idb-keyval'
+import { projectStore } from '@/stores/projectStore'
 
 type User = {
   avatar_url: string
@@ -23,6 +25,13 @@ type PullRequest = {
 }
 
 type Cache<T> = { [key: string]: T }
+
+type IDBCacheEntry = {
+  d: any
+  t: number
+}
+
+const IDB_CACHE_TTL = 1000 * 60 * 60 // 1 hour
 
 class DataStore {
   // --- stores
@@ -48,8 +57,25 @@ class DataStore {
       return await this.inProgress[key]
     } else {
       if (this.fakeMode) throw new Error('unhandled fake data ' + key)
+
+      const project = projectStore.currentProject.get()!
+      const idbKey = `${project.id}:${key}`
+
+      const readHelper = async () => {
+        const cached = await get<IDBCacheEntry>(idbKey)
+        if (cached) {
+          const now = Date.now()
+          if (now - cached.t < IDB_CACHE_TTL) {
+            return cached.d
+          }
+        }
+        const result = await fetch()
+        set(idbKey, { d: result, t: Date.now() })
+        return result
+      }
+
       try {
-        const promise = (this.inProgress[key] = fetch())
+        const promise = (this.inProgress[key] = readHelper())
         const result = await promise
         this.cache[key] = result
         return result
@@ -92,7 +118,7 @@ if (config.dev) (window as any)['dataStore'] = dataStore
 export function pastTwoWeeksDates(start: Date) {
   const keyMonday = isMonday(start) ? start : previousMonday(start)
   const startDate = sub(keyMonday, { weeks: 2 })
-  const endDate = add(startDate, { days: 13 })
+  const endDate = add(startDate, { days: 14 })
   return { startDate, endDate }
 }
 

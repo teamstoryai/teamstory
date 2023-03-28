@@ -111,7 +111,7 @@ export function unwrapError(error: any, skipExpandErrors?: boolean, defaultMessa
     let response = error.response
     if (response.data) logger.info(response.data)
 
-    const errorObject = response.data.error
+    const errorObject = response.data?.error
     if (errorObject) {
       const message =
         errorObject.message == 'Invalid parameters were provided'

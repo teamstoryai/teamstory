@@ -70,12 +70,14 @@ export type QueryIssue = {
   identifier: string
   title: string
   description?: string
-  createdAt: Date
-  startedAt?: Date
-  completedAt?: Date
+  createdAt: string
+  startedAt?: string
+  completedAt?: string
   url: string
-  user?: () => Promise<QueryUser>
-  labels?: () => Promise<QueryLabel[]>
+  assignee?: QueryUser
+  priority?: number // 0 = no, 1 = urgent
+  priorityLabel?: string
+  labels?: QueryLabel[]
 }
 
 export type QueryPullRequest = {

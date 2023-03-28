@@ -66,12 +66,14 @@ const GanttModule = (props: GanttModuleProps) => {
 export default GanttModule
 
 const duration = (issue: QueryIssue) =>
-  issue.startedAt ? (issue.completedAt || new Date()).getTime() - issue.startedAt.getTime() : 0
+  issue.startedAt
+    ? new Date(issue.completedAt || Date.now()).getTime() - new Date(issue.startedAt).getTime()
+    : 0
 
 const issueToTask = (issue: QueryIssue): Task => ({
   id: issue.id,
   name: `${issue.identifier} - ${issue.title}`,
-  start: dateToYMD(issue.startedAt || issue.createdAt),
-  end: dateToYMD(issue.completedAt || new Date()),
+  start: issue.startedAt || issue.createdAt,
+  end: issue.completedAt || new Date().toISOString(),
   progress: issue.completedAt ? 100 : 0,
 })
