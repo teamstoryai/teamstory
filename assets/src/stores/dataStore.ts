@@ -4,7 +4,7 @@ import linear from '@/query/linear'
 import { tokenStore } from '@/stores/tokenStore'
 import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns'
 import { atom } from 'nanostores'
-import { get, set } from 'idb-keyval'
+import { get, set, del } from 'idb-keyval'
 import { projectStore } from '@/stores/projectStore'
 
 type User = {
@@ -88,6 +88,10 @@ class DataStore {
   clear = (key: string) => {
     if (this.fakeMode) return
     delete this.cache[key]
+
+    const project = projectStore.currentProject.get()!
+    const idbKey = `${project.id}:${key}`
+    del(idbKey)
   }
 
   clearAll = () => {
