@@ -19,6 +19,7 @@ import { makeInitials, unwrapError } from '@/utils'
 import { EnvelopeIcon } from '@heroicons/react/24/solid'
 import { useStore } from '@nanostores/preact'
 import AppBody from '@/components/layout/AppBody'
+import PageTitle from '@/components/layout/PageTitle'
 
 type Props = {
   id?: string
@@ -43,9 +44,8 @@ const ProjectSettings = ({ id }: Props) => {
   if (project.id == 'fake') {
     return (
       <>
-        <Helmet title={`Project | ${project.name}`} />
         <AppHeader>
-          <h1 className="text-2xl font-semibold text-gray-900">{project.name}</h1>
+          <PageTitle title={project.name} />
         </AppHeader>
 
         <AppBody>
@@ -60,9 +60,8 @@ const ProjectSettings = ({ id }: Props) => {
 
   return (
     <>
-      <Helmet title={`Project | ${project.name}`} />
       <AppHeader>
-        <h1 className="text-2xl font-semibold text-gray-900">{project.name}</h1>
+        <PageTitle title={project.name} />
       </AppHeader>
 
       <AppBody>

@@ -6,6 +6,7 @@ import GoogleServerOAuth, {
 import Helmet from '@/components/core/Helmet'
 import Pressable from '@/components/core/Pressable'
 import AppHeader from '@/components/layout/AppHeader'
+import PageTitle from '@/components/layout/PageTitle'
 import { OAuthToken } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { calendarStore } from '@/stores/calendarStore'
@@ -19,7 +20,7 @@ export default (props: { path: string }) => {
     <>
       <Helmet title={`Settings`} />
       <AppHeader>
-        <h1 className="text-2xl font-semibold text-gray-900">Settings</h1>
+        <PageTitle title="Settings" />
       </AppHeader>
 
       <div className="flex flex-col grow w-full px-6 mt-4 mx-2">

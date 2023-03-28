@@ -75,6 +75,7 @@ const StatsModule = (props: StatsModuleProps) => {
                 `inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0 ` +
                 `bg-${stat.color}-100 text-${stat.color}-800`
               }
+              title={'Previous period: ' + stat.prev}
             >
               {stat.count < stat.prev ? (
                 <ArrowDownIcon class="h-4 w-4" />

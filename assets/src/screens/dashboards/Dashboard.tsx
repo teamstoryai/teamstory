@@ -74,8 +74,6 @@ const Dashboard = (props: Props) => {
 
   return (
     <>
-      <Helmet title={'Dashboard'} />
-
       <AppHeader>
         <PageTitle title="Dashboard" />
       </AppHeader>
