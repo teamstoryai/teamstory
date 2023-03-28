@@ -5,7 +5,7 @@ import { dataStore, dateToYMD } from '@/stores/dataStore'
 import { logger } from '@/utils'
 
 import Gantt, { Task } from '@/gantt'
-import { useEffect, useRef, useState } from 'preact/hooks'
+import { MutableRef, useEffect, useRef, useState } from 'preact/hooks'
 
 export type GanttModuleProps = {
   title: string
@@ -16,12 +16,12 @@ export type GanttModuleProps = {
 const GanttModule = (props: GanttModuleProps) => {
   const [error, setError] = useState<Error>()
   const divRef = useRef<HTMLDivElement>(null)
+  const gantt: MutableRef<Gantt | null> = useRef<Gantt | null>(null)
 
-  useEffect(() => {
-    if (!divRef.current) return
-
+  const fetchData = (clear?: boolean) => {
     const { filters } = props
     const key = 'issues:' + JSON.stringify(filters)
+    if (clear) dataStore.clear(key)
 
     dataStore
       .cacheRead(key, () => linear.issues(filters))
@@ -40,24 +40,34 @@ const GanttModule = (props: GanttModuleProps) => {
           })
           .filter(Boolean) as Task[]
         if (tasks.length == 0) return
-        logger.info('GanttModule', 'tasks', tasks)
+        logger.debug('GanttModule', 'tasks', tasks)
 
-        const gantt = new Gantt(divRef.current, tasks, {
-          view_mode: props.viewMode || 'Day',
-          read_only: true,
-          popup_trigger: 'mouseover',
-          footer_padding: 0,
-        })
-        ;(window as any)['gantt'] = gantt
+        if (!gantt.current) {
+          gantt.current = new Gantt(divRef.current, tasks, {
+            view_mode: props.viewMode || 'Day',
+            read_only: true,
+            popup_trigger: 'mouseover',
+            footer_padding: 0,
+          })
+        } else {
+          gantt.current.refresh(tasks)
+        }
       })
       .catch((e) => {
         logger.error(e)
         setError(e)
       })
+  }
+
+  useEffect(() => {
+    if (!divRef.current) return
+    fetchData()
   }, [divRef.current])
 
+  const refresh = () => fetchData(true)
+
   return (
-    <DataModule title={props.title} className="lg:col-span-2" error={error}>
+    <DataModule title={props.title} className="lg:col-span-2" error={error} refresh={refresh}>
       <div ref={divRef}></div>
     </DataModule>
   )
