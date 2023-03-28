@@ -29,6 +29,7 @@ const IssuesModule = (props: IssuesModuleProps) => {
           >
             <div class="text-sm flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
+              {issue.priority && <Priority issue={issue} />}
               {issue.assignee && (
                 <>
                   <div>&bull;</div>
@@ -86,6 +87,16 @@ const Labels = ({ labels }: { labels: QueryLabel[] }) => {
           {label.name}
         </span>
       ))}
+    </>
+  )
+}
+
+const Priority = ({ issue }: { issue: QueryIssue }) => {
+  const color = issue.priority == 1 ? 'red' : issue.priority == 2 ? 'orange' : 'green'
+  return (
+    <>
+      <div>&bull;</div>
+      <span style={{ color: color }}>{issue.priorityLabel}</span>
     </>
   )
 }

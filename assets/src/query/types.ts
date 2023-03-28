@@ -75,6 +75,8 @@ export type QueryIssue = {
   completedAt?: string
   url: string
   assignee?: QueryUser
+  priority?: number // 0 = no, 1 = urgent
+  priorityLabel?: string
   labels?: QueryLabel[]
 }
 
