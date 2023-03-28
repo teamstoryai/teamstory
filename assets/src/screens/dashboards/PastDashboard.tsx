@@ -29,8 +29,6 @@ const PastDashboard = (props: RenderableProps<Props>) => {
 
   return (
     <>
-      <Helmet title={props.title} />
-
       <AppHeader>
         <PageTitle title={props.title}></PageTitle>
       </AppHeader>

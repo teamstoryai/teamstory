@@ -10,7 +10,7 @@ const PastMonth = (props: Props) => {
 
   return (
     <PastDashboard title="Past Month" modules={modules}>
-      <div>Coming Soon.</div>
+      <div>Coming Soon: an overview of your team's past month activity</div>
     </PastDashboard>
   )
 }

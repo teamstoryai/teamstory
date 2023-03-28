@@ -1,4 +1,4 @@
-import { useEffect } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 
 import Helmet from '@/components/core/Helmet'
 import DailyPrompt from '@/components/dashboard/DailyPrompt'
@@ -16,20 +16,32 @@ import Loader from '@/components/core/Loader'
 import { DataModuleProps } from '@/modules/DataModule'
 import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
+import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'
+import {
+  ComingSoonModules,
+  DashboardModules,
+  NeedsAttentionModules,
+  TeamCurrentModules,
+} from '@/screens/dashboards/dashboards'
 
 type Props = {
   path: string
 }
 
+const suggestions: Suggestion[] = [
+  { id: 'attention', label: 'What needs my attention?' },
+  { id: 'team', label: 'What is everyone working on?' },
+  { id: 'help', label: 'Who might need help?' },
+  { id: 'overloaded', label: 'Who is overloaded?' },
+]
+
 const Dashboard = (props: Props) => {
   const params = new URLSearchParams(location.search)
   const project = useStore(projectStore.currentProject)
   const initialized = useStore(dataStore.initialized)
-
-  const projectParam = params.get('p')
-  useEffect(() => {
-    if (projectParam && projectParam != project?.id) projectStore.setCurrentProject(projectParam)
-  }, [projectParam, project])
+  const [suggestion, setSuggestion] = useState<Suggestion | undefined>(
+    suggestionFromParams(params, suggestions)
+  )
 
   useEffect(() => {
     if (!project) return
@@ -46,55 +58,29 @@ const Dashboard = (props: Props) => {
 
   const today = new Date()
   const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
-  const lastMonth = sub(today, { months: 1 })
+  const lastMonth = format(sub(today, { days: 14 }), 'yyyy-MM-dd')
 
-  const modules: DataModuleProps[] = [
-    {
-      module: 'pull_requests',
-      title: 'Open Pull Requests',
-      query: 'is:open is:pr draft:false',
-    },
-    {
-      module: 'pull_requests',
-      title: 'Recently Merged Pull Requests',
-      query: `is:merged is:pr merged:>${recentKey}`,
-    },
-    {
-      module: 'gantt',
-      title: 'Activity Timeline',
-      filters: {
-        custom: {
-          updatedAt: { gt: lastMonth },
-          or: [{ startedAt: { null: false } }, { completedAt: { null: false } }],
-        },
-      },
-    },
-    {
-      module: 'issues',
-      title: 'Issues In Progress',
-      filters: { started: true },
-    },
-    {
-      module: 'issues',
-      title: 'Recently Completed',
-      filters: { completedAfter: recentKey },
-    },
-    {
-      module: 'issues',
-      title: 'New Bugs',
-      filters: { open: true, label: 'bug', createdAfter: recentKey },
-    },
-  ]
+  const suggestionId = suggestion?.id
+  const modules: DataModuleProps[] =
+    suggestionId == 'attention'
+      ? NeedsAttentionModules(recentKey)
+      : suggestionId == 'team'
+      ? TeamCurrentModules(recentKey)
+      : suggestionId == 'help'
+      ? ComingSoonModules()
+      : suggestionId == 'overloaded'
+      ? ComingSoonModules()
+      : DashboardModules(recentKey, lastMonth)
 
   return (
     <>
-      <Helmet title={'Dashboard'} />
-
       <AppHeader>
         <PageTitle title="Dashboard" />
       </AppHeader>
       <AppBody>
         <DailyPrompt date={today} />
+
+        <Suggestions {...{ suggestions, suggestion, setSuggestion }} />
 
         <div class="grid grid-cols-1 lg:grid-cols-2 -ml-4 my-4">
           <ModuleGroup modules={modules} />

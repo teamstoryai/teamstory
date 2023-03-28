@@ -8,20 +8,14 @@ import { projectStore } from '@/stores/projectStore'
 import { classNames } from '@/utils'
 import {
   CalendarDaysIcon,
-  ChartBarIcon,
-  ChartBarSquareIcon,
   ChatBubbleLeftEllipsisIcon,
-  ChatBubbleLeftIcon,
   ChevronDoubleLeftIcon,
-  ChevronLeftIcon,
   HomeIcon,
   SparklesIcon,
   Squares2X2Icon,
   UsersIcon,
 } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
-import icon_2weeks from '@/images/icon_2weeks.png'
-import icon_quarter from '@/images/icon_quarter.png'
 import { Project } from '@/models'
 
 type NavItem = {
@@ -31,18 +25,14 @@ type NavItem = {
   indent?: number
 }
 
-export default ({ showHideButton }: { showHideButton?: boolean }) => {
+const AppSidebar = ({ showHideButton }: { showHideButton?: boolean }) => {
   const projects = useStore(projectStore.activeProjects)
   const currentProject = useStore(projectStore.currentProject)
-
-  const style = {
-    background: '#fafafa',
-  }
 
   const needsSetup = !Project.meta(currentProject).ob
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 select-none" style={style}>
+    <div className="flex-1 flex flex-col min-h-0 select-none bg-gray-50">
       <div className="flex-1 flex flex-col overflow-y-auto scrollbar">
         {!projects.length ? (
           <>
@@ -70,8 +60,8 @@ const mainNav = [
   { name: 'Learning Log', href: paths.LEARNING, icon: SparklesIcon },
   { name: 'Past 2 Weeks', href: paths.PAST_WEEKS, icon: ChevronDoubleLeftIcon },
   { name: 'Past Month', href: paths.PAST_MONTH, icon: CalendarDaysIcon },
-  { name: 'Past Quarter', href: paths.PAST_QUARTER, icon: Squares2X2Icon },
-  { name: 'Team Members', href: paths.TEAM, icon: UsersIcon },
+  { name: 'This Quarter', href: paths.PAST_QUARTER, icon: Squares2X2Icon },
+  { name: 'Teams', href: paths.TEAM, icon: UsersIcon },
   { name: 'Ask Tally', href: paths.ASK_TALLY, icon: ChatBubbleLeftEllipsisIcon },
 ] as NavItem[]
 
@@ -107,3 +97,5 @@ function Links({ items }: { items: NavItem[] }) {
     </nav>
   )
 }
+
+export default AppSidebar

@@ -20,12 +20,11 @@ export function initFakeData() {
 
   // add fake project
   projectStore.activeProjects.set([...projects, fakeProject])
-  projectStore.addListener(onSwitchProject)
 }
 
 const today = new Date()
 
-function onSwitchProject(project: Project) {
+export function fakeDataSwitchProject(project: Project) {
   const isFake = project.id == 'fake'
   dataStore.fakeMode = isFake
   connectStore.fakeMode = isFake
@@ -34,18 +33,28 @@ function onSwitchProject(project: Project) {
     connectStore.repos.set(repos)
     const today = new Date()
 
+    const randDates = (offset: number, skipCompleted?: boolean) => (i: QueryIssue) => {
+      const start = sub(today, { days: offset + Math.floor(Math.random() * 12) })
+      if (skipCompleted) return { ...i, startedAt: start }
+      const end = add(start, { days: Math.floor(Math.random() * 12) })
+      if (end > today) return { ...i, startedAt: start, completedAt: today }
+      return { ...i, startedAt: start, completedAt: end }
+    }
+
     // --- for dashboard
-    const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]].map(
-      titleToFeature(0, { startedAt: sub(today, { days: -1 }) })
-    )
-    const recentIssues: QueryIssue[] = [bugs[2], features[2], bugs[3], features[3]].map(
-      titleToFeature(-6, {
-        completedAt: sub(today, { days: -1 }),
-      })
-    )
-    dataStore.cache['issues:{"started":true}'] = openIssues
+    const openIssues: QueryIssue[] = [bugs[0], features[0], bugs[1], features[1]]
+      .map(titleToFeature(0, {}))
+      .map(randDates(0, true))
+    const recentIssues: QueryIssue[] = [bugs[2], features[2], bugs[3], features[3]]
+      .map(titleToFeature(-6, {}))
+      .map(randDates(0))
+    dataStore.cache['issues:{"started":true,"open":true}'] = openIssues
     const recentKey = format(sub(today, { days: 5 }), 'yyyy-MM-dd')
+    const twoWeeksKey = format(sub(today, { days: 14 }), 'yyyy-MM-dd')
     dataStore.cache[`issues:{"completedAfter":"${recentKey}"}`] = recentIssues
+    dataStore.cache[
+      `issues:{"custom":{"updatedAt":{"gt":"${twoWeeksKey}"},"or":[{"startedAt":{"null":false}},{"completedAt":{"null":false}}]}}`
+    ] = recentIssues.concat(openIssues)
     dataStore.cache[`issues:{"open":true,"label":"bug","createdAfter":"${recentKey}"}`] = [
       recentIssues[0],
     ]
@@ -69,17 +78,19 @@ function onSwitchProject(project: Project) {
       .slice(4, 10)
       .map(
         titleToFeature(-20, {
-          completedAt: sub(today, { days: -14 }),
-          labels: () => Promise.resolve(['bug']),
+          labels: () => Promise.resolve([{ name: 'bug', color: 'red' }]),
         })
       )
+      .map(randDates(6))
       .concat(
-        features.slice(4, 9).map(
-          titleToFeature(-14, {
-            completedAt: sub(today, { days: -14 }),
-            labels: () => Promise.resolve(['feature']),
-          })
-        )
+        features
+          .slice(4, 9)
+          .map(
+            titleToFeature(-14, {
+              labels: () => Promise.resolve([{ name: 'feature', color: 'blue' }]),
+            })
+          )
+          .map(randDates(6))
       )
 
     dataStore.cache[
@@ -143,6 +154,7 @@ const titleToPull =
     updated_at: today.toISOString(),
     created_at: sub(today, { days: idx - i }).toISOString(),
     repo: repos[0].name,
+    comments: Math.floor(Math.random() * 3),
     ...props,
   })
 

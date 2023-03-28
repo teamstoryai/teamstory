@@ -10,7 +10,7 @@ const PastQuarter = (props: Props) => {
 
   return (
     <PastDashboard title="Past Quarter" modules={modules}>
-      <div>Coming Soon.</div>
+      <div>Coming Soon: tracking your team's progress this quarter</div>
     </PastDashboard>
   )
 }

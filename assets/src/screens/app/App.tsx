@@ -14,11 +14,12 @@ export default () => {
   const user = useStore(authStore.loggedInUser)
 
   useEffect(() => {
+    uiStore.setupProjectListener()
+
     if (user === undefined) authStore.init()
     else if (user === null) location.href = paths.SIGNIN
     else {
       uiStore.initLoggedInUser(user)
-
       if (location.pathname == paths.APP) {
         route(paths.DASHBOARD)
       }

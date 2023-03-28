@@ -75,6 +75,7 @@ const StatsModule = (props: StatsModuleProps) => {
                 `inline-flex items-baseline rounded-full px-2.5 py-0.5 text-sm font-medium md:mt-2 lg:mt-0 ` +
                 `bg-${stat.color}-100 text-${stat.color}-800`
               }
+              title={'Previous period: ' + stat.prev}
             >
               {stat.count < stat.prev ? (
                 <ArrowDownIcon class="h-4 w-4" />
@@ -98,7 +99,7 @@ const getStats = async (filters: IssueFilters) => {
   for (const issue of issues) {
     const labels = await issue.labels?.()
     labels?.forEach((label) => {
-      stats[label] = (stats[label] || 0) + 1
+      stats[label.name] = (stats[label.name] || 0) + 1
     })
     if (!labels || !labels.length) {
       stats[NO_LABEL] = (stats[NO_LABEL] || 0) + 1

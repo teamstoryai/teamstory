@@ -60,6 +60,11 @@ export type QueryUser = {
   username?: string
 }
 
+export type QueryLabel = {
+  name: string
+  color?: string
+}
+
 export type QueryIssue = {
   id: string
   identifier: string
@@ -70,7 +75,7 @@ export type QueryIssue = {
   completedAt?: Date
   url: string
   user?: () => Promise<QueryUser>
-  labels?: () => Promise<string[]>
+  labels?: () => Promise<QueryLabel[]>
 }
 
 export type QueryPullRequest = {
@@ -82,4 +87,5 @@ export type QueryPullRequest = {
   created_at: string
   closed_at?: string
   repo: string
+  comments: number
 }

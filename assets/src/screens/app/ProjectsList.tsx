@@ -1,6 +1,7 @@
 import Button from '@/components/core/Button'
 import Helmet from '@/components/core/Helmet'
 import AppHeader from '@/components/layout/AppHeader'
+import PageTitle from '@/components/layout/PageTitle'
 import NewProjectModal from '@/components/modals/NewProjectModal'
 import { paths } from '@/config'
 import { Project } from '@/models'
@@ -20,10 +21,8 @@ export default (props: Props) => {
 
   return (
     <>
-      <Helmet title="Projects" />
-
       <AppHeader>
-        <h1 className="text-2xl font-semibold text-gray-900">Projects</h1>
+        <PageTitle title="Projects" />{' '}
       </AppHeader>
 
       <div className="px-4 sm:px-6 md:px-8">

@@ -190,3 +190,6 @@ ul[data-type='taskList'],
   fill: #8ca8fd;
   opacity: 0.5;
 }
+.gantt .handle-group {
+  display: none;
+}

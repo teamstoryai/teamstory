@@ -4,9 +4,10 @@ import { useEffect, useState } from 'preact/hooks'
 import type { Issue } from '@linear/sdk/dist/_generated_documents'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
-import { QueryIssue, QueryUser } from '@/query/types'
+import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
 
 export type IssuesModuleProps = {
+  id?: string
   title: string
   filters: IssueFilters
 }
@@ -22,7 +23,10 @@ const IssuesModule = (props: IssuesModuleProps) => {
 
     dataStore
       .cacheRead(key, () => linear.issues(filters))
-      .then(setIssues)
+      .then((items) => {
+        dataStore.storeData(props.id, items)
+        setIssues(items)
+      })
       .catch(setError)
   }
 
@@ -43,13 +47,17 @@ const IssuesModule = (props: IssuesModuleProps) => {
             key={issue.id}
             class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
           >
-            <div class="text-sm flex gap-2">
+            <div class="text-sm flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
               {issue.user && (
-                <div class="text-gray-500">
-                  &bull; <DeferredUser promise={issue.user()} />
-                </div>
+                <>
+                  <div>&bull;</div>
+                  <div>
+                    <DeferredUser promise={issue.user()} />
+                  </div>
+                </>
               )}
+              {issue.labels && <Labels labels={issue.labels} />}
             </div>
             <div class="text-gray-800">{issue.title}</div>
           </a>
@@ -68,6 +76,26 @@ const DeferredUser = ({ promise }: { promise: Promise<QueryUser> }) => {
 
   if (!user) return null
   return <>{user.name}</>
+}
+
+const Labels = ({ labels }: { labels: () => Promise<QueryLabel[]> }) => {
+  const [labelsData, setLabelsData] = useState<QueryLabel[]>()
+  useEffect(() => {
+    labels().then(setLabelsData).catch(logger.error)
+  }, [labels])
+
+  if (!labelsData || labelsData.length == 0) return null
+
+  return (
+    <>
+      <div>&bull;</div>
+      {labelsData.map((label, i) => (
+        <span key={i} style={{ color: label.color }}>
+          {label.name}
+        </span>
+      ))}
+    </>
+  )
 }
 
 export default IssuesModule

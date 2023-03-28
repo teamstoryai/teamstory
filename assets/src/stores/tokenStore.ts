@@ -1,7 +1,7 @@
 import { atom } from 'nanostores'
 
 import { API } from '@/api'
-import { OAuthToken } from '@/models'
+import { OAuthToken, Project } from '@/models'
 import { authStore } from '@/stores/authStore'
 
 class TokenStore {
@@ -11,7 +11,7 @@ class TokenStore {
 
   // --- actions
 
-  fetchTokens = async () => {
+  fetchTokens = async (project: Project) => {
     if (authStore.debugMode()) (window as any)['tokenStore'] = tokenStore
 
     const response = await API.getMultipleOAuthTokens(['github', 'gitlab', 'linear', 'jira'])

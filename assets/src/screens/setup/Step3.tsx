@@ -28,7 +28,7 @@ export const Step3 = () => {
           await projectStore.updateProject(project, { meta: { ob: 1 } })
         }
         uiStore
-          .loadTokens()
+          .loadTokens(projectStore.currentProject.get()!)
           .then(() => route(paths.DASHBOARD))
           .catch((e) => {
             logger.error(e)

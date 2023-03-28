@@ -12,6 +12,7 @@ export type IssueFilters = {
   completedAfter?: string
   completedBefore?: string
   label?: string
+  priority?: number // 1 = urgent, 2 = high, 3 = medium, 4 = low
   custom?: IssueFilter
 }
 
@@ -24,11 +25,11 @@ class Linear {
 
   issues = async (props: IssueFilters = {}): Promise<QueryIssue[]> => {
     const filter: IssueFilter = {}
-    if (props.open) {
-      filter.completedAt = { ...filter.completedAt, null: true }
+    if (props.open !== undefined) {
+      filter.completedAt = { ...filter.completedAt, null: props.open }
     }
-    if (props.started) {
-      filter.startedAt = { ...filter.startedAt, null: false }
+    if (props.started !== undefined) {
+      filter.startedAt = { ...filter.startedAt, null: !props.started }
     }
     if (props.createdBefore) {
       filter.createdAt = { ...filter.createdAt, lte: new Date(props.createdBefore) }
@@ -47,6 +48,9 @@ class Linear {
     }
     if (props.label) {
       filter.labels = { ...filter.labels, some: { name: { eqIgnoreCase: props.label } } }
+    }
+    if (props.priority !== undefined) {
+      filter.priority = { lte: props.priority, gt: 0 }
     }
     if (props.custom) {
       Object.assign(filter, props.custom)
@@ -67,7 +71,11 @@ class Linear {
               id: assignee.id,
               name: assignee.name,
             })),
-      labels: async () => (await issue.labels()).nodes.map((n) => n.name),
+      labels: async () =>
+        (await issue.labels()).nodes.map((n) => ({
+          name: n.name,
+          color: n.color,
+        })),
     }))
   }
 }

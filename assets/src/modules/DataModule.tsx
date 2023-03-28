@@ -1,8 +1,10 @@
+import ComingSoonModule, { ComingSoonModuleProps } from '@/modules/ComingSoonModule'
 import GanttModule, { GanttModuleProps } from '@/modules/GanttModule'
 import IssuesModule, { IssuesModuleProps } from '@/modules/IssuesModule'
 import NotesModule, { NotesModuleProps } from '@/modules/NotesModule'
 import PullRequestsModule, { PullRequestsModuleProps } from '@/modules/PullRequestsModule'
 import StatsModule, { StatsModuleProps } from '@/modules/StatsModule'
+import TeamCurrentModule, { TeamCurrentModuleProps } from '@/modules/TeamCurrentModule'
 
 export type DataModuleProps =
   | ({ module: 'issues' } & IssuesModuleProps)
@@ -10,6 +12,8 @@ export type DataModuleProps =
   | ({ module: 'gantt' } & GanttModuleProps)
   | ({ module: 'notes' } & NotesModuleProps)
   | ({ module: 'stats' } & StatsModuleProps)
+  | ({ module: 'team_current' } & TeamCurrentModuleProps)
+  | ({ module: 'coming_soon' } & ComingSoonModuleProps)
 
 function DataModule(props: DataModuleProps) {
   switch (props.module) {
@@ -23,6 +27,10 @@ function DataModule(props: DataModuleProps) {
       return <NotesModule {...props} />
     case 'stats':
       return <StatsModule {...props} />
+    case 'team_current':
+      return <TeamCurrentModule {...props} />
+    case 'coming_soon':
+      return <ComingSoonModule {...props} />
     default:
       return null
   }

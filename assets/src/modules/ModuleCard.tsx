@@ -23,7 +23,8 @@ const ModuleCard = ({
   return (
     <div
       class={twMerge(
-        'flex flex-col m-2 p-4 border border-gray-200 rounded-md flex-1 min-w-[400px] shadow max-h-[500px] overflow-y-auto',
+        'flex flex-col m-2 p-4 border border-gray-200 rounded-md flex-1 min-w-[400px] shadow ' +
+          'max-h-[500px] overflow-y-auto bg-white',
         className || ''
       )}
     >
