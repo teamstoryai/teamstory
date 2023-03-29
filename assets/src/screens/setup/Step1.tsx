@@ -117,14 +117,14 @@ export const Step1 = () => {
               {repo.name}
             </div>
           ))}
-          {state == ConnectState.RepoSelected && (
+          {
             <Pressable
               onClick={() => connectAnother()}
               className="text-gray-500 hover:text-gray-900 block"
             >
-              Connect another repository?
+              Connect another repository
             </Pressable>
-          )}
+          }
         </div>
       )}
 
@@ -210,11 +210,10 @@ function SelectRepository({
   if (!token || !orgs) return null
 
   return (
-    <>
-      <div class="mt-4">
+    <div class="bg-blue-100 p-2 mt-4 -mx-2 rounded-md">
+      <>
         {currentOrg ? (
           <>
-            <div>Organization:</div>
             <div class="flex flex-col gap-2 mt-2">
               <Pressable
                 onClick={() => {
@@ -257,7 +256,7 @@ function SelectRepository({
             </div>
           </>
         )}
-      </div>
+      </>
 
       {repos && (
         <div class="mt-4">
@@ -301,6 +300,6 @@ function SelectRepository({
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }
