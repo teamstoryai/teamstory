@@ -19,6 +19,8 @@ export type IssueFilters = {
 class Linear {
   client: LinearClient = new LinearClient({ apiKey: 'nothing' })
 
+  teamFilter: string[] = []
+
   setToken = (token: string) => {
     this.client = new LinearClient({ accessToken: token })
   }
@@ -51,6 +53,9 @@ class Linear {
     }
     if (props.priority !== undefined) {
       filter.priority = { lte: props.priority, gt: 0 }
+    }
+    if (this.teamFilter.length) {
+      filter.team = { id: { in: this.teamFilter } }
     }
     if (props.custom) {
       Object.assign(filter, props.custom)

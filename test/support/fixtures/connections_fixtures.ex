@@ -30,7 +30,7 @@ defmodule Teamstory.ConnectionsFixtures do
       attrs
       |> Enum.into(%{
         project_id: 1,
-        project: "some project",
+        name: "some name",
         base_url: "some base_url",
         service: "some service",
         uuid: "7488a646-e31f-11e4-aace-600308960662"

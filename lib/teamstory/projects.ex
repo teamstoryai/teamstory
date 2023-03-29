@@ -119,7 +119,10 @@ defmodule Teamstory.Projects do
         ]
   def list_project_members(project) do
     ups =
-      Repo.all(from up in UserProject, where: up.project_id == ^project.id and is_nil(up.left_at))
+      Repo.all(
+        from up in UserProject,
+          where: up.project_id == ^project.id and is_nil(up.left_at) and up.role != "hidden"
+      )
       |> Repo.preload(:user)
 
     invites =

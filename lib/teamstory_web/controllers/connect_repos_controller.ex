@@ -74,9 +74,10 @@ defmodule TeamstoryWeb.ConnectReposController do
            avatar_url: params["avatar_url"],
            base_url: params["base_url"],
            service: params["service"],
-           project_id: project.id
+           project_id: project.id,
+           deleted_at: nil
          },
-         {:ok, repo} <- Connections.create_repository(attrs) do
+         {:ok, repo} <- Connections.update_or_create_repository(attrs) do
       render(conn, "get.json", item: repo)
     end
   end

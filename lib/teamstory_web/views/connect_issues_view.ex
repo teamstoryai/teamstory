@@ -1,0 +1,25 @@
+defmodule TeamstoryWeb.ConnectIssuesView do
+  use TeamstoryWeb, :view
+
+  def render_item(item) do
+    %{
+      id: Teamstory.Utils.no_dash(item.uuid),
+      name: item.name,
+      service: item.service,
+      base_url: item.base_url,
+      deleted_at: item.deleted_at
+    }
+  end
+
+  def render("list.json", %{items: items}) do
+    %{
+      items: items |> Enum.map(&render_item(&1))
+    }
+  end
+
+  def render("get.json", %{item: item}) do
+    %{
+      item: render_item(item)
+    }
+  end
+end

@@ -8,7 +8,7 @@ import { tokenStore } from '@/stores/tokenStore'
 import Loader from '@/components/core/Loader'
 import Pressable from '@/components/core/Pressable'
 import { connectStore, OrgData, RepoData } from '@/stores/connectStore'
-import { OAuthToken } from '@/models'
+import { OAuthToken, Repository } from '@/models'
 import useOAuthPopup from '@/hooks/useOAuthPopup'
 import { LockClosedIcon } from '@heroicons/react/24/outline'
 import ForkIcon from '@/components/icons/ForkIcon'
@@ -17,6 +17,7 @@ import { projectStore } from '@/stores/projectStore'
 import { config } from '@/config'
 import { API } from '@/api'
 import { uiStore } from '@/stores/uiStore'
+import github from '@/query/github'
 
 const GH_SCOPES = 'user:email,repo,read:org'
 export const GH_URL = `https://github.com/login/oauth/authorize?scope=${GH_SCOPES}&client_id=`
@@ -26,7 +27,6 @@ enum ConnectState {
   Loading,
   Connected,
   RepoSelected,
-  ConnectAnother,
 }
 export const Step1 = () => {
   const [state, setState] = useState<ConnectState>(ConnectState.NotConnected)
@@ -44,10 +44,13 @@ export const Step1 = () => {
     if (!initialized) return
     const tokens = tokenStore.tokens.get()
     const found = tokens.find((t) => t.name == 'github' || t.name == 'gitlab')
-    if (!repos.length && found) {
-      setCurrentToken(found)
+    if (!found) return
+
+    if (found.name == 'github') github.setToken(found.access)
+    setCurrentToken(found)
+    if (!repos.length) {
       setState(ConnectState.Connected)
-    } else if (repos.length) {
+    } else {
       setState(ConnectState.RepoSelected)
     }
   }, [initialized])
@@ -81,8 +84,12 @@ export const Step1 = () => {
         })
     },
     setError,
-    state == ConnectState.NotConnected || state == ConnectState.ConnectAnother
+    state == ConnectState.NotConnected
   )
+
+  const connectAnother = () => {
+    setState(ConnectState.Connected)
+  }
 
   return (
     <div class="mb-12">
@@ -110,20 +117,27 @@ export const Step1 = () => {
               {repo.name}
             </div>
           ))}
-          <Pressable
-            onClick={() => setState(ConnectState.ConnectAnother)}
-            className="text-gray-500 hover:text-gray-900 block"
-          >
-            Connect another repository?
-          </Pressable>
+          {
+            <Pressable
+              onClick={() => connectAnother()}
+              className="text-gray-500 hover:text-gray-900 block"
+            >
+              Connect another repository
+            </Pressable>
+          }
         </div>
       )}
 
-      {currentToken && (
-        <SelectRepository token={currentToken} addRepo={addRepo} setError={setError} />
+      {state == ConnectState.Connected && currentToken && (
+        <SelectRepository
+          token={currentToken}
+          addRepo={addRepo}
+          setError={setError}
+          existing={repos[0]}
+        />
       )}
 
-      {(state == ConnectState.NotConnected || state == ConnectState.ConnectAnother) && (
+      {state == ConnectState.NotConnected && (
         <div class="flex flex-row items-center justify-center mt-8 gap-8">
           <ConnectButton
             icon={githubLogo}
@@ -143,10 +157,12 @@ function SelectRepository({
   token,
   addRepo,
   setError,
+  existing,
 }: {
   token: OAuthToken
   addRepo: (org: OrgData, repo: RepoData) => void
   setError: (err: string | undefined) => void
+  existing?: Repository
 }) {
   const [orgs, setOrgs] = useState<OrgData[]>()
   const [currentOrg, setCurrentOrg] = useState<OrgData>()
@@ -160,21 +176,31 @@ function SelectRepository({
 
   const fetchOrgs = () => {
     setError(undefined)
-    connectStore
-      .fetchOrgs(token.name)
-      .then((orgs) => {
+
+    github
+      .orgs()
+      .then((orgs: OrgData[]) => {
         logger.info(orgs)
         setOrgs(orgs)
+
+        if (existing) {
+          const [owner, repo] = existing.name.split('/')
+          const org = orgs.find((o) => o.login == owner)
+          if (org) {
+            setCurrentOrg(org)
+            fetchRepos(token, org)
+          }
+        }
       })
       .catch(setError)
   }
 
-  const fetchRepos = (token: OAuthToken, org: any) => {
+  const fetchRepos = (token: OAuthToken, org: OrgData) => {
     setCurrentOrg(org)
     setError(undefined)
-    connectStore
-      .fetchRepos(token.name, org)
-      .then((repos) => {
+    github
+      .repos(org.login)
+      .then((repos: RepoData[]) => {
         logger.info(repos)
         setRepos(repos)
       })
@@ -184,11 +210,10 @@ function SelectRepository({
   if (!token || !orgs) return null
 
   return (
-    <>
-      <div class="mt-4">
+    <div class="bg-blue-100 p-2 mt-4 -mx-2 rounded-md">
+      <>
         {currentOrg ? (
           <>
-            <div>Organization:</div>
             <div class="flex flex-col gap-2 mt-2">
               <Pressable
                 onClick={() => {
@@ -231,7 +256,7 @@ function SelectRepository({
             </div>
           </>
         )}
-      </div>
+      </>
 
       {repos && (
         <div class="mt-4">
@@ -275,6 +300,6 @@ function SelectRepository({
           )}
         </div>
       )}
-    </>
+    </div>
   )
 }

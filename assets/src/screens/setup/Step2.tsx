@@ -7,12 +7,14 @@ import { projectStore } from '@/stores/projectStore'
 import { tokenStore } from '@/stores/tokenStore'
 import { logger, toTitleCase } from '@/utils'
 import ErrorMessage from '@/components/core/ErrorMessage'
-import { OAuthToken } from '@/models'
+import { IssueTracker, OAuthToken } from '@/models'
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { API } from '@/api'
 import { LinearClient } from '@linear/sdk'
 import Pressable from '@/components/core/Pressable'
 import linear from '@/query/linear'
+import { useStore } from '@nanostores/preact'
+import { connectStore } from '@/stores/connectStore'
 
 const LIN_SCOPES = 'read'
 const LIN_URI = location.origin + '/oauth/linear'
@@ -20,7 +22,7 @@ const LINEAR_URL =
   'https://linear.app/oauth/authorize?response_type=code&actor=application' +
   `&scope=${LIN_SCOPES}&redirect_uri=${encodeURIComponent(LIN_URI)}&client_id=`
 
-type Project = {
+type IssueGroup = {
   id: string
   name: string
   key: string
@@ -31,7 +33,8 @@ export const Step2 = () => {
   const [currentToken, setCurrentToken] = useState<OAuthToken>()
   const linClientIdRef = useRef<string>()
 
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<IssueGroup[]>([])
+  const connectedTrackers = useStore(connectStore.trackers)
 
   useEffect(() => {
     if (!currentToken) return
@@ -88,6 +91,20 @@ export const Step2 = () => {
     !currentToken
   )
 
+  const connect = (project: IssueGroup, disconnect?: IssueTracker) => {
+    if (disconnect) return connectStore.deleteTracker(disconnect)
+    connectStore
+      .addTracker(currentToken!.name, {
+        base_url: project.id,
+        name: project.name,
+        service: currentToken!.name,
+      })
+      .catch((err) => {
+        logger.error(err)
+        setError(err)
+      })
+  }
+
   return (
     <div class="mb-12">
       <h1 class="text-lg my-2">2. Connect project management</h1>
@@ -103,14 +120,20 @@ export const Step2 = () => {
 
       {projects && projects.length > 0 && (
         <>
-          <div>Select one or more {currentToken?.name == 'linear' ? 'teams' : 'projects'}:</div>
+          <div class="mt-4">
+            Select one or more {currentToken?.name == 'linear' ? 'teams' : 'projects'}:
+          </div>
           <div class="flex flex-col gap-2 mt-2">
-            {projects.map((p) => (
-              <Pressable onClick={() => {}} key={p.id} className="flex-row">
-                {p.name}
-                <span class="text-gray-500 ml-2">({p.key})</span>
-              </Pressable>
-            ))}
+            {projects.map((p) => {
+              const connected = connectedTrackers.find((t) => t.base_url == p.id)
+              return (
+                <Pressable onClick={() => connect(p, connected)} key={p.id} className="flex-row">
+                  {p.name}
+                  <span class="text-gray-500 ml-2">({p.key})</span>
+                  {connected && <CheckIcon class="h-4 w-4 text-green-600 ml-2" />}
+                </Pressable>
+              )
+            })}
           </div>
         </>
       )}

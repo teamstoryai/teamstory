@@ -55,7 +55,7 @@ class UIStore {
       dataStore.initialized.set(false)
       dataStore.clearAll()
       tokenStore.tokens.set([])
-      connectStore.clearRepos()
+      connectStore.clearData()
       fakeDataSwitchProject(project)
       await this.loadTokens(project)
       dataStore.initTokens()
@@ -66,7 +66,7 @@ class UIStore {
     this.initialized.set(false)
     await Promise.all([
       tokenStore.fetchTokens(project).then(() => dataStore.initTokens()),
-      connectStore.loadConnectedRepos(project),
+      connectStore.loadConnections(project),
     ])
     this.initialized.set(true)
   }
