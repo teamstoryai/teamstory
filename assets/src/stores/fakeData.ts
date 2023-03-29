@@ -62,7 +62,9 @@ export function fakeDataSwitchProject(project: Project) {
       recentIssues[0],
     ]
     const openPulls: QueryPullRequest[] = [pullTitles[0], pullTitles[1]].map(titleToPull(0, {}))
-    dataStore.cache['rocketship/ship:pr:is:open is:pr draft:false'] = { items: openPulls }
+    dataStore.cache[`rocketship/ship:pr:is:open is:pr draft:false created:>${recentKey}`] = {
+      items: openPulls,
+    }
     const closedPulls: QueryPullRequest[] = [pullTitles[2], pullTitles[3]].map(
       titleToPull(-5, {
         closed_at: sub(today, { days: -1 }).toISOString(),

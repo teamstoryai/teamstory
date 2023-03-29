@@ -4,8 +4,8 @@ import { dateToYMD, pastTwoWeeksDates } from '@/stores/dataStore'
 export const DashboardModules = (dateKey: string, timelineStart: string): DataModuleProps[] => [
   {
     module: 'pull_requests',
-    title: 'Open Pull Requests',
-    query: 'is:open is:pr draft:false',
+    title: 'New Open Pull Requests',
+    query: `is:open is:pr draft:false created:>${dateKey}`,
   },
   {
     module: 'pull_requests',
