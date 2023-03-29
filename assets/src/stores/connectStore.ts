@@ -1,6 +1,7 @@
 import { API } from '@/api'
 import { config } from '@/config'
 import { IssueTracker, Project, Repository } from '@/models'
+import linear from '@/query/linear'
 import { projectStore } from '@/stores/projectStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
@@ -69,9 +70,10 @@ class ConnectStore {
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.issue_trackers.list(project)
-    const projects = response.items.map((i) => IssueTracker.fromJSON(i))
-    this.trackers.set(projects)
-    return projects
+    const trackers = response.items.map((i) => IssueTracker.fromJSON(i))
+    this.trackers.set(trackers)
+    this.updateTeamFilters(trackers)
+    return trackers
   }
 
   addTracker = async (service: string, data: Partial<IssueTracker>) => {
@@ -79,13 +81,22 @@ class ConnectStore {
     assertIsDefined(project, 'project')
     const response = await API.issue_trackers.create(project, data)
     const proj = IssueTracker.fromJSON(response.item)
-    this.trackers.set([...this.trackers.get(), proj])
+    const newTrackers = [...this.trackers.get(), proj]
+    this.trackers.set(newTrackers)
+    this.updateTeamFilters(newTrackers)
     return proj
+  }
+
+  updateTeamFilters = (trackers: IssueTracker[]) => {
+    const ids = trackers.map((t) => t.base_url!)
+    linear.teamFilter = ids
   }
 
   deleteTracker = async (tracker: IssueTracker) => {
     await API.issue_trackers.update(tracker.id, { deleted_at: new Date().toISOString() })
-    this.trackers.set(this.trackers.get().filter((i) => i.id !== tracker.id))
+    const newTrackers = this.trackers.get().filter((i) => i.id !== tracker.id)
+    this.trackers.set(newTrackers)
+    this.updateTeamFilters(newTrackers)
   }
 }
 
