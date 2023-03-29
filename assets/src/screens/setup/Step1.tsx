@@ -60,7 +60,6 @@ export const Step1 = () => {
     connectStore
       .addRepo(currentToken!.name, org, repo)
       .then(() => {
-        setCurrentToken(undefined)
         setState(ConnectState.RepoSelected)
       })
       .catch(setError)
