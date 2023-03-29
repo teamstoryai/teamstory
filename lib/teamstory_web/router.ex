@@ -97,6 +97,7 @@ defmodule TeamstoryWeb.Router do
     resources "/connect/repos", ConnectReposController, only: [:index, :create, :update]
     get "/connect/repos/fetch_orgs", ConnectReposController, :fetch_orgs
     get "/connect/repos/fetch_repos", ConnectReposController, :fetch_repos
+    resources "/connect/issues", ConnectIssuesController, only: [:index, :create, :update]
 
     get "/query/repo/:query", QueryReposController, :query
 

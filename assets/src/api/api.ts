@@ -4,7 +4,7 @@ import { config, OAuthProvider } from '@/config'
 import {
   AuthToken,
   AuthTokenPair,
-  IssueProject,
+  IssueTracker,
   OAuthToken,
   Project,
   ProjectRole,
@@ -243,10 +243,10 @@ class APIService {
 
   public repos = new ResourceWithParent<Project, Repository>(this, 'project_id', 'connect/repos')
 
-  public issue_projects = new ResourceWithParent<Project, IssueProject>(
+  public issue_trackers = new ResourceWithParent<Project, IssueTracker>(
     this,
     'project_id',
-    'connect/projects'
+    'connect/issues'
   )
 
   // tokens

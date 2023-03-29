@@ -1,4 +1,4 @@
-export * from './issue_project'
+export * from './issue_tracker'
 export * from './message'
 export * from './oauth_token'
 export * from './org'

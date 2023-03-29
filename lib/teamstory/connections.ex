@@ -27,6 +27,45 @@ defmodule Teamstory.Connections do
     end
   end
 
+  def update_or_create_repository(attrs) do
+    existing = Repo.get_by(Repository, project_id: attrs.project_id, base_url: attrs.base_url)
+
+    if existing do
+      update_repository(existing, attrs)
+    else
+      create_repository(attrs)
+    end
+  end
+
+  @spec list_issue_trackers(Project.t()) :: [IssueTracker.t()]
+  def list_issue_trackers(project) do
+    from(t in IssueTracker,
+      where: t.project_id == ^project.id and is_nil(t.deleted_at),
+      order_by: [asc: :id]
+    )
+    |> Repo.all()
+  end
+
+  @spec issue_tracker_by_uuid(binary) :: {:error, :not_found} | {:ok, IssueTracker.t()}
+  def issue_tracker_by_uuid(uuid) do
+    if uuid != nil and uuid != "undefined" and uuid != "" do
+      it = Repo.one(from q in IssueTracker, where: q.uuid == ^Base.decode16!(String.upcase(uuid)))
+      if it, do: {:ok, it}, else: {:error, :not_found}
+    else
+      {:error, :not_found}
+    end
+  end
+
+  def update_or_create_issue_tracker(attrs) do
+    existing = Repo.get_by(IssueTracker, project_id: attrs.project_id, base_url: attrs.base_url)
+
+    if existing do
+      update_issue_tracker(existing, attrs)
+    else
+      create_issue_tracker(attrs)
+    end
+  end
+
   @doc """
   Returns the list of repositories.
 

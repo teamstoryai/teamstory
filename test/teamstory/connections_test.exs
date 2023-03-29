@@ -88,7 +88,7 @@ defmodule Teamstory.ConnectionsTest do
 
     import Teamstory.ConnectionsFixtures
 
-    @invalid_attrs %{deleted_at: nil, project: nil, project_id: nil, service: nil, uuid: nil}
+    @invalid_attrs %{deleted_at: nil, name: nil, project_id: nil, service: nil, uuid: nil}
 
     test "list_issue_trackers/0 returns all issue_trackers" do
       issue_tracker = issue_tracker_fixture()
@@ -103,7 +103,7 @@ defmodule Teamstory.ConnectionsTest do
     test "create_issue_tracker/1 with valid data creates a issue_tracker" do
       valid_attrs = %{
         project_id: 1,
-        project: "some project",
+        name: "some project",
         base_url: "some base_url",
         service: "some service",
         uuid: "7488a646-e31f-11e4-aace-600308960662"
@@ -113,7 +113,7 @@ defmodule Teamstory.ConnectionsTest do
                Connections.create_issue_tracker(valid_attrs)
 
       assert issue_tracker.project_id == 1
-      assert issue_tracker.project == "some project"
+      assert issue_tracker.name == "some project"
       assert issue_tracker.base_url == "some base_url"
       assert issue_tracker.service == "some service"
       assert issue_tracker.uuid == "7488a646-e31f-11e4-aace-600308960662"
@@ -128,7 +128,7 @@ defmodule Teamstory.ConnectionsTest do
 
       update_attrs = %{
         deleted_at: ~U[2023-03-20 21:42:00Z],
-        project: "some updated project",
+        name: "some updated project",
         base_url: "some updated base_url",
         service: "some updated service",
         uuid: "7488a646-e31f-11e4-aace-600308960668"
@@ -138,7 +138,7 @@ defmodule Teamstory.ConnectionsTest do
                Connections.update_issue_tracker(issue_tracker, update_attrs)
 
       assert issue_tracker.deleted_at == ~U[2023-03-20 21:42:00Z]
-      assert issue_tracker.project == "some updated project"
+      assert issue_tracker.name == "some updated project"
       assert issue_tracker.base_url == "some updated base_url"
       assert issue_tracker.service == "some updated service"
       assert issue_tracker.uuid == "7488a646-e31f-11e4-aace-600308960668"

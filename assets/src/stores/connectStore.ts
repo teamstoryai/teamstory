@@ -1,6 +1,6 @@
 import { API } from '@/api'
 import { config } from '@/config'
-import { IssueProject, Project, Repository } from '@/models'
+import { IssueTracker, Project, Repository } from '@/models'
 import { projectStore } from '@/stores/projectStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
@@ -25,18 +25,19 @@ class ConnectStore {
 
   repos = atom<Repository[]>([])
 
-  projects = atom<IssueProject[]>([])
+  trackers = atom<IssueTracker[]>([])
 
   fakeMode = false
 
   // --- actions
 
-  clearRepos = () => {
+  clearData = () => {
     this.repos.set([])
+    this.trackers.set([])
   }
 
-  loadConnections = async () => {
-    await Promise.all([this.loadConnectedRepos(), this.loadConnectedProjects()])
+  loadConnections = async (project?: Project) => {
+    await Promise.all([this.loadConnectedRepos(project), this.loadConnectedTrackers(project)])
   }
 
   loadConnectedRepos = async (project?: Project) => {
@@ -63,23 +64,28 @@ class ConnectStore {
     return repo
   }
 
-  loadConnectedProjects = async (project?: Project) => {
-    if (this.fakeMode) return this.projects.get()
+  loadConnectedTrackers = async (project?: Project) => {
+    if (this.fakeMode) return this.trackers.get()
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
-    const response = await API.issue_projects.list(project)
-    const projects = response.items.map((i) => IssueProject.fromJSON(i))
-    this.projects.set(projects)
+    const response = await API.issue_trackers.list(project)
+    const projects = response.items.map((i) => IssueTracker.fromJSON(i))
+    this.trackers.set(projects)
     return projects
   }
 
-  addProject = async (service: string, data: IssueProject) => {
+  addTracker = async (service: string, data: Partial<IssueTracker>) => {
     const project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
-    const response = await API.repos.create(project, data)
-    const proj = IssueProject.fromJSON(response.item)
-    this.projects.set([...this.projects.get(), proj])
+    const response = await API.issue_trackers.create(project, data)
+    const proj = IssueTracker.fromJSON(response.item)
+    this.trackers.set([...this.trackers.get(), proj])
     return proj
+  }
+
+  deleteTracker = async (tracker: IssueTracker) => {
+    await API.issue_trackers.update(tracker.id, { deleted_at: new Date().toISOString() })
+    this.trackers.set(this.trackers.get().filter((i) => i.id !== tracker.id))
   }
 }
 
