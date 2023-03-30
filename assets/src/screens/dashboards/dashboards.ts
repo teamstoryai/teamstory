@@ -58,16 +58,6 @@ export const NeedsAttentionModules = (dateKey: string): DataModuleProps[] => [
   },
 ]
 
-export const TeamCurrentModules = (dateKey: string): DataModuleProps[] => [
-  {
-    module: 'team_current',
-    title: 'Breakdown by Team Member',
-    openPulls: 'is:open is:pr draft:false',
-    mergedPulls: `is:merged is:pr merged:>${dateKey}`,
-    openIssues: { started: true, open: true },
-  },
-]
-
 export const ComingSoonModules = (): DataModuleProps[] => [
   {
     module: 'coming_soon',
