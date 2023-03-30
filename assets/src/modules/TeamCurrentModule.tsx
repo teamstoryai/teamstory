@@ -44,6 +44,7 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
     // for (const id of selected) {
     //   if (users[id]) {
     // connectStore.updateUsers(changes)
+    alert('coming soon.')
   }
 
   return (
