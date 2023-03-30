@@ -448,4 +448,100 @@ defmodule Teamstory.Projects do
   def change_project_invite(%ProjectInvite{} = project_invite, attrs \\ %{}) do
     ProjectInvite.changeset(project_invite, attrs)
   end
+
+  alias Teamstory.Projects.ProjectData
+
+  @doc """
+  Returns the list of project_data.
+
+  ## Examples
+
+      iex> list_project_data()
+      [%ProjectData{}, ...]
+
+  """
+  def list_project_data do
+    Repo.all(ProjectData)
+  end
+
+  @doc """
+  Gets a single project_data.
+
+  Raises `Ecto.NoResultsError` if the Project data does not exist.
+
+  ## Examples
+
+      iex> get_project_data!(123)
+      %ProjectData{}
+
+      iex> get_project_data!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_project_data!(id), do: Repo.get!(ProjectData, id)
+
+  @doc """
+  Creates a project_data.
+
+  ## Examples
+
+      iex> create_project_data(%{field: value})
+      {:ok, %ProjectData{}}
+
+      iex> create_project_data(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_project_data(attrs \\ %{}) do
+    %ProjectData{}
+    |> ProjectData.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a project_data.
+
+  ## Examples
+
+      iex> update_project_data(project_data, %{field: new_value})
+      {:ok, %ProjectData{}}
+
+      iex> update_project_data(project_data, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_project_data(%ProjectData{} = project_data, attrs) do
+    project_data
+    |> ProjectData.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a project_data.
+
+  ## Examples
+
+      iex> delete_project_data(project_data)
+      {:ok, %ProjectData{}}
+
+      iex> delete_project_data(project_data)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_project_data(%ProjectData{} = project_data) do
+    Repo.delete(project_data)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking project_data changes.
+
+  ## Examples
+
+      iex> change_project_data(project_data)
+      %Ecto.Changeset{data: %ProjectData{}}
+
+  """
+  def change_project_data(%ProjectData{} = project_data, attrs \\ %{}) do
+    ProjectData.changeset(project_data, attrs)
+  end
 end
