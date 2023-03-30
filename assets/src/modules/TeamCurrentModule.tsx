@@ -1,13 +1,14 @@
+import Pressable from '@/components/core/Pressable'
 import { issuesFetch, useIssues } from '@/modules/IssuesModule'
 import DataModule from '@/modules/ModuleCard'
 import { pullRequestFetch, usePullRequests } from '@/modules/PullRequestsModule'
 import github from '@/query/github'
 import linear, { IssueFilters } from '@/query/linear'
 import { QueryIssue, QueryPullRequest, QueryUser } from '@/query/types'
-import { connectStore } from '@/stores/connectStore'
+import { connectStore, ProjectUserMap } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
-import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline'
+import { ChatBubbleLeftIcon, CheckIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
 import { StateUpdater, useEffect, useState } from 'preact/hooks'
@@ -35,31 +36,74 @@ const NONE_USER = 'none'
 const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
   const [error, setError] = useState<Error>()
   const timelines = calculateUserInfoMap(props, setError)
+  const [selected, setSelected] = useState<string[]>([])
+
+  const merge = () => {
+    // const users = connectStore.users.get()
+    // const changes: ProjectUserMap = {}
+    // for (const id of selected) {
+    //   if (users[id]) {
+    // connectStore.updateUsers(changes)
+  }
 
   return (
     <DataModule title={props.title} className="lg:col-span-2" error={error}>
+      <div class="-ml-1">
+        {selected.length > 1 && (
+          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={merge}>
+            Merge users
+          </Pressable>
+        )}
+      </div>
       <div className="grid grid-cols-4 divide-y divide-gray-200 -mx-4 -mb-4">
         {timelines.map((timeline) => (
-          <UserRow key={timeline.user.id} data={timeline} />
+          <UserRow
+            key={timeline.user.id}
+            data={timeline}
+            selected={selected.indexOf(timeline.user.id) > -1}
+            setSelected={setSelected}
+          />
         ))}
       </div>
     </DataModule>
   )
 }
 
-function UserRow({ data }: { data: UserTimeline }) {
+function UserRow({
+  data,
+  selected,
+  setSelected,
+}: {
+  data: UserTimeline
+  selected: boolean
+  setSelected: StateUpdater<string[]>
+}) {
   const today = new Date()
+  const select = () => {
+    if (selected) setSelected((selected) => selected.filter((id) => id !== data.user.id))
+    else setSelected((selected) => [...selected, data.user.id])
+  }
   return (
     <>
       <div className="flex items-center p-4 pr-2">
-        <img
-          className="h-12 w-12 rounded-full mr-2"
-          src={
-            data.user.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.name)}`
-          }
-          alt=""
-        />
+        <div className="mr-2 relative">
+          <img
+            className="h-12 w-12 rounded-full"
+            src={
+              data.user.avatar ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(data.user.name)}`
+            }
+            alt=""
+          />
+          <div
+            onClick={select}
+            className={`absolute rounded-full top-0 left-0 w-full h-full hover:bg-gray-800/50
+              cursor-pointer ${selected ? 'bg-gray-800/80' : ''}`}
+            title="Merge"
+          >
+            {selected && <CheckIcon class="ml-2 mt-2 h-8 w-8 text-green-500" />}
+          </div>
+        </div>
         <div class="flex-1 truncate">
           <p className="text-sm font-medium text-indigo-600">{data.user.name}</p>
           <p className="mt-2 flex items-center text-sm text-gray-500">{data.user.email}</p>
