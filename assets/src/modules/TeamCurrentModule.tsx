@@ -5,7 +5,7 @@ import { pullRequestFetch, usePullRequests } from '@/modules/PullRequestsModule'
 import github from '@/query/github'
 import linear, { IssueFilters } from '@/query/linear'
 import { QueryIssue, QueryPullRequest, QueryUser } from '@/query/types'
-import { connectStore, ProjectUserMap } from '@/stores/connectStore'
+import { connectStore, ProjectUserInfo, ProjectUserMap } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { logger, unwrapError } from '@/utils'
 import { ChatBubbleLeftIcon, CheckIcon } from '@heroicons/react/24/outline'
@@ -39,12 +39,21 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
   const [selected, setSelected] = useState<string[]>([])
 
   const merge = () => {
-    // const users = connectStore.users.get()
-    // const changes: ProjectUserMap = {}
-    // for (const id of selected) {
-    //   if (users[id]) {
-    // connectStore.updateUsers(changes)
-    alert('coming soon.')
+    const users = connectStore.users.get()
+    let change: ProjectUserInfo = {}
+    let changeId = selected[0]
+    for (const id of selected) {
+      if (users[id]) {
+        changeId = id
+        change = users[id]
+      }
+    }
+    if (!change) change = {}
+    if (!change.aliases) change.aliases = selected
+    else change.aliases = Array.from(new Set([...change.aliases, ...selected]))
+    change.aliases = change.aliases.filter((a) => a != changeId)
+
+    connectStore.updateUsers({ [changeId]: change })
   }
 
   return (
@@ -138,6 +147,7 @@ function calculateUserInfoMap(
 ) {
   const [userInfos, setUserInfos] = useState<UserInfoMap>({})
   const repos = useStore(connectStore.repos)
+  const connectUsers = useStore(connectStore.users)
 
   useEffect(() => {
     setUserInfos({})
@@ -187,7 +197,7 @@ function calculateUserInfoMap(
     })
   }, [props.updatedIssues, props.updatedPulls])
 
-  mergeUserInfos(userInfos)
+  mergeUserInfos(connectUsers, userInfos)
   const timelines = Object.values(userInfos).map(eventsToTimeline)
   ;(window as any)['userInfos'] = userInfos
   timelines.sort((a, b) => a.user.name.localeCompare(b.user.name))
@@ -201,15 +211,13 @@ const mergeUsers = (u1: QueryUser, u2: QueryUser) => {
   })
 }
 
-const mergeUserInfos = (map: UserInfoMap) => {
-  const users = connectStore.users.get()
-
+const mergeUserInfos = (users: ProjectUserMap, map: UserInfoMap) => {
   Object.keys(map).forEach((id) => {
     const projectInfo = users[id]
     if (!projectInfo) return
     if (projectInfo.aliases) {
       projectInfo.aliases.forEach((alias) => {
-        if (map[alias]) {
+        if (alias != id && map[alias]) {
           mergeUsers(map[id].user, map[alias].user)
           map[id].pullRequests.push(...map[alias].pullRequests)
           map[id].issues.push(...map[alias].issues)

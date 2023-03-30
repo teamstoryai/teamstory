@@ -22,11 +22,12 @@ export type RepoData = {
 }
 
 // mapping of user to alias
+export type ProjectUserInfo = {
+  aliases?: string[]
+  name?: string
+}
 export type ProjectUserMap = {
-  [id: string]: {
-    aliases?: string[]
-    name?: string
-  }
+  [id: string]: ProjectUserInfo
 }
 
 class ConnectStore {
