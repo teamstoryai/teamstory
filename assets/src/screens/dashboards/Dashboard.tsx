@@ -30,9 +30,7 @@ type Props = {
 
 const suggestions: Suggestion[] = [
   { id: 'attention', label: 'What needs my attention?' },
-  { id: 'team', label: 'What is everyone working on?' },
-  { id: 'help', label: 'Who might need help?' },
-  { id: 'overloaded', label: 'Who is overloaded?' },
+  { id: 'risks', label: 'Upcoming risks' },
 ]
 
 const Dashboard = (props: Props) => {
@@ -64,11 +62,7 @@ const Dashboard = (props: Props) => {
   const modules: DataModuleProps[] =
     suggestionId == 'attention'
       ? NeedsAttentionModules(recentKey)
-      : suggestionId == 'team'
-      ? TeamCurrentModules(recentKey)
-      : suggestionId == 'help'
-      ? ComingSoonModules()
-      : suggestionId == 'overloaded'
+      : suggestionId == 'risks'
       ? ComingSoonModules()
       : DashboardModules(recentKey, lastMonth)
 

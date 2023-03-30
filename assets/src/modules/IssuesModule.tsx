@@ -4,6 +4,7 @@ import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
 import linear, { IssueFilters } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
+import { formatDistance } from 'date-fns'
 
 export type IssuesModuleProps = {
   id?: string
@@ -39,6 +40,13 @@ const IssuesModule = (props: IssuesModuleProps) => {
               {issue.labels && <Labels labels={issue.labels} />}
             </div>
             <div class="text-gray-800">{issue.title}</div>
+            <div class="text-gray-500 text-xs">
+              {issue.completedAt
+                ? `completed ${formatDistance(new Date(issue.completedAt!), new Date())} ago`
+                : issue.startedAt
+                ? `started ${formatDistance(new Date(issue.startedAt!), new Date())} ago`
+                : `created ${formatDistance(new Date(issue.createdAt!), new Date())} ago`}
+            </div>
           </a>
         ))}
         {!issues.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}

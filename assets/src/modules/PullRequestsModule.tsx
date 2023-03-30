@@ -34,18 +34,19 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
             <div class="flex-1">
               {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
               <div class="text-gray-800">{pr.title}</div>
-              {!pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                  {pr.user.name}
-                </div>
-              )}
-              {pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} by {pr.user.name} was merged{' '}
-                  {formatDistance(new Date(pr.closed_at), new Date())} ago
-                </div>
-              )}
+              <div class="text-gray-500 text-xs">
+                {!pr.closed_at ? (
+                  <>
+                    #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
+                    {pr.user.name}
+                  </>
+                ) : (
+                  <>
+                    #{pr.number} by {pr.user.name} was merged{' '}
+                    {formatDistance(new Date(pr.closed_at), new Date())} ago
+                  </>
+                )}
+              </div>
             </div>
             {pr.comments > 0 && (
               <div class="flex text-gray-400">

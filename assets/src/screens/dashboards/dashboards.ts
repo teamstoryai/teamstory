@@ -3,6 +3,13 @@ import { dateToYMD, pastTwoWeeksDates } from '@/stores/dataStore'
 
 export const DashboardModules = (dateKey: string, timelineStart: string): DataModuleProps[] => [
   {
+    module: 'team_current',
+    title: 'Breakdown by Team Member',
+    openPulls: 'is:open is:pr draft:false',
+    mergedPulls: `is:merged is:pr merged:>${dateKey}`,
+    openIssues: { started: true, open: true },
+  },
+  {
     module: 'pull_requests',
     title: 'New Open Pull Requests',
     query: `is:open is:pr draft:false created:>${dateKey}`,
@@ -11,16 +18,6 @@ export const DashboardModules = (dateKey: string, timelineStart: string): DataMo
     module: 'pull_requests',
     title: 'Recently Merged Pull Requests',
     query: `is:merged is:pr merged:>${dateKey}`,
-  },
-  {
-    module: 'gantt',
-    title: 'Activity Timeline',
-    filters: {
-      custom: {
-        updatedAt: { gt: timelineStart as any },
-        or: [{ startedAt: { null: false } }, { completedAt: { null: false } }],
-      },
-    },
   },
   {
     module: 'issues',
