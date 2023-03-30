@@ -40,7 +40,7 @@ const ModuleCard = ({
         )}
       </div>
 
-      {!error && children}
+      {children}
       <ErrorMessage error={error} />
     </div>
   )

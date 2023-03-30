@@ -1,6 +1,6 @@
 import { IssueConnection, LinearClient } from '@linear/sdk'
-import { QueryIssue } from '@/query/types'
-import { IssueFilter } from '@linear/sdk/dist/_generated_documents'
+import { QueryIssue, QueryUser } from '@/query/types'
+import { IssueFilter, TeamFilter, UserFilter } from '@linear/sdk/dist/_generated_documents'
 import { config } from '@/config'
 
 export type IssueFilters = {
@@ -12,6 +12,7 @@ export type IssueFilters = {
   createdAfter?: string
   completedAfter?: string
   completedBefore?: string
+  updatedAfter?: string
   label?: string
   priority?: number // 1 = urgent, 2 = high, 3 = medium, 4 = low
   custom?: IssueFilter
@@ -39,6 +40,9 @@ class Linear {
     }
     if (props.createdAfter) {
       filter.createdAt = { ...filter.createdAt, gte: new Date(props.createdAfter) }
+    }
+    if (props.updatedAfter) {
+      filter.updatedAt = { ...filter.updatedAt, gte: new Date(props.updatedAfter) }
     }
     if (props.completedBefore) {
       filter.completedAt = {
@@ -95,26 +99,13 @@ class Linear {
       identifier
       priorityLabel
       branchName
-      cycle {
-        id
-      }
       dueDate
       estimate
       description
       title
       number
       updatedAt
-      parent {
-        id
-      }
       priority
-      project {
-        id
-        name
-      }
-      team {
-        id
-      }
       archivedAt
       createdAt
       canceledAt
@@ -129,6 +120,10 @@ class Linear {
         }
       }
       assignee {
+        id
+        name
+      }
+      creator {
         id
         name
       }
@@ -160,6 +155,85 @@ class Linear {
     return result.nodes.map((issue: any) => ({
       ...issue,
       labels: issue.labels.nodes,
+    }))
+  }
+
+  users = async () => {
+    return this.client.users()
+  }
+
+  teams = async () => {
+    const filter: TeamFilter = {}
+    if (this.teamFilter.length) {
+      filter.id = { in: this.teamFilter }
+    }
+    return this.client.teams({ filter })
+  }
+
+  teamMembers = async (): Promise<QueryUser[]> => {
+    const filter: TeamFilter = {}
+    if (this.teamFilter.length) {
+      filter.id = { in: this.teamFilter }
+    }
+
+    const response: any = await this.client.client.request(
+      `
+    query teams($after: String, $before: String, $filter: TeamFilter, $first: Int, $includeArchived: Boolean, $last: Int, $orderBy: PaginationOrderBy) {
+      teams(
+        after: $after
+        before: $before
+        filter: $filter
+        first: $first
+        includeArchived: $includeArchived
+        last: $last
+        orderBy: $orderBy
+      ) {
+        ...TeamConnection
+      }
+    }
+
+    fragment TeamConnection on TeamConnection {
+      __typename
+      nodes {
+        ...Team
+      }
+      pageInfo {
+        ...PageInfo
+      }
+    }
+
+    fragment Team on Team {
+      __typename
+      members {
+        nodes {
+          id
+          name
+          avatarUrl
+          email
+        }
+        pageInfo {
+          ...PageInfo
+        }
+      }
+    }
+
+    fragment PageInfo on PageInfo {
+      __typename
+      startCursor
+      endCursor
+      hasPreviousPage
+      hasNextPage
+    }
+    `,
+      { filter }
+    )
+
+    const teams = response.teams.nodes
+    const members = teams.map((t: any) => t.members.nodes).flat()
+
+    return members.map((member: any) => ({
+      ...member,
+      avatar: member.avatarUrl,
     }))
   }
 }

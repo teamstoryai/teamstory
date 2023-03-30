@@ -58,6 +58,8 @@ export type QueryUser = {
   id: string
   name: string
   username?: string
+  avatar?: string
+  email?: string
 }
 
 export type QueryLabel = {
@@ -74,6 +76,7 @@ export type QueryIssue = {
   startedAt?: string
   completedAt?: string
   url: string
+  creator: QueryUser
   assignee?: QueryUser
   priority?: number // 0 = no, 1 = urgent
   priorityLabel?: string
@@ -87,6 +90,7 @@ export type QueryPullRequest = {
   html_url: string
   updated_at: string
   created_at: string
+  merged_at?: string
   closed_at?: string
   repo: string
   comments: number

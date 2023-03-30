@@ -63,11 +63,7 @@ export function useIssues(
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    const key = 'issues:' + JSON.stringify(filters)
-    if (clear) dataStore.clear(key)
-
-    dataStore
-      .cacheRead(key, () => linear.issues(filters))
+    issuesFetch(filters, clear)
       .then((items) => {
         dataStore.storeData(storeDataKey, items)
         setIssues(items)
@@ -82,6 +78,12 @@ export function useIssues(
   const refresh = useCallback(() => fetchData(true), [filters])
 
   return { issues, refresh }
+}
+
+export function issuesFetch(filters: IssueFilters, clearCache?: boolean) {
+  const key = 'issues:' + JSON.stringify(filters)
+  if (clearCache) dataStore.clear(key)
+  return dataStore.cacheRead(key, () => linear.issues(filters))
 }
 
 const Labels = ({ labels }: { labels: QueryLabel[] }) => {

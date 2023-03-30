@@ -62,6 +62,8 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
   )
 }
 
+const keyFunction = (repo: string, query: string) => `${repo}:pr:${query}`
+
 export function usePullRequests(
   query: string,
   setError: StateUpdater<Error | undefined>,
@@ -73,10 +75,7 @@ export function usePullRequests(
 
   const fetchData = (clear?: boolean) => {
     repos.forEach((repo) => {
-      const key = `${repo.name}:pr:${query}`
-      if (clear) dataStore.clear(key)
-      dataStore
-        .cacheRead(key, () => github.pulls(repo.name, query))
+      pullRequestFetch(repo.name, query, clear)
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
           dataStore.storeData(storeDataKey, items)
@@ -96,6 +95,12 @@ export function usePullRequests(
   const refresh = useCallback(() => fetchData(true), [repos, query])
 
   return { data: allPRs, refresh }
+}
+
+export function pullRequestFetch(repo: string, query: string, clearCache?: boolean) {
+  const key = keyFunction(repo, query)
+  if (clearCache) dataStore.clear(key)
+  return dataStore.cacheRead(key, () => github.pulls(repo, query))
 }
 
 export default PullRequestsModule

@@ -7,7 +7,7 @@ defmodule Teamstory.Projects do
   alias Teamstory.Repo
 
   alias Teamstory.{Users.User}
-  alias Teamstory.Projects.{Project, UserProject, ProjectInvite}
+  alias Teamstory.Projects.{Project, UserProject, ProjectInvite, ProjectData}
 
   @spec list_user_projects(User.t()) :: [Project.t()]
   def list_user_projects(user, include_archived \\ false) do
@@ -165,6 +165,12 @@ defmodule Teamstory.Projects do
         user_id: user.id
       })
     end)
+  end
+
+  def get_project_data(project, key) do
+    Repo.one(
+      from ud in ProjectData, where: ud.project_id == ^project.id and ud.key == ^key, limit: 1
+    )
   end
 
   @doc """

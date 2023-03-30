@@ -38,14 +38,22 @@ class Github {
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await this.axios.get('https://api.github.com/search/issues?q=' + q)
 
-    const data: QueryPullRequest[] = response.data.items.map((item: any) => ({
-      ...item,
-      user: {
-        id: item.user?.login,
-        name: item.user?.login,
-      },
-      repo,
-    }))
+    const data: QueryPullRequest[] = response.data.items.map(
+      (item: any) =>
+        ({
+          ...item,
+          user:
+            item.author_association == 'CONTRIBUTOR'
+              ? {
+                  id: item.user?.login,
+                  name: item.user?.login,
+                  username: item.user?.login,
+                  avatar: 'https://avatars.githubusercontent.com/' + item.user?.login,
+                }
+              : null,
+          repo,
+        } as QueryPullRequest)
+    )
     response.data.items = data
     return response.data
   }

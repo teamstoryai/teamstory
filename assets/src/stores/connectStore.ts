@@ -21,12 +21,22 @@ export type RepoData = {
   url: string
 }
 
+// mapping of user to alias
+export type ProjectUserMap = {
+  [id: string]: {
+    aliases?: string[]
+    name?: string
+  }
+}
+
 class ConnectStore {
   // --- stores
 
   repos = atom<Repository[]>([])
 
   trackers = atom<IssueTracker[]>([])
+
+  users = atom<ProjectUserMap>({})
 
   fakeMode = false
 
@@ -38,8 +48,14 @@ class ConnectStore {
   }
 
   loadConnections = async (project?: Project) => {
-    await Promise.all([this.loadConnectedRepos(project), this.loadConnectedTrackers(project)])
+    await Promise.all([
+      this.loadConnectedRepos(project),
+      this.loadConnectedTrackers(project),
+      this.loadUsers(project),
+    ])
   }
+
+  // --- repos
 
   loadConnectedRepos = async (project?: Project) => {
     if (this.fakeMode) return this.repos.get()
@@ -64,6 +80,8 @@ class ConnectStore {
     this.repos.set([...this.repos.get(), repo])
     return repo
   }
+
+  // --- trackers
 
   loadConnectedTrackers = async (project?: Project) => {
     if (this.fakeMode) return this.trackers.get()
@@ -97,6 +115,27 @@ class ConnectStore {
     const newTrackers = this.trackers.get().filter((i) => i.id !== tracker.id)
     this.trackers.set(newTrackers)
     this.updateTeamFilters(newTrackers)
+  }
+
+  // --- user data
+
+  loadUsers = async (project?: Project) => {
+    if (this.fakeMode) return this.users.get()
+    if (!project) project = projectStore.currentProject.get()
+    assertIsDefined(project, 'project')
+    const response = await API.getProjectData(project.id, 'users')
+    if (response) this.users.set(response)
+    return response || {}
+  }
+
+  updateUsers = async (changes: ProjectUserMap) => {
+    const updated = { ...this.users.get(), ...changes }
+    this.users.set(updated)
+    if (this.fakeMode) return
+
+    const project = projectStore.currentProject.get()
+    assertIsDefined(project, 'project')
+    await API.setProjectData(project.id, 'users', updated)
   }
 }
 

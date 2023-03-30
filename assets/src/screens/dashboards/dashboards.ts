@@ -5,9 +5,8 @@ export const DashboardModules = (dateKey: string, timelineStart: string): DataMo
   {
     module: 'team_current',
     title: 'Breakdown by Team Member',
-    openPulls: 'is:open is:pr draft:false',
-    mergedPulls: `is:merged is:pr merged:>${dateKey}`,
-    openIssues: { started: true, open: true },
+    updatedPulls: `is:pr updated:>${dateKey}`,
+    updatedIssues: { updatedAfter: dateKey },
   },
   {
     module: 'pull_requests',
