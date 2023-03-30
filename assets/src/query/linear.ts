@@ -1,6 +1,7 @@
 import { IssueConnection, LinearClient } from '@linear/sdk'
 import { QueryIssue } from '@/query/types'
 import { IssueFilter } from '@linear/sdk/dist/_generated_documents'
+import { config } from '@/config'
 
 export type IssueFilters = {
   before?: string
@@ -163,4 +164,6 @@ class Linear {
   }
 }
 
-export default new Linear()
+const linear = new Linear()
+if (config.dev) (window as any).linear = linear
+export default linear

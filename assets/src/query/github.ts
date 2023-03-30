@@ -1,3 +1,4 @@
+import { config } from '@/config'
 import { QueryPullRequest } from '@/query/types'
 import axios, { AxiosInstance } from 'axios'
 
@@ -50,4 +51,6 @@ class Github {
   }
 }
 
-export default new Github()
+const github = new Github()
+if (config.dev) (window as any).github = github
+export default github
