@@ -21,7 +21,6 @@ import {
   ComingSoonModules,
   DashboardModules,
   NeedsAttentionModules,
-  TeamCurrentModules,
 } from '@/screens/dashboards/dashboards'
 
 type Props = {

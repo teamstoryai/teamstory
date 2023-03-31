@@ -1,7 +1,7 @@
 import DataModule from '@/modules/ModuleCard'
 import { logger } from '@/utils'
 import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
-import linear, { IssueFilters } from '@/query/linear'
+import linear, { IssueFilters, LinearIssueFields } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
 import { formatDistance } from 'date-fns'
@@ -63,10 +63,18 @@ export function useIssues(
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    issuesFetch(filters, clear)
+    issuesFetch(
+      filters,
+      {
+        assignee: true,
+        labels: true,
+      },
+      clear
+    )
       .then((items) => {
+        console.log('issues returned', items)
         dataStore.storeData(storeDataKey, items)
-        setIssues(items)
+        setIssues(items || [])
       })
       .catch(setError)
   }
@@ -80,10 +88,14 @@ export function useIssues(
   return { issues, refresh }
 }
 
-export function issuesFetch(filters: IssueFilters, clearCache?: boolean) {
+export function issuesFetch(
+  filters: IssueFilters,
+  fields: LinearIssueFields,
+  clearCache?: boolean
+) {
   const key = 'issues:' + JSON.stringify(filters)
   if (clearCache) dataStore.clear(key)
-  return dataStore.cacheRead(key, () => linear.issues(filters))
+  return dataStore.cacheRead(key, () => linear.issues(filters, fields))
 }
 
 const Labels = ({ labels }: { labels: QueryLabel[] }) => {

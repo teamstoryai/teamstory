@@ -18,6 +18,14 @@ export type IssueFilters = {
   custom?: IssueFilter
 }
 
+export type LinearIssueFields = {
+  labels?: boolean
+  creator?: boolean
+  assignee?: boolean
+  state?: boolean
+  nonEssentials?: boolean
+}
+
 class Linear {
   client: LinearClient = new LinearClient({ apiKey: 'nothing' })
 
@@ -27,7 +35,7 @@ class Linear {
     this.client = new LinearClient({ accessToken: token })
   }
 
-  issues = async (props: IssueFilters = {}): Promise<QueryIssue[]> => {
+  issues = async (props: IssueFilters = {}, fields: LinearIssueFields): Promise<QueryIssue[]> => {
     const filter: IssueFilter = {}
     if (props.open !== undefined) {
       filter.completedAt = { ...filter.completedAt, null: props.open }
@@ -94,42 +102,64 @@ class Linear {
 
     fragment Issue on Issue {
       __typename
-      trashed
+      title
+      createdAt
       url
       identifier
       priorityLabel
+      completedAt
+      startedAt
+      id
+      ${
+        fields.nonEssentials
+          ? `
+      trashed
       branchName
       dueDate
       estimate
       description
-      title
       number
       updatedAt
       priority
       archivedAt
-      createdAt
       canceledAt
-      completedAt
-      startedAt
-      id
-      labels {
+      `
+          : ''
+      }
+      ${
+        fields.labels
+          ? `labels {
         nodes {
           id
           name
           color
         }
+      }`
+          : ''
       }
-      assignee {
+      ${
+        fields.assignee
+          ? `assignee {
         id
         name
+      }`
+          : ''
       }
-      creator {
+      ${
+        fields.creator
+          ? `creator {
         id
         name
+      }`
+          : ''
       }
-      state {
+      ${
+        fields.state
+          ? `state {
         id
         name
+      }`
+          : ''
       }
     }
 
@@ -154,7 +184,7 @@ class Linear {
 
     return result.nodes.map((issue: any) => ({
       ...issue,
-      labels: issue.labels.nodes,
+      labels: issue.labels?.nodes,
     }))
   }
 

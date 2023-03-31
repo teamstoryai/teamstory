@@ -168,7 +168,10 @@ function calculateUserInfoMap(
         .catch(setError)
     })
 
-    issuesFetch(props.updatedIssues)
+    issuesFetch(props.updatedIssues, {
+      assignee: true,
+      creator: true,
+    })
       .then((data) => {
         setUserInfos((prev) => {
           const map = { ...prev }
@@ -186,15 +189,17 @@ function calculateUserInfoMap(
       })
       .catch(setError)
 
-    linear.teamMembers().then((data) => {
-      setUserInfos((prev) => {
-        const map = { ...prev }
-        data.forEach((user) => {
-          getUserInfo(map, user)
+    dataStore
+      .cacheRead('linearTeam', () => linear.teamMembers(), 86400000)
+      .then((data) => {
+        setUserInfos((prev) => {
+          const map = { ...prev }
+          data.forEach((user) => {
+            getUserInfo(map, user)
+          })
+          return map
         })
-        return map
       })
-    })
   }, [props.updatedIssues, props.updatedPulls])
 
   mergeUserInfos(connectUsers, userInfos)

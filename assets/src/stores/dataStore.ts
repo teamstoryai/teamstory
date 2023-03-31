@@ -6,6 +6,7 @@ import { add, format, isMonday, isSameYear, previousMonday, sub } from 'date-fns
 import { atom } from 'nanostores'
 import { get, set, del } from 'idb-keyval'
 import { projectStore } from '@/stores/projectStore'
+import { logger } from '@/utils'
 
 type User = {
   avatar_url: string
@@ -50,7 +51,7 @@ class DataStore {
 
   // --- actions
 
-  cacheRead = async <T>(key: string, fetch: () => Promise<T>): Promise<T> => {
+  cacheRead = async <T>(key: string, fetch: () => Promise<T>, ttl?: number): Promise<T> => {
     if (this.cache[key]) {
       return this.cache[key]
     } else if (this.inProgress[key] != undefined) {
@@ -63,15 +64,23 @@ class DataStore {
 
       const readHelper = async () => {
         const cached = await get<IDBCacheEntry>(idbKey)
+        logger.debug('read', idbKey, cached)
         if (cached) {
           const now = Date.now()
-          if (now - cached.t < IDB_CACHE_TTL) {
+          if (now - cached.t < (ttl || IDB_CACHE_TTL)) {
             return cached.d
           }
         }
-        const result = await fetch()
-        set(idbKey, { d: result, t: Date.now() })
-        return result
+        try {
+          const result = await fetch()
+          console.log(key, 'fetch returned', result)
+          set(idbKey, { d: result, t: Date.now() })
+        } catch (e) {
+          logger.error(e)
+          // if we fail to fetch, return the cached value
+          if (cached?.d) return cached.d
+          throw e
+        }
       }
 
       try {

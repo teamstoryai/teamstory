@@ -24,7 +24,7 @@ const GanttModule = (props: GanttModuleProps) => {
     if (clear) dataStore.clear(key)
 
     dataStore
-      .cacheRead(key, () => linear.issues(filters))
+      .cacheRead(key, () => linear.issues(filters, {}))
       .then((issues) => {
         issues.sort((a, b) => duration(b) - duration(a))
 
