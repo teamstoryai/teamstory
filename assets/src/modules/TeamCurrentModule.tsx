@@ -27,7 +27,7 @@ class UserInfo {
 
 type UserInfoMap = { [key: string]: UserInfo }
 
-type Timeline = { ts: string; message: string }[]
+type Timeline = { ts: string; message: string; url?: string }[]
 
 type UserTimeline = { user: QueryUser; timeline: Timeline }
 
@@ -56,6 +56,8 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
     connectStore.updateUsers({ [changeId]: change })
   }
 
+  const itemsPerRow = Math.max(Math.min(10, 40 / timelines.length), 4)
+
   return (
     <DataModule title={props.title} className="lg:col-span-2" error={error}>
       <div class="-ml-1">
@@ -72,6 +74,7 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
             data={timeline}
             selected={selected.indexOf(timeline.user.id) > -1}
             setSelected={setSelected}
+            itemsPerRow={itemsPerRow}
           />
         ))}
       </div>
@@ -83,10 +86,12 @@ function UserRow({
   data,
   selected,
   setSelected,
+  itemsPerRow,
 }: {
   data: UserTimeline
   selected: boolean
   setSelected: StateUpdater<string[]>
+  itemsPerRow: number
 }) {
   const today = new Date()
   const select = () => {
@@ -120,13 +125,13 @@ function UserRow({
         </div>
       </div>
       <div class="text-sm text-gray-800 col-span-3 p-4 pl-2">
-        {data.timeline.map((event) => (
-          <div className="flex items-center">
+        {data.timeline.slice(0, itemsPerRow).map((event) => (
+          <a href={event.url} target="_blank" className="flex items-center hover:underline">
             <span class="flex-1 truncate">{event.message}</span>
             <span className="ml-2 text-gray-500 text-xs">
               {formatDistance(new Date(event.ts), today, { addSuffix: true })}
             </span>
-          </div>
+          </a>
         ))}
       </div>
     </>
@@ -202,12 +207,14 @@ function calculateUserInfoMap(
       })
   }, [props.updatedIssues, props.updatedPulls])
 
-  mergeUserInfos(connectUsers, userInfos)
   const timelines = Object.values(userInfos).map(eventsToTimeline)
-  ;(window as any)['userInfos'] = userInfos
-  timelines.sort((a, b) => a.user.name.localeCompare(b.user.name))
+  const merged = mergeTimelines(connectUsers, timelines)
+  merged.forEach((item) => item.timeline.sort((a, b) => b.ts.localeCompare(a.ts)))
 
-  return timelines
+  merged.sort((a, b) => a.user.name.localeCompare(b.user.name))
+  ;(window as any)['timelines'] = merged
+
+  return merged
 }
 
 const mergeUsers = (u1: QueryUser, u2: QueryUser) => {
@@ -216,7 +223,12 @@ const mergeUsers = (u1: QueryUser, u2: QueryUser) => {
   })
 }
 
-const mergeUserInfos = (users: ProjectUserMap, map: UserInfoMap) => {
+const mergeTimelines = (users: ProjectUserMap, timelines: UserTimeline[]) => {
+  const map: { [id: string]: UserTimeline } = {}
+  timelines.forEach((timeline) => {
+    map[timeline.user.id] = timeline
+  })
+
   Object.keys(map).forEach((id) => {
     const projectInfo = users[id]
     if (!projectInfo) return
@@ -224,8 +236,7 @@ const mergeUserInfos = (users: ProjectUserMap, map: UserInfoMap) => {
       projectInfo.aliases.forEach((alias) => {
         if (alias != id && map[alias]) {
           mergeUsers(map[id].user, map[alias].user)
-          map[id].pullRequests.push(...map[alias].pullRequests)
-          map[id].issues.push(...map[alias].issues)
+          map[id].timeline.push(...map[alias].timeline)
           delete map[alias]
         }
       })
@@ -234,6 +245,7 @@ const mergeUserInfos = (users: ProjectUserMap, map: UserInfoMap) => {
       map[id].user.name = projectInfo.name
     }
   })
+  return Object.values(map)
 }
 
 const eventsToTimeline = (user: UserInfo): UserTimeline => {
@@ -242,11 +254,13 @@ const eventsToTimeline = (user: UserInfo): UserTimeline => {
     timeline.push({
       ts: pr.created_at,
       message: `created PR #${pr.number}: ${pr.title}`,
+      url: pr.html_url,
     })
     if (pr.closed_at) {
       timeline.push({
         ts: pr.created_at,
         message: `merged PR #${pr.number}: ${pr.title}`,
+        url: pr.html_url,
       })
     }
   })
@@ -255,25 +269,26 @@ const eventsToTimeline = (user: UserInfo): UserTimeline => {
       timeline.push({
         ts: issue.createdAt,
         message: `created issue ${issue.identifier}: ${issue.title}`,
+        url: issue.url,
       })
     }
     if (issue.startedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
         ts: issue.startedAt,
         message: `started issue ${issue.identifier}: ${issue.title}`,
+        url: issue.url,
       })
     }
     if (issue.completedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
         ts: issue.completedAt,
         message: `completed issue ${issue.identifier}: ${issue.title}`,
+        url: issue.url,
       })
     }
   })
 
-  const sliced = timeline.sort((a, b) => b.ts.localeCompare(a.ts)).slice(0, 5)
-
-  return { user: user.user, timeline: sliced }
+  return { user: user.user, timeline }
 }
 
 export default TeamCurrentModule

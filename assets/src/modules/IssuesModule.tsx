@@ -72,7 +72,6 @@ export function useIssues(
       clear
     )
       .then((items) => {
-        console.log('issues returned', items)
         dataStore.storeData(storeDataKey, items)
         setIssues(items || [])
       })

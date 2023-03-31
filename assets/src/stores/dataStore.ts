@@ -64,7 +64,7 @@ class DataStore {
 
       const readHelper = async () => {
         const cached = await get<IDBCacheEntry>(idbKey)
-        logger.debug('read', idbKey, cached)
+        logger.debug('read', idbKey, cached, cached ? Date.now() - cached.t : '-')
         if (cached) {
           const now = Date.now()
           if (now - cached.t < (ttl || IDB_CACHE_TTL)) {
@@ -73,7 +73,7 @@ class DataStore {
         }
         try {
           const result = await fetch()
-          console.log(key, 'fetch returned', result)
+          logger.debug('fetch returned', key, result)
           set(idbKey, { d: result, t: Date.now() })
         } catch (e) {
           logger.error(e)
