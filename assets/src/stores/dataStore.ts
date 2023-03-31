@@ -75,6 +75,7 @@ class DataStore {
           const result = await fetch()
           logger.debug('fetch returned', key, result)
           set(idbKey, { d: result, t: Date.now() })
+          return result
         } catch (e) {
           logger.error(e)
           // if we fail to fetch, return the cached value

@@ -38,11 +38,11 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
                 {!pr.closed_at ? (
                   <>
                     #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                    {pr.user.name}
+                    {pr.user?.name || 'unknown'}
                   </>
                 ) : (
                   <>
-                    #{pr.number} by {pr.user.name} was merged{' '}
+                    #{pr.number} by {pr.user?.name || 'unknown'} was merged{' '}
                     {formatDistance(new Date(pr.closed_at), new Date())} ago
                   </>
                 )}

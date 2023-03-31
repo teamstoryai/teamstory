@@ -27,11 +27,9 @@ class UserInfo {
 
 type UserInfoMap = { [key: string]: UserInfo }
 
-type Timeline = { ts: string; message: string; url?: string }[]
+type Timeline = { ts: Date; message: string; url?: string }[]
 
 type UserTimeline = { user: QueryUser; timeline: Timeline }
-
-const NONE_USER = 'none'
 
 const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
   const [error, setError] = useState<Error>()
@@ -54,6 +52,36 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
     change.aliases = change.aliases.filter((a) => a != changeId)
 
     connectStore.updateUsers({ [changeId]: change })
+    setSelected([])
+  }
+
+  const hide = () => {
+    const users = connectStore.users.get()
+    let changes: ProjectUserMap = {}
+    for (const id of selected) {
+      if (users[id]) {
+        changes[id] = { ...users[id], hidden: true }
+      } else {
+        changes[id] = { hidden: true }
+      }
+    }
+    connectStore.updateUsers(changes)
+    setSelected([])
+  }
+
+  const rename = () => {
+    const users = connectStore.users.get()
+    let changes: ProjectUserMap = {}
+    const name = prompt('New name for user:')
+    if (!name) return
+    const id = selected[0]
+    if (users[id]) {
+      changes[id] = { ...users[id], name }
+    } else {
+      changes[id] = { name }
+    }
+    connectStore.updateUsers(changes)
+    setSelected([])
   }
 
   const itemsPerRow = Math.max(Math.min(10, 40 / timelines.length), 4)
@@ -66,8 +94,18 @@ const TeamCurrentModule = (props: TeamCurrentModuleProps) => {
             Merge users
           </Pressable>
         )}
+        {selected.length > 0 && (
+          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={hide}>
+            Hide user{selected.length > 0 ? 's' : ''}
+          </Pressable>
+        )}
+        {selected.length == 1 && (
+          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={rename}>
+            Rename
+          </Pressable>
+        )}
       </div>
-      <div className="grid grid-cols-4 divide-y divide-gray-200 -mx-4 -mb-4">
+      <div className="grid grid-cols-4 -mx-4 -mb-4 overflow-y-auto">
         {timelines.map((timeline) => (
           <UserRow
             key={timeline.user.id}
@@ -100,7 +138,7 @@ function UserRow({
   }
   return (
     <>
-      <div className="flex items-center p-4 pr-2">
+      <div className="flex items-center p-4 pr-2 border-t border-gray-200">
         <div className="mr-2 relative">
           <img
             className="h-12 w-12 rounded-full"
@@ -124,7 +162,7 @@ function UserRow({
           <p className="mt-2 flex items-center text-sm text-gray-500">{data.user.email}</p>
         </div>
       </div>
-      <div class="text-sm text-gray-800 col-span-3 p-4 pl-2">
+      <div class="text-sm text-gray-800 col-span-3 p-4 pl-2 border-t border-gray-200">
         {data.timeline.slice(0, itemsPerRow).map((event) => (
           <a href={event.url} target="_blank" className="flex items-center hover:underline">
             <span class="flex-1 truncate">{event.message}</span>
@@ -209,8 +247,7 @@ function calculateUserInfoMap(
 
   const timelines = Object.values(userInfos).map(eventsToTimeline)
   const merged = mergeTimelines(connectUsers, timelines)
-  merged.forEach((item) => item.timeline.sort((a, b) => b.ts.localeCompare(a.ts)))
-
+  merged.forEach((item) => item.timeline.sort((a, b) => b.ts.getTime() - a.ts.getTime()))
   merged.sort((a, b) => a.user.name.localeCompare(b.user.name))
   ;(window as any)['timelines'] = merged
 
@@ -231,8 +268,7 @@ const mergeTimelines = (users: ProjectUserMap, timelines: UserTimeline[]) => {
 
   Object.keys(map).forEach((id) => {
     const projectInfo = users[id]
-    if (!projectInfo) return
-    if (projectInfo.aliases) {
+    if (projectInfo?.aliases) {
       projectInfo.aliases.forEach((alias) => {
         if (alias != id && map[alias]) {
           mergeUsers(map[id].user, map[alias].user)
@@ -241,24 +277,32 @@ const mergeTimelines = (users: ProjectUserMap, timelines: UserTimeline[]) => {
         }
       })
     }
-    if (projectInfo.name) {
+    if (projectInfo?.name) {
       map[id].user.name = projectInfo.name
+    }
+    if (projectInfo?.hidden) {
+      delete map[id]
+    }
+    if (map[id] && map[id].timeline.length == 0) {
+      delete map[id]
     }
   })
   return Object.values(map)
 }
 
+const MAX_TIMELINE_AGE = 10 * 86400000
+
 const eventsToTimeline = (user: UserInfo): UserTimeline => {
   const timeline: Timeline = []
   user.pullRequests.forEach((pr) => {
     timeline.push({
-      ts: pr.created_at,
+      ts: new Date(pr.created_at),
       message: `created PR #${pr.number}: ${pr.title}`,
       url: pr.html_url,
     })
     if (pr.closed_at) {
       timeline.push({
-        ts: pr.created_at,
+        ts: new Date(pr.created_at),
         message: `merged PR #${pr.number}: ${pr.title}`,
         url: pr.html_url,
       })
@@ -267,28 +311,31 @@ const eventsToTimeline = (user: UserInfo): UserTimeline => {
   user.issues.forEach((issue) => {
     if (issue.creator.id == user.user.id) {
       timeline.push({
-        ts: issue.createdAt,
+        ts: new Date(issue.createdAt),
         message: `created issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
     }
     if (issue.startedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
-        ts: issue.startedAt,
+        ts: new Date(issue.startedAt),
         message: `started issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
     }
     if (issue.completedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
-        ts: issue.completedAt,
+        ts: new Date(issue.completedAt),
         message: `completed issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
     }
   })
 
-  return { user: user.user, timeline }
+  const now = Date.now()
+  const filtered = timeline.filter((item) => item.ts.getTime() > now - MAX_TIMELINE_AGE)
+
+  return { user: user.user, timeline: filtered }
 }
 
 export default TeamCurrentModule

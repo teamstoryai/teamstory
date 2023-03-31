@@ -25,6 +25,7 @@ export type RepoData = {
 export type ProjectUserInfo = {
   aliases?: string[]
   name?: string
+  hidden?: boolean
 }
 export type ProjectUserMap = {
   [id: string]: ProjectUserInfo
@@ -107,7 +108,7 @@ class ConnectStore {
   }
 
   updateTeamFilters = (trackers: IssueTracker[]) => {
-    const ids = trackers.map((t) => t.base_url!)
+    const ids = trackers.filter((t) => t.service == 'linear').map((t) => t.base_url!)
     linear.teamFilter = ids
   }
 

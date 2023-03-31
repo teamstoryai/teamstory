@@ -28,10 +28,10 @@ defmodule TeamstoryWeb.ProjectDataController do
             value: update
           })
         else
-          if data do
-            Projects.update_project_data(update, %{value: data})
+          if update do
+            Projects.update_project_data(data, %{value: update})
           else
-            Projects.delete_project_data(update)
+            Projects.delete_project_data(data)
           end
         end
 

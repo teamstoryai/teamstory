@@ -10,6 +10,7 @@ import ModuleGroup from '@/modules/ModuleGroup'
 import PageTitle from '@/components/layout/PageTitle'
 import { projectStore } from '@/stores/projectStore'
 import { RenderableProps } from 'preact'
+import { uiStore } from '@/stores/uiStore'
 
 type Props = {
   title: string
@@ -17,7 +18,7 @@ type Props = {
 }
 
 const PastDashboard = (props: RenderableProps<Props>) => {
-  const initialized = useStore(dataStore.initialized)
+  const initialized = useStore(uiStore.initialized)
   useStore(projectStore.currentProject)
 
   if (!initialized)

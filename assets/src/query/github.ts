@@ -42,15 +42,12 @@ class Github {
       (item: any) =>
         ({
           ...item,
-          user:
-            item.author_association == 'CONTRIBUTOR'
-              ? {
-                  id: item.user?.login,
-                  name: item.user?.login,
-                  username: item.user?.login,
-                  avatar: 'https://avatars.githubusercontent.com/' + item.user?.login,
-                }
-              : null,
+          user: {
+            id: item.user?.login,
+            name: item.user?.login,
+            username: item.user?.login,
+            avatar: 'https://avatars.githubusercontent.com/' + item.user?.login,
+          },
           repo,
         } as QueryPullRequest)
     )

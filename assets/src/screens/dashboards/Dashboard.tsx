@@ -22,6 +22,7 @@ import {
   DashboardModules,
   NeedsAttentionModules,
 } from '@/screens/dashboards/dashboards'
+import { uiStore } from '@/stores/uiStore'
 
 type Props = {
   path: string
@@ -35,7 +36,7 @@ const suggestions: Suggestion[] = [
 const Dashboard = (props: Props) => {
   const params = new URLSearchParams(location.search)
   const project = useStore(projectStore.currentProject)
-  const initialized = useStore(dataStore.initialized)
+  const initialized = useStore(uiStore.initialized)
   const [suggestion, setSuggestion] = useState<Suggestion | undefined>(
     suggestionFromParams(params, suggestions)
   )
