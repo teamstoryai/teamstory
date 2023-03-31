@@ -12,7 +12,7 @@ defmodule Teamstory.ProjectsTest do
 
     test "list_projects/0 returns all projects" do
       project = project_fixture()
-      assert Enum.find Projects.list_projects(), fn p -> p.id == project.id end
+      assert Enum.find(Projects.list_projects(), fn p -> p.id == project.id end)
     end
 
     test "get_project!/1 returns the project with given id" do
@@ -21,8 +21,12 @@ defmodule Teamstory.ProjectsTest do
     end
 
     test "create_project/1 with valid data creates a project" do
-      valid_attrs = %{archived_at: ~U[2022-07-13 06:12:00Z], meta: %{}, name: "some name",
-        shortcode: "PR", creator_id: 1}
+      valid_attrs = %{
+        archived_at: ~U[2022-07-13 06:12:00Z],
+        meta: %{},
+        name: "some name",
+        creator_id: 1
+      }
 
       assert {:ok, %Project{} = project} = Projects.create_project(valid_attrs)
       assert project.archived_at == ~U[2022-07-13 06:12:00Z]
@@ -36,7 +40,12 @@ defmodule Teamstory.ProjectsTest do
 
     test "update_project/2 with valid data updates the project" do
       project = project_fixture()
-      update_attrs = %{archived_at: ~U[2022-07-14 06:12:00Z], meta: %{}, name: "some updated name"}
+
+      update_attrs = %{
+        archived_at: ~U[2022-07-14 06:12:00Z],
+        meta: %{},
+        name: "some updated name"
+      }
 
       assert {:ok, %Project{} = project} = Projects.update_project(project, update_attrs)
       assert project.archived_at == ~U[2022-07-14 06:12:00Z]
@@ -71,7 +80,7 @@ defmodule Teamstory.ProjectsTest do
 
     test "list_user_projects/0 returns all user_projects" do
       user_project = user_project_fixture()
-      assert Enum.find Projects.list_user_projects(), fn p -> p.id == user_project.id end
+      assert Enum.find(Projects.list_user_projects(), fn p -> p.id == user_project.id end)
     end
 
     test "get_user_project!/1 returns the user_project with given id" do
@@ -96,14 +105,19 @@ defmodule Teamstory.ProjectsTest do
       user_project = user_project_fixture()
       update_attrs = %{left_at: ~U[2022-07-14 06:14:00Z], role: "some updated role"}
 
-      assert {:ok, %UserProject{} = user_project} = Projects.update_user_project(user_project, update_attrs)
+      assert {:ok, %UserProject{} = user_project} =
+               Projects.update_user_project(user_project, update_attrs)
+
       assert user_project.left_at == ~U[2022-07-14 06:14:00Z]
       assert user_project.role == "some updated role"
     end
 
     test "update_user_project/2 with invalid data returns error changeset" do
       user_project = user_project_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_user_project(user_project, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Projects.update_user_project(user_project, @invalid_attrs)
+
       assert user_project == Projects.get_user_project!(user_project.id)
     end
 
@@ -124,7 +138,14 @@ defmodule Teamstory.ProjectsTest do
 
     import Teamstory.ProjectsFixtures
 
-    @invalid_attrs %{creator_id: nil, project_id: nil, code: nil, deleted_at: nil, email: nil, joined_at: nil}
+    @invalid_attrs %{
+      creator_id: nil,
+      project_id: nil,
+      code: nil,
+      deleted_at: nil,
+      email: nil,
+      joined_at: nil
+    }
 
     test "list_project_invites/0 returns all project_invites" do
       project_invite = project_invite_fixture()
@@ -137,10 +158,19 @@ defmodule Teamstory.ProjectsTest do
     end
 
     test "create_project_invite/1 with valid data creates a project_invite" do
-      valid_attrs = %{project_id: 1, creator_id: 1, code: "some code", deleted_at: ~U[2022-09-25 01:21:00Z],
-        email: "some email", joined_at: ~U[2022-09-25 01:21:00Z], role: "abc"}
+      valid_attrs = %{
+        project_id: 1,
+        creator_id: 1,
+        code: "some code",
+        deleted_at: ~U[2022-09-25 01:21:00Z],
+        email: "some email",
+        joined_at: ~U[2022-09-25 01:21:00Z],
+        role: "abc"
+      }
 
-      assert {:ok, %ProjectInvite{} = project_invite} = Projects.create_project_invite(valid_attrs)
+      assert {:ok, %ProjectInvite{} = project_invite} =
+               Projects.create_project_invite(valid_attrs)
+
       assert project_invite.code == "some code"
       assert project_invite.deleted_at == ~U[2022-09-25 01:21:00Z]
       assert project_invite.email == "some email"
@@ -153,9 +183,17 @@ defmodule Teamstory.ProjectsTest do
 
     test "update_project_invite/2 with valid data updates the project_invite" do
       project_invite = project_invite_fixture()
-      update_attrs = %{code: "some updated code", deleted_at: ~U[2022-09-26 01:21:00Z], email: "some updated email", joined_at: ~U[2022-09-26 01:21:00Z]}
 
-      assert {:ok, %ProjectInvite{} = project_invite} = Projects.update_project_invite(project_invite, update_attrs)
+      update_attrs = %{
+        code: "some updated code",
+        deleted_at: ~U[2022-09-26 01:21:00Z],
+        email: "some updated email",
+        joined_at: ~U[2022-09-26 01:21:00Z]
+      }
+
+      assert {:ok, %ProjectInvite{} = project_invite} =
+               Projects.update_project_invite(project_invite, update_attrs)
+
       assert project_invite.code == "some updated code"
       assert project_invite.deleted_at == ~U[2022-09-26 01:21:00Z]
       assert project_invite.email == "some updated email"
@@ -164,7 +202,10 @@ defmodule Teamstory.ProjectsTest do
 
     test "update_project_invite/2 with invalid data returns error changeset" do
       project_invite = project_invite_fixture()
-      assert {:error, %Ecto.Changeset{}} = Projects.update_project_invite(project_invite, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Projects.update_project_invite(project_invite, @invalid_attrs)
+
       assert project_invite == Projects.get_project_invite!(project_invite.id)
     end
 
@@ -192,8 +233,8 @@ defmodule Teamstory.ProjectsTest do
     test "user_joined with invites" do
       project = project_fixture()
 
-      project_invite_fixture(%{ project_id: project.id, email: "foo@bar.com", role: "admin" })
-      user = user_fixture(%{ email: "foo@bar.com" })
+      project_invite_fixture(%{project_id: project.id, email: "foo@bar.com", role: "admin"})
+      user = user_fixture(%{email: "foo@bar.com"})
 
       Projects.user_joined(user)
 
@@ -205,9 +246,14 @@ defmodule Teamstory.ProjectsTest do
     test "user_joined with deleted invite" do
       project = project_fixture()
 
-      project_invite_fixture(%{ project_id: project.id, email: "foo@bar.com",
-        role: "admin", deleted_at: Timex.now })
-      user = user_fixture(%{ email: "foo@bar.com" })
+      project_invite_fixture(%{
+        project_id: project.id,
+        email: "foo@bar.com",
+        role: "admin",
+        deleted_at: Timex.now()
+      })
+
+      user = user_fixture(%{email: "foo@bar.com"})
 
       Projects.user_joined(user)
 
@@ -215,7 +261,66 @@ defmodule Teamstory.ProjectsTest do
       up = Enum.find(ups, fn up -> up.project_id == project.id end)
       assert up == nil
     end
-
   end
 
+  describe "project_data" do
+    alias Teamstory.Projects.ProjectData
+
+    import Teamstory.ProjectsFixtures
+
+    @invalid_attrs %{key: nil, value: nil}
+
+    test "list_project_data/0 returns all project_data" do
+      project_data = project_data_fixture()
+      assert Projects.list_project_data() == [project_data]
+    end
+
+    test "get_project_data!/1 returns the project_data with given id" do
+      project_data = project_data_fixture()
+      assert Projects.get_project_data!(project_data.id) == project_data
+    end
+
+    test "create_project_data/1 with valid data creates a project_data" do
+      valid_attrs = %{project_id: 1, key: "newkey", value: %{"1" => "2"}}
+
+      assert {:ok, %ProjectData{} = project_data} = Projects.create_project_data(valid_attrs)
+      assert project_data.key == "newkey"
+      assert project_data.value == %{"1" => "2"}
+    end
+
+    test "create_project_data/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Projects.create_project_data(@invalid_attrs)
+    end
+
+    test "update_project_data/2 with valid data updates the project_data" do
+      project_data = project_data_fixture()
+      update_attrs = %{key: "some updated key", value: %{}}
+
+      assert {:ok, %ProjectData{} = project_data} =
+               Projects.update_project_data(project_data, update_attrs)
+
+      assert project_data.key == "some updated key"
+      assert project_data.value == %{}
+    end
+
+    test "update_project_data/2 with invalid data returns error changeset" do
+      project_data = project_data_fixture()
+
+      assert {:error, %Ecto.Changeset{}} =
+               Projects.update_project_data(project_data, @invalid_attrs)
+
+      assert project_data == Projects.get_project_data!(project_data.id)
+    end
+
+    test "delete_project_data/1 deletes the project_data" do
+      project_data = project_data_fixture()
+      assert {:ok, %ProjectData{}} = Projects.delete_project_data(project_data)
+      assert_raise Ecto.NoResultsError, fn -> Projects.get_project_data!(project_data.id) end
+    end
+
+    test "change_project_data/1 returns a project_data changeset" do
+      project_data = project_data_fixture()
+      assert %Ecto.Changeset{} = Projects.change_project_data(project_data)
+    end
+  end
 end

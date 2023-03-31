@@ -1,9 +1,10 @@
 import DataModule from '@/modules/ModuleCard'
 import { logger } from '@/utils'
 import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
-import linear, { IssueFilters } from '@/query/linear'
+import linear, { IssueFilters, LinearIssueFields } from '@/query/linear'
 import { dataStore } from '@/stores/dataStore'
 import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
+import { formatDistance } from 'date-fns'
 
 export type IssuesModuleProps = {
   id?: string
@@ -39,6 +40,13 @@ const IssuesModule = (props: IssuesModuleProps) => {
               {issue.labels && <Labels labels={issue.labels} />}
             </div>
             <div class="text-gray-800">{issue.title}</div>
+            <div class="text-gray-500 text-xs">
+              {issue.completedAt
+                ? `completed ${formatDistance(new Date(issue.completedAt!), new Date())} ago`
+                : issue.startedAt
+                ? `started ${formatDistance(new Date(issue.startedAt!), new Date())} ago`
+                : `created ${formatDistance(new Date(issue.createdAt!), new Date())} ago`}
+            </div>
           </a>
         ))}
         {!issues.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}
@@ -55,14 +63,17 @@ export function useIssues(
   const [issues, setIssues] = useState<QueryIssue[]>([])
 
   const fetchData = (clear?: boolean) => {
-    const key = 'issues:' + JSON.stringify(filters)
-    if (clear) dataStore.clear(key)
-
-    dataStore
-      .cacheRead(key, () => linear.issues(filters))
+    issuesFetch(
+      filters,
+      {
+        assignee: true,
+        labels: true,
+      },
+      clear
+    )
       .then((items) => {
         dataStore.storeData(storeDataKey, items)
-        setIssues(items)
+        setIssues(items || [])
       })
       .catch(setError)
   }
@@ -74,6 +85,16 @@ export function useIssues(
   const refresh = useCallback(() => fetchData(true), [filters])
 
   return { issues, refresh }
+}
+
+export function issuesFetch(
+  filters: IssueFilters,
+  fields: LinearIssueFields,
+  clearCache?: boolean
+) {
+  const key = 'issues:' + JSON.stringify(filters)
+  if (clearCache) dataStore.clear(key)
+  return dataStore.cacheRead(key, () => linear.issues(filters, fields))
 }
 
 const Labels = ({ labels }: { labels: QueryLabel[] }) => {

@@ -34,18 +34,19 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
             <div class="flex-1">
               {repos.length > 1 && <div class="text-sm text-teal-500">{pr.repo}</div>}
               <div class="text-gray-800">{pr.title}</div>
-              {!pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
-                  {pr.user.name}
-                </div>
-              )}
-              {pr.closed_at && (
-                <div class="text-gray-500 text-xs">
-                  #{pr.number} by {pr.user.name} was merged{' '}
-                  {formatDistance(new Date(pr.closed_at), new Date())} ago
-                </div>
-              )}
+              <div class="text-gray-500 text-xs">
+                {!pr.closed_at ? (
+                  <>
+                    #{pr.number} opened {formatDistance(new Date(pr.created_at), new Date())} ago by{' '}
+                    {pr.user?.name || 'unknown'}
+                  </>
+                ) : (
+                  <>
+                    #{pr.number} by {pr.user?.name || 'unknown'} was merged{' '}
+                    {formatDistance(new Date(pr.closed_at), new Date())} ago
+                  </>
+                )}
+              </div>
             </div>
             {pr.comments > 0 && (
               <div class="flex text-gray-400">
@@ -61,6 +62,8 @@ const PullRequestsModule = (props: PullRequestsModuleProps) => {
   )
 }
 
+const keyFunction = (repo: string, query: string) => `${repo}:pr:${query}`
+
 export function usePullRequests(
   query: string,
   setError: StateUpdater<Error | undefined>,
@@ -72,10 +75,7 @@ export function usePullRequests(
 
   const fetchData = (clear?: boolean) => {
     repos.forEach((repo) => {
-      const key = `${repo.name}:pr:${query}`
-      if (clear) dataStore.clear(key)
-      dataStore
-        .cacheRead(key, () => github.pulls(repo.name, query))
+      pullRequestFetch(repo.name, query, clear)
         .then((response) => {
           const items = response.items.map((i) => ({ ...i, repo: repo.name }))
           dataStore.storeData(storeDataKey, items)
@@ -95,6 +95,12 @@ export function usePullRequests(
   const refresh = useCallback(() => fetchData(true), [repos, query])
 
   return { data: allPRs, refresh }
+}
+
+export function pullRequestFetch(repo: string, query: string, clearCache?: boolean) {
+  const key = keyFunction(repo, query)
+  if (clearCache) dataStore.clear(key)
+  return dataStore.cacheRead(key, () => github.pulls(repo, query))
 }
 
 export default PullRequestsModule

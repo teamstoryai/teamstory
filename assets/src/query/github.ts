@@ -1,3 +1,4 @@
+import { config } from '@/config'
 import { QueryPullRequest } from '@/query/types'
 import axios, { AxiosInstance } from 'axios'
 
@@ -37,17 +38,24 @@ class Github {
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await this.axios.get('https://api.github.com/search/issues?q=' + q)
 
-    const data: QueryPullRequest[] = response.data.items.map((item: any) => ({
-      ...item,
-      user: {
-        id: item.user?.login,
-        name: item.user?.login,
-      },
-      repo,
-    }))
+    const data: QueryPullRequest[] = response.data.items.map(
+      (item: any) =>
+        ({
+          ...item,
+          user: {
+            id: item.user?.login,
+            name: item.user?.login,
+            username: item.user?.login,
+            avatar: 'https://avatars.githubusercontent.com/' + item.user?.login,
+          },
+          repo,
+        } as QueryPullRequest)
+    )
     response.data.items = data
     return response.data
   }
 }
 
-export default new Github()
+const github = new Github()
+if (config.dev) (window as any).github = github
+export default github

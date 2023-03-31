@@ -239,6 +239,23 @@ class APIService {
     return response.data
   }
 
+  // project data
+
+  async getProjectData(projectId: string, key: string): Promise<any> {
+    const response = await this.axios.get(
+      `${this.endpoint}/projects/${projectId}/data?key=${encodeURIComponent(key)}`
+    )
+    return response.data.data
+  }
+
+  async setProjectData(projectId: string, key: string, data: any): Promise<R.SuccessResponse> {
+    const response = await this.axios.post(
+      `${this.endpoint}/projects/${projectId}/data?key=${encodeURIComponent(key)}`,
+      { data }
+    )
+    return response.data
+  }
+
   // other resources
 
   public repos = new ResourceWithParent<Project, Repository>(this, 'project_id', 'connect/repos')

@@ -1,5 +1,6 @@
 import ErrorMessage from '@/components/core/ErrorMessage'
 import Pressable from '@/components/core/Pressable'
+import { logger } from '@/utils'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { RenderableProps } from 'preact'
 import { twMerge } from 'tailwind-merge'
@@ -20,6 +21,7 @@ const ModuleCard = ({
   className,
   count,
 }: RenderableProps<Props>) => {
+  if (error) logger.error(error)
   return (
     <div
       class={twMerge(
@@ -40,7 +42,7 @@ const ModuleCard = ({
         )}
       </div>
 
-      {!error && children}
+      {children}
       <ErrorMessage error={error} />
     </div>
   )

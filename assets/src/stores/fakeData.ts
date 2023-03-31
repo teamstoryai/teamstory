@@ -145,6 +145,7 @@ const titleToFeature =
     title,
     createdAt: sub(today, { days: 3 - i }).toISOString(),
     url: '',
+    creator: teamMembers[Math.abs(idx + i + 3) % teamMembers.length],
     assignee: teamMembers[Math.abs(idx + i) % teamMembers.length],
     ...props,
   })

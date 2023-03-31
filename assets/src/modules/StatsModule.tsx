@@ -95,7 +95,7 @@ const StatsModule = (props: StatsModuleProps) => {
 const getStats = async (filters: IssueFilters) => {
   const stats: StatsMap = {}
   const key = 'issues:' + JSON.stringify(filters)
-  const issues = await dataStore.cacheRead(key, () => linear.issues(filters))
+  const issues = await dataStore.cacheRead(key, () => linear.issues(filters, { labels: true }))
   for (const issue of issues) {
     const labels = issue.labels
     labels?.forEach((label) => {

@@ -90,6 +90,8 @@ defmodule TeamstoryWeb.Router do
     resources "/projects", ProjectsController
     post "/projects/:id/add_member", ProjectsController, :add_member
     post "/projects/:id/remove_member", ProjectsController, :remove_member
+    get "/projects/:id/data", ProjectDataController, :get_data
+    post "/projects/:id/data", ProjectDataController, :set_data
 
     get "/users/data", UserDataController, :get_user_data
     post "/users/data", UserDataController, :set_user_data
@@ -98,8 +100,6 @@ defmodule TeamstoryWeb.Router do
     get "/connect/repos/fetch_orgs", ConnectReposController, :fetch_orgs
     get "/connect/repos/fetch_repos", ConnectReposController, :fetch_repos
     resources "/connect/issues", ConnectIssuesController, only: [:index, :create, :update]
-
-    get "/query/repo/:query", QueryReposController, :query
 
     get "/subinfo", BillingController, :info
     get "/billing/info", BillingController, :info
