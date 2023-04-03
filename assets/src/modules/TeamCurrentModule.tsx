@@ -219,8 +219,10 @@ function calculateUserInfoMap(
         setUserInfos((prev) => {
           const map = { ...prev }
           data.forEach((issue) => {
-            const user = getUserInfo(map, issue.creator)
-            user.issues.push(issue)
+            if (issue.creator) {
+              const user = getUserInfo(map, issue.creator)
+              user.issues.push(issue)
+            }
 
             if (issue.assignee) {
               const user = getUserInfo(map, issue.assignee)
@@ -238,7 +240,7 @@ function calculateUserInfoMap(
         setUserInfos((prev) => {
           const map = { ...prev }
           data.forEach((user) => {
-            getUserInfo(map, user)
+            if (user) getUserInfo(map, user)
           })
           return map
         })
@@ -309,7 +311,7 @@ const eventsToTimeline = (user: UserInfo): UserTimeline => {
     }
   })
   user.issues.forEach((issue) => {
-    if (issue.creator.id == user.user.id) {
+    if (issue.creator?.id == user.user.id) {
       timeline.push({
         ts: new Date(issue.createdAt),
         message: `created issue ${issue.identifier}: ${issue.title}`,
