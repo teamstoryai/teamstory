@@ -35,6 +35,7 @@ defmodule TeamstoryWeb.Router do
   pipeline :authenticated do
     plug Teamstory.Auth.Pipeline
     plug Guardian.Plug.EnsureAuthenticated
+    plug TeamstoryWeb.ValidateRequest
   end
 
   pipeline :logging do

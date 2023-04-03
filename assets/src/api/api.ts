@@ -89,6 +89,7 @@ class APIService {
       if (request.url?.startsWith(this.endpoint)) {
         if (this.tokens?.access?.token) {
           request.headers!['Authorization'] = 'Bearer ' + this.tokens?.access?.token
+          request.headers!['X-Req-ID'] = 'api-' + Date.now()
         } else {
           delete request.headers!['Authorization']
         }
