@@ -1,4 +1,4 @@
-import { DataModuleProps } from '@/modules/DataModule'
+import { DataModuleProps } from '@/modules/DataModuleFactory'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
 import { pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'

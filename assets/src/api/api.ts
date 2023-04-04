@@ -89,6 +89,7 @@ class APIService {
       if (request.url?.startsWith(this.endpoint)) {
         if (this.tokens?.access?.token) {
           request.headers!['Authorization'] = 'Bearer ' + this.tokens?.access?.token
+          request.headers!['X-Req-ID'] = 'api-' + Date.now()
         } else {
           delete request.headers!['Authorization']
         }
@@ -345,6 +346,23 @@ class APIService {
   async clientId(service: string): Promise<{ client_id: string }> {
     const response = await this.axios.get(`${this.endpoint}/client_id?service=${service}`)
     return response.data
+  }
+
+  // ai
+
+  async generateSummary(
+    project: Project,
+    messages: { role: string; content: string }[],
+    model?: string,
+    maxTokens?: number
+  ): Promise<{ response: string; status: number }> {
+    const response = await this.axios.post(`${this.endpoint}/ai/summary`, {
+      project_id: project.id,
+      messages,
+      model,
+      tokens: maxTokens,
+    })
+    return { response: response.data, status: response.status }
   }
 
   // for storybooks, put API into a stub state

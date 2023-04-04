@@ -1,4 +1,4 @@
-import { DataModuleProps } from '@/modules/DataModule'
+import { DataModuleProps } from '@/modules/DataModuleFactory'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
 
 type Props = {

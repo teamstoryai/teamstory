@@ -7,6 +7,8 @@ import { atom } from 'nanostores'
 import { get, set, del } from 'idb-keyval'
 import { projectStore } from '@/stores/projectStore'
 import { logger } from '@/utils'
+import { DataModuleProps } from '@/modules/DataModuleFactory'
+import { AnyBaseModule } from '@/modules/data/BaseModule'
 
 type User = {
   avatar_url: string
@@ -44,6 +46,8 @@ class DataStore {
   inProgress: Cache<Promise<any>> = {}
 
   dataById: Cache<any> = {}
+
+  currentDashboard: AnyBaseModule[] = []
 
   // --- variables
 

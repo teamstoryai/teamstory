@@ -1,23 +1,19 @@
 import Button from '@/components/core/Button'
 import Pressable from '@/components/core/Pressable'
-import DataModule from '@/modules/ModuleCard'
+import CardFrame from '@/modules/ui/CardFrame'
+import useDataModule, { ModuleCardProps } from '@/modules/ui/useDataModule'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'preact/hooks'
 
-export type NotesModuleProps = {
-  title: string
-  key: string
-}
-
-const NotesModule = (props: NotesModuleProps) => {
+const NotesCard = (props: ModuleCardProps<any, string>) => {
   const [notes, setNotes] = useState('')
   const [privateNotes, setPrivateNotes] = useState('')
   const [showPrivateNotes, setShowPrivateNotes] = useState(false)
 
-  useEffect(() => {}, [props.key])
+  const { data, error, loading, refresh } = useDataModule(props.module)
 
   return (
-    <DataModule title={props.title}>
+    <CardFrame title={props.title} {...{ count: data?.length, error, loading, refresh }}>
       <textarea
         class="w-full flex-1 rounded-md p-2 border-none bg-gray-100"
         placeholder="Enter team-visible notes here..."
@@ -48,8 +44,8 @@ const NotesModule = (props: NotesModuleProps) => {
         )}
         <Button class="">Save</Button>
       </div>
-    </DataModule>
+    </CardFrame>
   )
 }
 
-export default NotesModule
+export default NotesCard

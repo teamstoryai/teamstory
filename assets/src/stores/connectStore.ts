@@ -31,6 +31,8 @@ export type ProjectUserMap = {
   [id: string]: ProjectUserInfo
 }
 
+type NameMap = { [id: string]: string | false }
+
 class ConnectStore {
   // --- stores
 
@@ -40,6 +42,8 @@ class ConnectStore {
 
   users = atom<ProjectUserMap>({})
 
+  idToName = atom<NameMap>({})
+
   fakeMode = false
 
   // --- actions
@@ -47,6 +51,8 @@ class ConnectStore {
   clearData = () => {
     this.repos.set([])
     this.trackers.set([])
+    this.users.set({})
+    this.idToName.set({})
   }
 
   loadConnections = async (project?: Project) => {
@@ -125,8 +131,20 @@ class ConnectStore {
     if (this.fakeMode) return this.users.get()
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
-    const response = await API.getProjectData(project.id, 'users')
-    if (response) this.users.set(response)
+    const response = (await API.getProjectData(project.id, 'users')) as ProjectUserMap
+    if (response) {
+      this.users.set(response)
+      const idToName: NameMap = {}
+      Object.keys(response).forEach((id) => {
+        const info = response[id]
+        const name = info.hidden ? false : info.name
+        if (name !== undefined) {
+          idToName[id] = name
+          if (info.aliases) info.aliases.forEach((a) => (idToName[a] = name))
+        }
+      })
+      this.idToName.set(idToName)
+    }
     return response || {}
   }
 

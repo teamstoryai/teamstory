@@ -1,26 +1,15 @@
-import DataModule from '@/modules/ModuleCard'
-import { logger } from '@/utils'
-import { StateUpdater, useCallback, useEffect, useState } from 'preact/hooks'
-import linear, { IssueFilters, LinearIssueFields } from '@/query/linear'
-import { dataStore } from '@/stores/dataStore'
-import { QueryIssue, QueryLabel, QueryUser } from '@/query/types'
+import CardFrame from '@/modules/ui/CardFrame'
+import { QueryIssue, QueryLabel } from '@/query/types'
 import { formatDistance } from 'date-fns'
+import useDataModule, { ModuleCardProps } from '@/modules/ui/useDataModule'
 
-export type IssuesModuleProps = {
-  id?: string
-  title: string
-  filters: IssueFilters
-}
-
-const IssuesModule = (props: IssuesModuleProps) => {
-  const [error, setError] = useState<Error>()
-
-  const { issues, refresh } = useIssues(props.filters, setError, props.id)
+const IssuesCard = (props: ModuleCardProps<any, QueryIssue[]>) => {
+  const { data, error, loading, refresh } = useDataModule(props.module)
 
   return (
-    <DataModule title={props.title} count={issues.length} refresh={refresh} error={error}>
+    <CardFrame title={props.title} {...{ count: data?.length, error, loading, refresh }}>
       <div class="flex flex-col w-full gap-2">
-        {issues.map((issue) => (
+        {data?.map((issue) => (
           <a
             href={issue.url}
             target="_blank"
@@ -49,52 +38,10 @@ const IssuesModule = (props: IssuesModuleProps) => {
             </div>
           </a>
         ))}
-        {!issues.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}
+        {data && !data?.length && <div class="my-8 self-center text-gray-400">Nothing to show</div>}
       </div>
-    </DataModule>
+    </CardFrame>
   )
-}
-
-export function useIssues(
-  filters: IssueFilters,
-  setError: StateUpdater<Error | undefined>,
-  storeDataKey?: string
-) {
-  const [issues, setIssues] = useState<QueryIssue[]>([])
-
-  const fetchData = (clear?: boolean) => {
-    issuesFetch(
-      filters,
-      {
-        assignee: true,
-        labels: true,
-      },
-      clear
-    )
-      .then((items) => {
-        dataStore.storeData(storeDataKey, items)
-        setIssues(items || [])
-      })
-      .catch(setError)
-  }
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const refresh = useCallback(() => fetchData(true), [filters])
-
-  return { issues, refresh }
-}
-
-export function issuesFetch(
-  filters: IssueFilters,
-  fields: LinearIssueFields,
-  clearCache?: boolean
-) {
-  const key = 'issues:' + JSON.stringify(filters)
-  if (clearCache) dataStore.clear(key)
-  return dataStore.cacheRead(key, () => linear.issues(filters, fields))
 }
 
 const Labels = ({ labels }: { labels: QueryLabel[] }) => {
@@ -122,4 +69,4 @@ const Priority = ({ issue }: { issue: QueryIssue }) => {
   )
 }
 
-export default IssuesModule
+export default IssuesCard
