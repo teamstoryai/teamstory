@@ -351,10 +351,16 @@ class APIService {
   // ai
 
   async generateSummary(
-    messages: { role: string; content: string }[]
+    project: Project,
+    messages: { role: string; content: string }[],
+    model?: string,
+    maxTokens?: number
   ): Promise<{ response: string; status: number }> {
     const response = await this.axios.post(`${this.endpoint}/ai/summary`, {
+      project_id: project.id,
       messages,
+      model,
+      tokens: maxTokens,
     })
     return { response: response.data, status: response.status }
   }

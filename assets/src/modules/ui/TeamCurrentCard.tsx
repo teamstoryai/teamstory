@@ -1,4 +1,5 @@
 import Pressable from '@/components/core/Pressable'
+import useTippy from '@/hooks/useTippy'
 import { UserTimeline } from '@/modules/data/TeamCurrentModule'
 import CardFrame from '@/modules/ui/CardFrame'
 import useDataModule, { ModuleCardProps } from '@/modules/ui/useDataModule'
@@ -6,7 +7,7 @@ import { connectStore, ProjectUserInfo, ProjectUserMap } from '@/stores/connectS
 import { CheckIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 import { formatDistance } from 'date-fns'
-import { StateUpdater, useState } from 'preact/hooks'
+import { StateUpdater, useRef, useState } from 'preact/hooks'
 
 const TeamCurrentCard = (props: ModuleCardProps<any, UserTimeline[]>) => {
   const [selected, setSelected] = useState<string[]>([])
@@ -75,24 +76,24 @@ const TeamCurrentCard = (props: ModuleCardProps<any, UserTimeline[]>) => {
 
   return (
     <CardFrame className="lg:col-span-2" title={props.title} {...{ error, loading }}>
-      <div class="-ml-1">
+      <div class="-ml-1 text-sm flex gap-2">
         {selected.length > 1 && (
-          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={merge}>
+          <Pressable className="inline-block text-blue-600 mb-4" onClick={merge}>
             Merge users
           </Pressable>
         )}
         {selected.length == 1 && userInfos[selected[0]]?.aliases && (
-          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={unmerge}>
+          <Pressable className="inline-block text-blue-600 mb-4" onClick={unmerge}>
             Un-merge users
           </Pressable>
         )}
         {selected.length > 0 && (
-          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={hide}>
-            Hide user{selected.length > 0 ? 's' : ''}
+          <Pressable className="inline-block text-blue-600 mb-4" onClick={hide}>
+            Hide user{selected.length > 1 ? 's' : ''}
           </Pressable>
         )}
         {selected.length == 1 && (
-          <Pressable className="inline-block text-sm text-blue-600 mb-4" onClick={rename}>
+          <Pressable className="inline-block text-blue-600 mb-4" onClick={rename}>
             Rename
           </Pressable>
         )}
@@ -123,15 +124,19 @@ function UserRow({
   setSelected: StateUpdater<string[]>
   itemsPerRow: number
 }) {
+  const divRef = useRef<HTMLDivElement | null>(null)
   const today = new Date()
   const select = () => {
     if (selected) setSelected((selected) => selected.filter((id) => id !== data.user.id))
     else setSelected((selected) => [...selected, data.user.id])
   }
+
+  useTippy(divRef, { content: 'Click on avatar for actions' })
+
   return (
     <>
       <div className="flex items-center p-4 pr-2 border-t border-gray-200">
-        <div className="mr-2 relative">
+        <div className="mr-2 relative" ref={divRef}>
           <img
             className="h-12 w-12 rounded-full"
             src={

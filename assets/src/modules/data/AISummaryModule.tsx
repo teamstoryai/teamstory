@@ -1,3 +1,4 @@
+import { API } from '@/api'
 import BaseModule, { AnyBaseModule } from '@/modules/data/BaseModule'
 import IssuesModule from '@/modules/data/IssuesModule'
 import PullRequestsModule from '@/modules/data/PullRequestsModule'
@@ -6,6 +7,7 @@ import AISummaryCard from '@/modules/ui/AISummaryCard'
 import { QueryUser } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
+import { projectStore } from '@/stores/projectStore'
 import { formatDistance } from 'date-fns'
 
 type ModuleGroup = {
@@ -22,12 +24,22 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
   fetchData = async (clearCache?: boolean) => {
     const modules = dataStore.currentDashboard
     const moduleString = modules.map((m) => m.props.module).join(',')
-    const key = 'summary:' + JSON.stringify(moduleString)
+    const key = 'summary:' + moduleString
     if (clearCache) dataStore.clear(key)
+
     return dataStore.cacheRead(key, async () => {
       const content = await Promise.all(modules.map((m) => moduleToText(m)).filter(Boolean))
-      const result = content.join('\n\n') + '\n\n' + this.props.instructions
-      return result.trim()
+      if (content.length == 0) return 'Nothing to summarize.'
+
+      const prompt = content.join('\n\n').trim() + '\n\n' + this.props.instructions
+
+      const result = await API.generateSummary(
+        projectStore.currentProject.get()!,
+        [{ role: 'user', content: prompt }],
+        undefined,
+        200
+      )
+      return result.response
     })
   }
 

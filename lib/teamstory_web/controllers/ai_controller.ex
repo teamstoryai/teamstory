@@ -11,7 +11,11 @@ defmodule TeamstoryWeb.AIController do
         %{"project_id" => project_uuid, "verb" => _verb, "messages" => messages} = params
       ) do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn) do
-      prompt_joined = Enum.join(messages, "\n")
+      prompt_joined =
+        messages
+        |> Enum.map(fn message -> message["content"] end)
+        |> Enum.join("\n")
+
       prompt_hash = :crypto.hash(:md5, prompt_joined) |> Base.encode16()
       cache_key = "complete:" <> project_uuid <> ":" <> prompt_hash
 
