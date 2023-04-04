@@ -51,6 +51,11 @@ export const DashboardModules = (dateKey: string, timelineStart: string): DataMo
 
 export const NeedsAttentionModules = (dateKey: string): DataModuleProps[] => [
   {
+    module: 'ai_summary',
+    title: 'Top three actions:',
+    instructions: 'Prioritize the top three actions I should take as the engineering manager:',
+  },
+  {
     module: 'pull_requests',
     title: 'Stale Pull Requests',
     query: `is:open is:pr draft:false created:<${dateKey}`,
