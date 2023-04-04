@@ -6,7 +6,7 @@ export type ComingSoonModuleProps = {
   title: string
 }
 
-export default class ComingSoonModuleModule extends BaseModule<ComingSoonModuleProps, void> {
+export default class ComingSoonModule extends BaseModule<ComingSoonModuleProps, void> {
   fetchData = async (clearCache?: boolean) => {}
 
   render = () => {

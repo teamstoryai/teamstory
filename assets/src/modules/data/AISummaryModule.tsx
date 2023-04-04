@@ -4,7 +4,7 @@ import IssuesModule from '@/modules/data/IssuesModule'
 import PullRequestsModule from '@/modules/data/PullRequestsModule'
 import { DataModuleProps } from '@/modules/DataModuleFactory'
 import AISummaryCard from '@/modules/ui/AISummaryCard'
-import { QueryUser } from '@/query/types'
+import { QueryIssue, QueryLabel, QueryPullRequest, QueryUser } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
@@ -62,7 +62,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
       module.props.title +
       ':\n' +
       issues
-        .map((issue) => {
+        .map((issue: QueryIssue) => {
           const props = [issue.title]
 
           if (!issue.completedAt && issue.startedAt) {
@@ -84,7 +84,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
             props.push(`by ${name}`)
           }
           if (issue.labels?.length)
-            props.push(`labels: ${issue.labels.map((l) => l.name).join(', ')}`)
+            props.push(`labels: ${issue.labels.map((l: QueryLabel) => l.name).join(', ')}`)
           if (issue.priority) props.push(`priority: ${issue.priorityLabel}`)
 
           return `* ${props.join(', ')}`
@@ -99,7 +99,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
       module.props.title +
       ':\n' +
       pulls
-        .map((pull) => {
+        .map((pull: QueryPullRequest) => {
           const props = [pull.title]
 
           if (pull.closed_at)

@@ -149,7 +149,6 @@ function UserRow({
             onClick={select}
             className={`absolute rounded-full top-0 left-0 w-full h-full hover:bg-gray-800/50
               cursor-pointer ${selected ? 'bg-gray-800/80' : ''}`}
-            title="Merge"
           >
             {selected && <CheckIcon class="ml-2 mt-2 h-8 w-8 text-green-500" />}
           </div>
