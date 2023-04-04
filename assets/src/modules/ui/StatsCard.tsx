@@ -8,7 +8,7 @@ const StatsCard = (props: ModuleCardProps<any, Stat[]>) => {
   const { data, error, loading } = useDataModule(props.module)
 
   return (
-    <CardFrame title={props.title} {...{ count: data?.length, error, loading }}>
+    <CardFrame title={props.title} {...{ error, loading }}>
       {data?.map((stat, i) => (
         <div class="py-2" key={i}>
           <dt class="text-base font-normal text-gray-900">
