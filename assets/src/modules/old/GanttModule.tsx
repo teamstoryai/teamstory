@@ -1,4 +1,4 @@
-import DataModule from '@/modules/ModuleCard'
+import DataModule from '@/modules/ui/CardFrame'
 import linear, { IssueFilters } from '@/query/linear'
 import { QueryIssue } from '@/query/types'
 import { dataStore, dateToYMD } from '@/stores/dataStore'

@@ -1,6 +1,6 @@
 import Button from '@/components/core/Button'
 import Pressable from '@/components/core/Pressable'
-import DataModule from '@/modules/ModuleCard'
+import DataModule from '@/modules/ui/CardFrame'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import { useEffect, useState } from 'preact/hooks'
 

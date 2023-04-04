@@ -106,6 +106,8 @@ defmodule TeamstoryWeb.Router do
     get "/billing/info", BillingController, :info
     post "/billing/new", BillingController, :new
     post "/billing/manage", BillingController, :manage
+
+    post "/ai/:verb", AIController, :complete
   end
 
   # Web scope (skipping logging)

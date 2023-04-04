@@ -1,29 +1,48 @@
-import { DataModuleProps } from '@/modules/DataModule'
+import { DataModuleProps } from '@/modules/DataModuleFactory'
 import { dateToYMD, pastTwoWeeksDates } from '@/stores/dataStore'
+
+/**
+ * supported variables:
+ *
+ * {{t}} - today in YYYY-MM-DD format
+ * {{t-1}} - today - 1 day, etc
+ * {{s}} - period start
+ * {{e}} - period end
+ */
 
 export const DashboardModules = (dateKey: string, timelineStart: string): DataModuleProps[] => [
   {
+    module: 'ai_summary',
+    title: 'Executive summary',
+    instructions: "Summary of the team's recent activity with one bullet point per person:",
+  },
+  {
+    id: 'team',
     module: 'team_current',
     title: 'Breakdown by Team Member',
     updatedPulls: `is:pr updated:>${dateKey}`,
     updatedIssues: { updatedAfter: dateKey },
   },
   {
+    id: 'open',
     module: 'pull_requests',
     title: 'New Open Pull Requests',
     query: `is:open is:pr draft:false created:>${dateKey}`,
   },
   {
+    id: 'merged',
     module: 'pull_requests',
     title: 'Recently Merged Pull Requests',
     query: `is:merged is:pr merged:>${dateKey}`,
   },
   {
+    id: 'in-progress',
     module: 'issues',
     title: 'Issues In Progress',
     filters: { started: true, open: true },
   },
   {
+    id: 'completed',
     module: 'issues',
     title: 'Recently Completed',
     filters: { completedAfter: dateKey },

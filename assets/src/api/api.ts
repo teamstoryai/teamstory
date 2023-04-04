@@ -348,6 +348,17 @@ class APIService {
     return response.data
   }
 
+  // ai
+
+  async generateSummary(
+    messages: { role: string; content: string }[]
+  ): Promise<{ response: string; status: number }> {
+    const response = await this.axios.post(`${this.endpoint}/ai/summary`, {
+      messages,
+    })
+    return { response: response.data, status: response.status }
+  }
+
   // for storybooks, put API into a stub state
 
   stubMode() {

@@ -1,4 +1,4 @@
-import DataModule from '@/modules/ModuleCard'
+import DataModule from '@/modules/ui/CardFrame'
 import { useState } from 'preact/hooks'
 
 export type ComingSoonModuleProps = {
