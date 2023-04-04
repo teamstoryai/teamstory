@@ -244,10 +244,10 @@ export default class Gantt {
 
     // override dates if users request it
     if (this.options.start_date) {
-      this.gantt_start = this.options.start_date
+      this.gantt_start = date_utils.start_of(this.options.start_date, 'day')
     }
     if (this.options.end_date) {
-      this.gantt_end = this.options.end_date
+      this.gantt_end = date_utils.start_of(this.options.end_date, 'day')
     }
   }
 
@@ -410,28 +410,45 @@ export default class Gantt {
   }
 
   make_grid_highlights() {
-    // highlight today's date
-    if (this.view_is(VIEW_MODE.DAY) && this.options.show_today_highlight) {
-      const x =
-        (date_utils.diff(date_utils.today(), this.gantt_start, 'hour') / this.options.step) *
-        this.options.column_width
-      const y = 0
-
-      const width = this.options.column_width
-      const height =
-        (this.options.bar_height + this.options.padding) * this.tasks.length +
-        this.options.header_height +
-        this.options.padding / 2
-
-      createSVG('rect', {
-        x,
-        y,
-        width,
-        height,
-        class: 'today-highlight',
-        append_to: this.layers.grid,
-      })
+    if (this.view_is(VIEW_MODE.DAY)) {
+      // highlight today's date
+      if (this.options.show_today_highlight) {
+        this.make_highlight_bar(date_utils.today(), 'today-highlight')
+      }
+      // show weekend highlights
+      if (this.options.show_saturday_highlight || this.options.show_sunday_highlight) {
+        for (var D = new Date(this.gantt_start); D <= this.gantt_end; D.setDate(D.getDate() + 1)) {
+          if (
+            (D.getDay() == 0 && this.options.show_sunday_highlight) ||
+            (D.getDay() == 6 && this.options.show_saturday_highlight)
+          ) {
+            this.make_highlight_bar(D, 'nonworkingday-highlight')
+          }
+        }
+      }
     }
+  }
+
+  make_highlight_bar(the_date, highlight_class) {
+    const x =
+      (date_utils.diff(the_date, this.gantt_start, 'hour') / this.options.step) *
+      this.options.column_width
+    const y = 0
+
+    const width = this.options.column_width
+    const height =
+      (this.options.bar_height + this.options.padding) * this.tasks.length +
+      this.options.header_height +
+      this.options.padding / 2
+
+    createSVG('rect', {
+      x,
+      y,
+      width,
+      height,
+      class: highlight_class,
+      append_to: this.layers.grid,
+    })
   }
 
   make_dates() {

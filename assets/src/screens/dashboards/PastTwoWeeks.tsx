@@ -43,7 +43,7 @@ const PastTwoWeeks = (props: Props) => {
       ? ComingSoonModules()
       : suggestionId == 'slow'
       ? ComingSoonModules()
-      : PastTwoWeeksModules(startDate, startDateStr, endDateStr)
+      : PastTwoWeeksModules(startDate, startDateStr, endDate, endDateStr)
 
   return (
     <PastDashboard title={title} modules={modules}>

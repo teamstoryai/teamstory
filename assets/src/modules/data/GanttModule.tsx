@@ -11,6 +11,8 @@ export type GanttModuleProps = {
   title: string
   viewMode?: 'Day' | 'Week' | 'Month'
   filters: IssueFilters
+  startDate?: Date
+  endDate?: Date
 }
 
 export default class GanttModule extends BaseModule<GanttModuleProps, Task[]> {

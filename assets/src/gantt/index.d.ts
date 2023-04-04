@@ -34,6 +34,8 @@ export type GanttOptions = {
   read_only?: boolean
   footer_padding?: number
   show_today_highlight?: boolean
+  show_saturday_highlight?: boolean
+  show_sunday_highlight?: boolean
   start_date?: Date
   end_date?: Date
   custom_popup_html?: (task: Task) => string
