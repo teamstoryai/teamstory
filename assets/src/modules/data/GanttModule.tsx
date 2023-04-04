@@ -20,10 +20,9 @@ export default class GanttModule extends BaseModule<GanttModuleProps, Task[]> {
     if (clearCache) dataStore.clear(key)
 
     const issues = await dataStore.cacheRead(key, () => linear.issues(filters, {}))
-    issues.sort((a, b) => duration(b) - duration(a))
+    issues.sort((a, b) => a.completedAt!.localeCompare(b.completedAt!))
 
     const tasks = issues
-      .slice(0, 10)
       .map((issue) => {
         try {
           return issueToTask(issue)

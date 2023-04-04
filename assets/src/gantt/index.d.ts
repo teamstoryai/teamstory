@@ -33,6 +33,9 @@ export type GanttOptions = {
   popup_trigger?: 'click' | 'mouseover'
   read_only?: boolean
   footer_padding?: number
+  show_today_highlight?: boolean
+  start_date?: Date
+  end_date?: Date
   custom_popup_html?: (task: Task) => string
   on_click?: (task: Task) => void
   on_date_change?: (task: Task, start: Date, end: Date) => void
