@@ -11,7 +11,9 @@ export class Learning {
     end_date: '',
   }
 
+  public is_you: boolean = true
   public user_id: string = ''
+  public user_name: string = ''
   public content: string = ''
   public private: boolean = false
 

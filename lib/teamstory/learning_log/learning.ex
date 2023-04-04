@@ -2,14 +2,17 @@ defmodule Teamstory.LearningLog.Learning do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Teamstory.{Projects.Project, Users.User}
+
   schema "learnings" do
     field :content, :string
     field :end_date, :string
     field :private, :boolean, default: false
     field :start_date, :string
     field :type, :string
-    field :project_id, :id
-    field :user_id, :id
+
+    belongs_to :user, User
+    belongs_to :project, Project
 
     timestamps()
   end

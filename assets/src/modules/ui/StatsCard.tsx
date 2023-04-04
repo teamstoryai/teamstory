@@ -7,8 +7,10 @@ import { ArrowDownIcon, ArrowUpIcon, Bars2Icon } from '@heroicons/react/24/outli
 const StatsCard = (props: ModuleCardProps<any, Stat[]>) => {
   const { data, error, loading } = useDataModule(props.module)
 
+  const count = data?.reduce((a, b) => a + b.count, 0)
+
   return (
-    <CardFrame title={props.title} {...{ error, loading }}>
+    <CardFrame title={props.title} {...{ error, loading, count }}>
       {data?.map((stat, i) => (
         <div class="py-2" key={i}>
           <dt class="text-base font-normal text-gray-900">

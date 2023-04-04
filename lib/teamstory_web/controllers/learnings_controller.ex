@@ -5,7 +5,7 @@ defmodule TeamstoryWeb.LearningsController do
 
   action_fallback TeamstoryWeb.FallbackController
 
-  alias Teamstory.{LearningLog, Projects, Utils}
+  alias Teamstory.{LearningLog, Projects}
 
   # GET /learnings
   def index(conn, %{
@@ -17,7 +17,7 @@ defmodule TeamstoryWeb.LearningsController do
     with user when is_map(user) <- Guardian.Plug.current_resource(conn),
          {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid),
          items <- LearningLog.all_logs_for_period(project, user, type, start_date, end_date) do
-      render(conn, "list.json", items: items)
+      render(conn, "list.json", user: user, items: items)
     end
   end
 
@@ -39,6 +39,8 @@ defmodule TeamstoryWeb.LearningsController do
         end)
 
       attrs = %{
+        project_id: project.id,
+        user_id: user.id,
         type: type,
         private: private,
         start_date: start_date,
@@ -47,14 +49,20 @@ defmodule TeamstoryWeb.LearningsController do
       }
 
       result =
-        if existing do
-          LearningLog.update_log(existing, attrs)
-        else
-          LearningLog.create_log(project, user, attrs)
+        cond do
+          existing && content == "" ->
+            LearningLog.delete_learning(existing)
+
+          existing ->
+            LearningLog.update_learning(existing, attrs)
+
+          true ->
+            LearningLog.create_learning(attrs)
         end
 
-      with {:ok, _item} <- result do
-        :ok
+      with {:ok, item} <- result do
+        item = %{item | user: user}
+        render(conn, "get.json", user: user, item: item)
       end
     end
   end

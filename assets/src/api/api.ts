@@ -346,7 +346,10 @@ class APIService {
     return response.data
   }
 
-  async updateLearning(project: Project, item: Partial<Learning>): Promise<R.SuccessResponse> {
+  async updateLearning(
+    project: Project,
+    item: Partial<Learning>
+  ): Promise<R.ItemResponse<Learning>> {
     const params = new URLSearchParams({ project_id: project.id, ...item.key })
     const response = await this.axios.post(`${this.endpoint}/learnings?${params.toString()}`, {
       content: item.content,

@@ -8,7 +8,6 @@ defmodule Teamstory.LearningLog do
 
   alias Teamstory.LearningLog.Learning
 
-  @spec logs_for_period(Project.t(), User.t()) :: [Learning.t()]
   def all_logs_for_period(project, user, type, start_date, end_date) do
     from(t in Learning,
       where:
@@ -20,6 +19,7 @@ defmodule Teamstory.LearningLog do
       order_by: [asc: :id]
     )
     |> Repo.all()
+    |> Repo.preload(:user)
   end
 
   def user_logs_for_period(project, user, type, start_date, end_date) do
