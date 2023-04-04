@@ -38,6 +38,7 @@ export type GanttOptions = {
   show_sunday_highlight?: boolean
   start_date?: Date
   end_date?: Date
+  date_padding?: [number, string]
   custom_popup_html?: (task: Task) => string
   on_click?: (task: Task) => void
   on_date_change?: (task: Task, start: Date, end: Date) => void

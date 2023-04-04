@@ -122,8 +122,8 @@ export const PastTwoWeeksModules = (
         completedAfter: startDateStr,
         completedBefore: endDateStr,
       },
-      startDate: sub(startDate, { days: 7 }),
-      endDate: add(endDate, { days: 7 }),
+      startDate,
+      endDate,
     },
     {
       module: 'pull_requests',

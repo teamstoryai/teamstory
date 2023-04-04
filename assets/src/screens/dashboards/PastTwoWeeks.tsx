@@ -4,6 +4,7 @@ import { pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'
 import { useState } from 'preact/hooks'
 import { ComingSoonModules, PastTwoWeeksModules } from '@/screens/dashboards/dashboards'
+import { startOfDay } from 'date-fns'
 
 type Props = {
   path: string
@@ -22,7 +23,7 @@ const PastTwoWeeks = (props: Props) => {
     suggestionFromParams(params, suggestions)
   )
 
-  const today = new Date()
+  const today = startOfDay(new Date())
   const { startDate, endDate } = pastTwoWeeksDates(today)
 
   const { startDateStr, endDateStr, startDateHuman, endDateHuman } = renderDates(

@@ -224,11 +224,23 @@ export default class Gantt {
       }
     }
 
+    // override dates if users request it
+    if (this.options.start_date) {
+      this.gantt_start = this.options.start_date
+    }
+    if (this.options.end_date) {
+      this.gantt_end = this.options.end_date
+    }
+
     this.gantt_start = date_utils.start_of(this.gantt_start, 'day')
     this.gantt_end = date_utils.start_of(this.gantt_end, 'day')
 
     // add date padding on both sides
-    if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
+    if (this.options.date_padding) {
+      const [value, unit] = this.options.date_padding
+      this.gantt_start = date_utils.add(this.gantt_start, -value, unit)
+      this.gantt_end = date_utils.add(this.gantt_end, value, unit)
+    } else if (this.view_is([VIEW_MODE.QUARTER_DAY, VIEW_MODE.HALF_DAY])) {
       this.gantt_start = date_utils.add(this.gantt_start, -7, 'day')
       this.gantt_end = date_utils.add(this.gantt_end, 7, 'day')
     } else if (this.view_is(VIEW_MODE.MONTH)) {
@@ -240,14 +252,6 @@ export default class Gantt {
     } else {
       this.gantt_start = date_utils.add(this.gantt_start, -1, 'month')
       this.gantt_end = date_utils.add(this.gantt_end, 1, 'month')
-    }
-
-    // override dates if users request it
-    if (this.options.start_date) {
-      this.gantt_start = date_utils.start_of(this.options.start_date, 'day')
-    }
-    if (this.options.end_date) {
-      this.gantt_end = date_utils.start_of(this.options.end_date, 'day')
     }
   }
 
@@ -415,6 +419,14 @@ export default class Gantt {
       if (this.options.show_today_highlight) {
         this.make_highlight_bar(date_utils.today(), 'today-highlight')
       }
+
+      if (this.options.start_date) {
+        this.make_highlight_bar(this.options.start_date, 'range-highlight', 1)
+      }
+      if (this.options.end_date) {
+        this.make_highlight_bar(this.options.end_date, 'range-highlight', 1)
+      }
+
       // show weekend highlights
       if (this.options.show_saturday_highlight || this.options.show_sunday_highlight) {
         for (var D = new Date(this.gantt_start); D <= this.gantt_end; D.setDate(D.getDate() + 1)) {
@@ -429,13 +441,12 @@ export default class Gantt {
     }
   }
 
-  make_highlight_bar(the_date, highlight_class) {
+  make_highlight_bar(the_date, highlight_class, width = this.options.column_width) {
     const x =
       (date_utils.diff(the_date, this.gantt_start, 'hour') / this.options.step) *
       this.options.column_width
     const y = 0
 
-    const width = this.options.column_width
     const height =
       (this.options.bar_height + this.options.padding) * this.tasks.length +
       this.options.header_height +

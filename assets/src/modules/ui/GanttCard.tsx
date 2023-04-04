@@ -21,6 +21,7 @@ const GanttCard = (props: ModuleCardProps<any, Task[]>) => {
         show_sunday_highlight: true,
         start_date: props.module.props.startDate,
         end_date: props.module.props.endDate,
+        date_padding: [7, 'day'],
       })
     } else {
       gantt.current.refresh(data)
