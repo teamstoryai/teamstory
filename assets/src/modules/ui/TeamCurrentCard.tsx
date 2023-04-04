@@ -11,8 +11,9 @@ import { StateUpdater, useRef, useState } from 'preact/hooks'
 
 const TeamCurrentCard = (props: ModuleCardProps<any, UserTimeline[]>) => {
   const [selected, setSelected] = useState<string[]>([])
+  const [showCount, setShowCount] = useState<number>(5)
   const userInfos = useStore(connectStore.users)
-  const { data, error, loading } = useDataModule(props.module, [userInfos])
+  const { data, error, loading, refresh } = useDataModule(props.module, [userInfos])
 
   const merge = () => {
     let change: ProjectUserInfo = {}
@@ -72,10 +73,32 @@ const TeamCurrentCard = (props: ModuleCardProps<any, UserTimeline[]>) => {
     setSelected([])
   }
 
-  const itemsPerRow = data ? Math.max(Math.min(10, 40 / data.length), 4) : 0
+  const headerActions = (
+    <div class="text-sm flex items-center gap-1 mr-2">
+      Show:
+      {showCount == 5 ? (
+        <div>5</div>
+      ) : (
+        <Pressable className="text-blue-600 text-sm" onClick={() => setShowCount(5)}>
+          5
+        </Pressable>
+      )}
+      {showCount == 10 ? (
+        <div>10</div>
+      ) : (
+        <Pressable className="text-blue-600 text-sm" onClick={() => setShowCount(10)}>
+          10
+        </Pressable>
+      )}
+    </div>
+  )
 
   return (
-    <CardFrame className="lg:col-span-2" title={props.title} {...{ error, loading }}>
+    <CardFrame
+      className="lg:col-span-2"
+      title={props.title}
+      {...{ error, loading, refresh, headerActions }}
+    >
       <div class="-ml-1 text-sm flex gap-2">
         {selected.length > 1 && (
           <Pressable className="inline-block text-blue-600 mb-4" onClick={merge}>
@@ -105,7 +128,7 @@ const TeamCurrentCard = (props: ModuleCardProps<any, UserTimeline[]>) => {
             data={timeline}
             selected={selected.indexOf(timeline.user.id) > -1}
             setSelected={setSelected}
-            itemsPerRow={itemsPerRow}
+            itemsPerRow={showCount}
           />
         ))}
       </div>

@@ -13,6 +13,7 @@ type Props = {
   refresh?: () => void
   error?: string | Error
   className?: string
+  headerActions?: JSX.Element
 }
 
 const ModuleCard = ({
@@ -23,6 +24,7 @@ const ModuleCard = ({
   className,
   count,
   loading,
+  headerActions,
 }: RenderableProps<Props>) => {
   if (error) logger.error(error)
   return (
@@ -38,6 +40,7 @@ const ModuleCard = ({
           {title}
           {count !== undefined ? ` (${count})` : null}
         </h1>
+        {headerActions}
         {refresh && (
           <Pressable onClick={refresh} tooltip="Refresh data">
             <ArrowPathIcon class="h-4 w-4 text-gray-400" />

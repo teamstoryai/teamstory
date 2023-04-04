@@ -45,20 +45,21 @@ export default class TeamCurrentsModule extends BaseModule<TeamCurrentModuleProp
     await Promise.all([updatedPulls, updatedIssues, teamInfo])
 
     const map: UserInfoMap = {}
+    const knownItems = new Set<string>()
 
     ;(await updatedPulls).forEach((pr) => {
-      if (!pr.user) return
+      if (!pr.user || knownItems.has(pr.html_url)) return
+      knownItems.add(pr.html_url)
       const user = getUserInfo(map, pr.user)
       user.pullRequests.push(pr)
     })
     ;(await updatedIssues).forEach((issue) => {
-      if (issue.creator) {
-        const user = getUserInfo(map, issue.creator)
-        user.issues.push(issue)
-      }
-
       if (issue.assignee) {
         const user = getUserInfo(map, issue.assignee)
+        user.issues.push(issue)
+      }
+      if (issue.creator && issue.creator.id != issue.assignee?.id) {
+        const user = getUserInfo(map, issue.creator)
         user.issues.push(issue)
       }
     })
@@ -129,38 +130,37 @@ const MAX_TIMELINE_AGE = 10 * 86400000
 const eventsToTimeline = (user: UserInfo): UserTimeline => {
   const timeline: Timeline = []
   user.pullRequests.forEach((pr) => {
-    timeline.push({
-      ts: new Date(pr.created_at),
-      message: `created PR #${pr.number}: ${pr.title}`,
-      url: pr.html_url,
-    })
     if (pr.closed_at) {
       timeline.push({
         ts: new Date(pr.created_at),
         message: `merged PR #${pr.number}: ${pr.title}`,
         url: pr.html_url,
       })
+    } else {
+      timeline.push({
+        ts: new Date(pr.created_at),
+        message: `created PR #${pr.number}: ${pr.title}`,
+        url: pr.html_url,
+      })
     }
   })
   user.issues.forEach((issue) => {
-    if (issue.creator?.id == user.user.id) {
+    if (issue.completedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
-        ts: new Date(issue.createdAt),
-        message: `created issue ${issue.identifier}: ${issue.title}`,
+        ts: new Date(issue.completedAt),
+        message: `completed issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
-    }
-    if (issue.startedAt && issue.assignee?.id == user.user.id) {
+    } else if (issue.startedAt && issue.assignee?.id == user.user.id) {
       timeline.push({
         ts: new Date(issue.startedAt),
         message: `started issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
-    }
-    if (issue.completedAt && issue.assignee?.id == user.user.id) {
+    } else if (issue.creator?.id == user.user.id) {
       timeline.push({
-        ts: new Date(issue.completedAt),
-        message: `completed issue ${issue.identifier}: ${issue.title}`,
+        ts: new Date(issue.createdAt),
+        message: `created issue ${issue.identifier}: ${issue.title}`,
         url: issue.url,
       })
     }
