@@ -112,7 +112,9 @@ export const PastTwoWeeksModules = (
     },
     {
       module: 'notes',
-      key: `p2w-${startDateStr}`,
+      type: '2w',
+      startDate: startDateStr,
+      endDate: endDateStr,
       title: 'Reflections & Learnings',
     },
     {

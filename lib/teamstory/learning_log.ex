@@ -8,6 +8,33 @@ defmodule Teamstory.LearningLog do
 
   alias Teamstory.LearningLog.Learning
 
+  @spec logs_for_period(Project.t(), User.t()) :: [Learning.t()]
+  def all_logs_for_period(project, user, type, start_date, end_date) do
+    from(t in Learning,
+      where:
+        t.project_id == ^project.id and
+          t.type == ^type and
+          t.start_date >= ^start_date and
+          t.end_date <= ^end_date and
+          (t.user_id == ^user.id or t.private != true),
+      order_by: [asc: :id]
+    )
+    |> Repo.all()
+  end
+
+  def user_logs_for_period(project, user, type, start_date, end_date) do
+    from(t in Learning,
+      where:
+        t.project_id == ^project.id and
+          t.type == ^type and
+          t.start_date >= ^start_date and
+          t.end_date <= ^end_date and
+          t.user_id == ^user.id,
+      order_by: [asc: :id]
+    )
+    |> Repo.all()
+  end
+
   @doc """
   Returns the list of learnings.
 

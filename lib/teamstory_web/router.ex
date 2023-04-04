@@ -102,6 +102,8 @@ defmodule TeamstoryWeb.Router do
     get "/connect/repos/fetch_repos", ConnectReposController, :fetch_repos
     resources "/connect/issues", ConnectIssuesController, only: [:index, :create, :update]
 
+    resources "/learnings", LearningsController, only: [:index, :create]
+
     get "/subinfo", BillingController, :info
     get "/billing/info", BillingController, :info
     post "/billing/new", BillingController, :new

@@ -1,4 +1,5 @@
 export * from './issue_tracker'
+export * from './learning'
 export * from './message'
 export * from './oauth_token'
 export * from './org'
