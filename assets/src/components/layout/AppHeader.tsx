@@ -56,7 +56,7 @@ export default function AppHeader(p: RenderableProps<Props>) {
       <div className="flex-1 flex justify-between select-none pt-1 overflow-hidden">
         {p.children}
       </div>
-      <div className="mr-4 flex items-center">
+      <div className="mr-4 flex items-center mt-2">
         <UserMenu />
       </div>
     </div>
