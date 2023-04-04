@@ -6,6 +6,7 @@ import { logger } from '@/utils'
 import { Task } from '@/gantt'
 import GanttCard from '@/modules/ui/GanttCard'
 import BaseModule from '@/modules/data/BaseModule'
+import { connectStore } from '@/stores/connectStore'
 
 export type GanttModuleProps = {
   title: string
@@ -21,8 +22,21 @@ export default class GanttModule extends BaseModule<GanttModuleProps, Task[]> {
     const key = 'issues:' + JSON.stringify(filters)
     if (clearCache) dataStore.clear(key)
 
-    const issues = await dataStore.cacheRead(key, () => linear.issues(filters, {}))
+    const issues = await dataStore.cacheRead(key, () => linear.issues(filters, { assignee: true }))
     issues.sort((a, b) => a.completedAt!.localeCompare(b.completedAt!))
+    const issueToTask = (issue: QueryIssue): Task | null => {
+      const assignee = issue.assignee ? connectStore.getName(issue.assignee) : undefined
+      if (assignee === false) return null
+
+      return {
+        id: issue.id,
+        name: `${issue.identifier} - ${issue.title}`,
+        start: issue.startedAt || issue.createdAt,
+        end: issue.completedAt || new Date().toISOString(),
+        progress: issue.completedAt ? 100 : 0,
+        subtitle: assignee || 'unassigned',
+      }
+    }
 
     const tasks = issues
       .map((issue) => {
@@ -46,11 +60,3 @@ const duration = (issue: QueryIssue) =>
   issue.startedAt
     ? new Date(issue.completedAt || Date.now()).getTime() - new Date(issue.startedAt).getTime()
     : 0
-
-const issueToTask = (issue: QueryIssue): Task => ({
-  id: issue.id,
-  name: `${issue.identifier} - ${issue.title}`,
-  start: issue.startedAt || issue.createdAt,
-  end: issue.completedAt || new Date().toISOString(),
-  progress: issue.completedAt ? 100 : 0,
-})

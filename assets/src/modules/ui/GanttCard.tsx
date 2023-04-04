@@ -22,6 +22,14 @@ const GanttCard = (props: ModuleCardProps<any, Task[]>) => {
         start_date: props.module.props.startDate,
         end_date: props.module.props.endDate,
         date_padding: [7, 'day'],
+        custom_popup_html: (task: Task) => {
+          const title = task.name
+          const subtitle = task.subtitle
+          return `
+            <div class="title">${title}</div>
+            <div class="subtitle">${subtitle}</div>
+          `
+        },
       })
     } else {
       gantt.current.refresh(data)

@@ -2,6 +2,7 @@
 export declare class Task {
   id: string
   name: string
+  subtitle?: string
   start: string
   end: string
   constructor(options?: Partial<Task>)

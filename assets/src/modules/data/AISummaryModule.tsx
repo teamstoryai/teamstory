@@ -49,12 +49,6 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
 }
 
 const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
-  const idToName = connectStore.idToName.get()
-  const getName = (user: QueryUser) => {
-    if (idToName[user.id] !== undefined) return idToName[user.id]
-    return user.name
-  }
-
   if (module instanceof IssuesModule) {
     const issues = await module.fetchData()
     if (issues.length == 0) return null
@@ -76,7 +70,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
           else if (issue.createdAt) props.push(`created`)
 
           if (issue.assignee) {
-            const name = getName(issue.assignee)
+            const name = connectStore.getName(issue.assignee)
             if (name === false) return null
             props.push(`by ${name}`)
           }
@@ -104,7 +98,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
 
           if (pull.comments) props.push(`${pull.comments} comments`)
           if (pull.user) {
-            const name = getName(pull.user)
+            const name = connectStore.getName(pull.user)
             if (name === false) return null
             props.push(`by ${name}`)
           }
