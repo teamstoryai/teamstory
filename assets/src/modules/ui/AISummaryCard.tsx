@@ -4,7 +4,7 @@ import useDataModule, { ModuleCardProps } from '@/modules/ui/useDataModule'
 const AISummaryCard = (props: ModuleCardProps<any, string>) => {
   const { data, error, loading, refresh } = useDataModule(props.module)
 
-  const dataLines = data?.split('\n') || []
+  const dataLines = data?.split('\n').filter(Boolean) || []
   const listStyle = data?.startsWith('- ')
     ? 'list-disc'
     : data?.startsWith('1.')
