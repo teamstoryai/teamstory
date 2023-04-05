@@ -1,16 +1,21 @@
-import { CodeService } from '@/query/codeService'
+import { CodeService, PRFilters } from '@/query/codeService'
 import { fakeData } from '@/query/fakeData'
 import { IssueFields, IssueFilters, IssueService } from '@/query/issueService'
 import { QueryIssue, QueryPullRequest, QueryUser } from '@/query/types'
 import { logger } from '@/utils'
 
 class FakeService implements CodeService, IssueService {
-  setToken(token: string): void {
-    throw new Error('Method not implemented.')
+  setToken(token: string): void {}
+  pulls(repo: string, filters: PRFilters): Promise<QueryPullRequest[]> {
+    const pulls = fetchSome(fakeData.pullTitles, 5).map((title) =>
+      toPullRequest(title, repo, filters)
+    )
+
+    logger.info('FakeService.pulls', filters, pulls)
+
+    return Promise.resolve(pulls)
   }
-  pulls(repo: string, query: string): Promise<QueryPullRequest[]> {
-    throw new Error('Method not implemented.')
-  }
+
   issues(props: IssueFilters, fields: IssueFields): Promise<QueryIssue[]> {
     const hasDateRange = !!props.completedBefore
     const featureMax = props.label == 'bug' ? 0 : props.open ? 2 : hasDateRange ? 12 : 4
@@ -56,6 +61,27 @@ function fetchSome<T>(array: T[], max?: number): T[] {
     someArray.push(array[(startIndex + i) % array.length])
   }
   return someArray
+}
+
+function toPullRequest(
+  title: string,
+  repo: string,
+  filters: PRFilters,
+  additional?: Partial<QueryPullRequest>
+): QueryPullRequest {
+  const user = fetchOne(fakeData.users)
+  return {
+    number: Math.floor(Math.random() * 1000),
+    title,
+    user,
+    repo,
+    html_url: 'https://sample.com',
+    created_at: dateInRange(filters.createdAfter, filters.createdBefore),
+    updated_at: dateInRange(filters.updatedAfter, filters.updatedBefore),
+    merged_at: filters.open ? undefined : dateInRange(filters.mergedAfter, filters.mergedBefore),
+    closed_at: filters.open ? undefined : dateInRange(filters.mergedAfter, filters.mergedBefore),
+    comments: Math.floor(Math.random() * 100),
+  }
 }
 
 function toIssue(

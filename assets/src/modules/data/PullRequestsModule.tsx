@@ -1,5 +1,6 @@
 import BaseModule from '@/modules/data/BaseModule'
 import PullRequestsCard from '@/modules/ui/PullRequestsCard'
+import { PRFilters } from '@/query/codeService'
 import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
@@ -7,10 +8,10 @@ import { dataStore } from '@/stores/dataStore'
 export type PullRequestsModuleProps = {
   id?: string
   title?: string
-  query: string
+  filters: PRFilters
 }
 
-const keyFunction = (repo: string, query: string) => `${repo}:pr:${query}`
+const keyFunction = (repo: string, filters: PRFilters) => `${repo}:pr:${JSON.stringify(filters)}`
 
 export default class PullRequestsModule extends BaseModule<
   PullRequestsModuleProps,
@@ -18,14 +19,14 @@ export default class PullRequestsModule extends BaseModule<
 > {
   fetchData = (clearCache?: boolean) => {
     const repos = connectStore.repos.get()
-    const query = this.props.query
+    const filters = this.props.filters
 
     const result = Promise.all(
       repos.map(async (repo) => {
-        const key = keyFunction(repo.name, query)
+        const key = keyFunction(repo.name, filters)
         if (clearCache) dataStore.clear(key)
         const result = await dataStore.cacheRead(key, () =>
-          connectStore.codeService.pulls(repo.name, query)
+          connectStore.codeService.pulls(repo.name, filters)
         )
         return result.map((i) => ({ ...i, repo: repo.name }))
       })

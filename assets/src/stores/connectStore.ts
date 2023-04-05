@@ -2,6 +2,7 @@ import { API } from '@/api'
 import { config } from '@/config'
 import { IssueTracker, Project, Repository } from '@/models'
 import { CodeService } from '@/query/codeService'
+import { fakeData } from '@/query/fakeData'
 import fakeService from '@/query/fakeService'
 import github from '@/query/github'
 import { IssueService } from '@/query/issueService'
@@ -57,8 +58,6 @@ class ConnectStore {
 
   idToName = atom<NameMap>({})
 
-  fakeMode = false
-
   // --- actions
 
   clearData = () => {
@@ -96,7 +95,10 @@ class ConnectStore {
   // --- repos
 
   loadConnectedRepos = async (project?: Project) => {
-    if (this.fakeMode) return this.repos.get()
+    if (project?.sample) {
+      this.repos.set(fakeData.repos)
+      return this.repos.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.repos.list(project)
@@ -122,7 +124,10 @@ class ConnectStore {
   // --- trackers
 
   loadConnectedTrackers = async (project?: Project) => {
-    if (this.fakeMode) return this.trackers.get()
+    if (project?.sample) {
+      this.trackers.set([])
+      return this.trackers.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.issue_trackers.list(project)
@@ -158,7 +163,10 @@ class ConnectStore {
   // --- user data
 
   loadUsers = async (project?: Project) => {
-    if (this.fakeMode) return this.users.get()
+    if (project?.sample) {
+      this.users.set({})
+      return this.users.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = (await API.getProjectData(project.id, 'users')) as ProjectUserMap
@@ -181,7 +189,6 @@ class ConnectStore {
   updateUsers = async (changes: ProjectUserMap) => {
     const updated = { ...this.users.get(), ...changes }
     this.users.set(updated)
-    if (this.fakeMode) return
 
     const project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')

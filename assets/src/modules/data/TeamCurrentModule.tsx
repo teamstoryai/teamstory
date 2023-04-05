@@ -6,11 +6,12 @@ import TeamCurrentCard from '@/modules/ui/TeamCurrentCard'
 import PullRequestsModule from '@/modules/data/PullRequestsModule'
 import IssuesModule from '@/modules/data/IssuesModule'
 import { IssueFilters } from '@/query/issueService'
+import { PRFilters } from '@/query/codeService'
 
 export type TeamCurrentModuleProps = {
   id?: string
   title: string
-  updatedPulls: string
+  updatedPulls: PRFilters
   updatedIssues: IssueFilters
 }
 
@@ -31,7 +32,7 @@ export default class TeamCurrentsModule extends BaseModule<TeamCurrentModuleProp
     const repos = connectStore.repos.get()
     const props = this.props
 
-    const prModule = new PullRequestsModule({ query: props.updatedPulls })
+    const prModule = new PullRequestsModule({ filters: props.updatedPulls })
     const updatedPulls = prModule.fetchData(clearCache)
 
     const issueModule = new IssuesModule({
