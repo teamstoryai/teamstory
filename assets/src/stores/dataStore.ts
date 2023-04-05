@@ -47,10 +47,6 @@ class DataStore {
 
   currentDashboard: AnyBaseModule[] = []
 
-  // --- variables
-
-  fakeMode = false
-
   // --- actions
 
   cacheRead = async <T>(key: string, fetch: () => Promise<T>, ttl?: number): Promise<T> => {
@@ -59,8 +55,6 @@ class DataStore {
     } else if (this.inProgress[key] != undefined) {
       return await this.inProgress[key]
     } else {
-      if (this.fakeMode) throw new Error('unhandled fake data ' + key)
-
       const project = projectStore.currentProject.get()!
       const idbKey = `${project.id}:${key}`
 
@@ -76,7 +70,7 @@ class DataStore {
         try {
           const result = await fetch()
           logger.debug('fetch returned', key, result)
-          set(idbKey, { d: result, t: Date.now() })
+          if (!project.sample) set(idbKey, { d: result, t: Date.now() })
           return result
         } catch (e) {
           logger.error(e)
@@ -105,7 +99,6 @@ class DataStore {
   }
 
   clear = (key: string) => {
-    if (this.fakeMode) return
     delete this.cache[key]
 
     const project = projectStore.currentProject.get()!

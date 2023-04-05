@@ -4,6 +4,7 @@ import IssuesModule from '@/modules/data/IssuesModule'
 import PullRequestsModule from '@/modules/data/PullRequestsModule'
 import { DataModuleProps } from '@/modules/DataModuleFactory'
 import AISummaryCard from '@/modules/ui/AISummaryCard'
+import fakeService from '@/query/fakeService'
 import { QueryIssue, QueryLabel, QueryPullRequest, QueryUser } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
@@ -26,6 +27,10 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
     const moduleString = modules.map((m) => m.props.module).join(',')
     const key = 'summary:' + moduleString
     if (clearCache) dataStore.clear(key)
+
+    if (projectStore.currentProject.get()?.sample && !clearCache) {
+      return fakeService.aiSummary(this.props.instructions)
+    }
 
     return dataStore.cacheRead(key, async () => {
       const content = (

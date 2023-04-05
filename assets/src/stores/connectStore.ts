@@ -77,8 +77,7 @@ class ConnectStore {
   }
 
   initTokens = () => {
-    this.codeService = stubService
-    this.issueService = stubService
+    this.issueService = this.codeService = stubService
 
     const tokens = tokenStore.tokens.get()
     tokens.forEach((token) => {
@@ -88,6 +87,8 @@ class ConnectStore {
       } else if (token.name == 'linear') {
         this.issueService = linear
         linear.setToken(token.access)
+      } else if (token.name == 'fake') {
+        this.codeService = this.issueService = fakeService
       }
     })
   }

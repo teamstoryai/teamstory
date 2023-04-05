@@ -7,11 +7,12 @@ const AISummaryCard = (props: ModuleCardProps<any, string>) => {
   if (!data) return null
 
   const dataLines = data?.split('\n').filter(Boolean) || []
-  const listStyle = data?.startsWith('- ')
-    ? 'list-disc'
-    : data?.startsWith('1.')
-    ? 'list-decimal'
-    : 'list-none'
+  const listStyle =
+    data?.startsWith('- ') || data?.startsWith('* ')
+      ? 'list-disc'
+      : data?.startsWith('1.')
+      ? 'list-decimal'
+      : 'list-none'
 
   const splitter =
     dataLines.filter((d) => d.indexOf(': ') > -1).length == dataLines.length
@@ -30,7 +31,7 @@ const AISummaryCard = (props: ModuleCardProps<any, string>) => {
     >
       <ul class={`${listStyle} ml-5`}>
         {dataLines.map((line, i) => {
-          const trimmedLine = line.replace(/^(-|\d+.) /, '').trim()
+          const trimmedLine = line.replace(/^(\*|-|\d+.) /, '').trim()
 
           const listSplit = splitter ? trimmedLine.indexOf(splitter) : null
           const [boldPart, textPart] = listSplit

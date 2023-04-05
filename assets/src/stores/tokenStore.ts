@@ -15,6 +15,12 @@ class TokenStore {
   fetchTokens = async (project: Project) => {
     if (authStore.debugMode()) (window as any)['tokenStore'] = tokenStore
 
+    if (project.sample) {
+      const token: OAuthToken = { name: 'fake', access: 'fake' }
+      this.tokens.set([token])
+      return [token]
+    }
+
     const response = await API.getMultipleOAuthTokens(project, [
       'github',
       'gitlab',

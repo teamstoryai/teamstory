@@ -75,9 +75,9 @@ export const NeedsAttentionModules = (dateKey: string): DataModuleProps[] => [
     module: 'issues',
     title: 'Slow Issues',
     filters: {
+      open: true,
       custom: {
         startedAt: { lt: new Date(dateKey) },
-        completedAt: { null: true },
       },
     },
   },
