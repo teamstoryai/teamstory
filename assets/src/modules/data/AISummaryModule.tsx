@@ -59,7 +59,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
       ':\n' +
       issues
         .map((issue: QueryIssue) => {
-          const props = [issue.title]
+          const props = ['"' + issue.title + '"']
 
           if (!issue.completedAt && issue.startedAt) {
             const started = new Date(issue.startedAt)
@@ -93,7 +93,7 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
       ':\n' +
       pulls
         .map((pull: QueryPullRequest) => {
-          const props = [pull.title]
+          const props = ['"' + pull.title + '"']
 
           if (pull.closed_at) props.push(`merged`)
           else if (pull.created_at) props.push(`created`)
