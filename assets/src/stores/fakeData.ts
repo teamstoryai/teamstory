@@ -7,7 +7,7 @@ import { logger } from '@/utils'
 import { add, format, isMonday, previousMonday, sub } from 'date-fns'
 
 export const fakeProject: Project = {
-  id: 'fake',
+  id: '00000000-0000-0000-0000-000000000000',
   name: 'Rocket Inc (sample)',
   meta: {
     ob: 1,

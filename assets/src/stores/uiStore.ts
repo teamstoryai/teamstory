@@ -9,7 +9,6 @@ import { tokenStore } from '@/stores/tokenStore'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
-import { fakeDataSwitchProject, initFakeData } from '@/stores/fakeData'
 import { logger } from '@/utils'
 
 const SLEEP_CHECK_INTERVAL = 30_000
@@ -45,8 +44,6 @@ class UIStore {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       authStore.updateUser({ timezone })
     }
-
-    initFakeData()
   }
 
   setupProjectListener = () => {
@@ -56,7 +53,6 @@ class UIStore {
       dataStore.clearAll()
       tokenStore.tokens.set([])
       connectStore.clearData()
-      fakeDataSwitchProject(project)
       await this.loadTokens(project)
       dataStore.initTokens()
     })

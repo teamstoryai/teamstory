@@ -6,8 +6,6 @@ import { paths } from '@/config'
 import { Project, User } from '@/models'
 import { authStore } from '@/stores/authStore'
 import { logger } from '@/utils'
-import { fakeProject, initFakeData } from '@/stores/fakeData'
-import { dataStore } from '@/stores/dataStore'
 
 export type ProjectMap = { [id: string]: Project }
 
@@ -53,9 +51,6 @@ class ProjectStore {
       let currentProject: Project | undefined
       if (lastProjectId) {
         currentProject = projects.find((p) => p.id == lastProjectId)
-      }
-      if (!currentProject && lastProjectId == 'fake') {
-        currentProject = fakeProject
       }
       if (!currentProject) currentProject = projects[0]
       if (currentProject) this.projectSwitchListeners.forEach((l) => l(currentProject!))

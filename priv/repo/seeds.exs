@@ -21,8 +21,9 @@ user =
 project =
   Teamstory.Repo.insert!(%Teamstory.Projects.Project{
     creator_id: user.id,
-    uuid: Ecto.UUID.generate(),
-    name: "Work Stuff"
+    uuid: "00000000-0000-0000-0000-000000000000",
+    name: "Rocket Inc (sample)",
+    meta: %{ob: 1}
   })
 
 Teamstory.Repo.insert!(%Teamstory.Projects.UserProject{
