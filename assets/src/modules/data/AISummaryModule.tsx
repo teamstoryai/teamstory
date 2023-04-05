@@ -28,8 +28,10 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
     if (clearCache) dataStore.clear(key)
 
     return dataStore.cacheRead(key, async () => {
-      const content = await Promise.all(modules.map((m) => moduleToText(m)).filter(Boolean))
-      if (content.length == 0) return 'Nothing to summarize.'
+      const content = (
+        await Promise.all(modules.map((m) => moduleToText(m)).filter(Boolean))
+      ).filter(Boolean)
+      if (content.length == 0) return ''
 
       const prompt = content.join('\n\n').trim() + '\n\n' + this.props.instructions
 

@@ -4,6 +4,8 @@ import useDataModule, { ModuleCardProps } from '@/modules/ui/useDataModule'
 const AISummaryCard = (props: ModuleCardProps<any, string>) => {
   const { data, error, loading, refresh } = useDataModule(props.module)
 
+  if (!data) return null
+
   const dataLines = data?.split('\n').filter(Boolean) || []
   const listStyle = data?.startsWith('- ')
     ? 'list-disc'
@@ -21,7 +23,11 @@ const AISummaryCard = (props: ModuleCardProps<any, string>) => {
       : null
 
   return (
-    <CardFrame className="lg:col-span-2" title={props.title} {...{ error, loading, refresh }}>
+    <CardFrame
+      className="lg:col-span-2 bg-green-100"
+      title={props.title}
+      {...{ error, loading, refresh }}
+    >
       <ul class={`${listStyle} ml-5`}>
         {dataLines.map((line, i) => {
           const trimmedLine = line.replace(/^(-|\d+.) /, '').trim()
