@@ -2,6 +2,7 @@ import { API } from '@/api'
 import { config } from '@/config'
 import { IssueTracker, Project, Repository } from '@/models'
 import linear from '@/query/linear'
+import { QueryUser } from '@/query/types'
 import { projectStore } from '@/stores/projectStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
@@ -156,6 +157,12 @@ class ConnectStore {
     const project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     await API.setProjectData(project.id, 'users', updated)
+  }
+
+  getName = (user: QueryUser) => {
+    const idToName = this.idToName.get()
+    if (idToName[user.id] !== undefined) return idToName[user.id]
+    return user.name
   }
 }
 

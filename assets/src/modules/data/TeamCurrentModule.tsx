@@ -102,6 +102,11 @@ const mergeTimelines = (users: ProjectUserMap, timelines: UserTimeline[]) => {
   })
 
   Object.keys(map).forEach((id) => {
+    if (!map[id]) {
+      delete map[id]
+      return
+    }
+
     const projectInfo = users[id]
     if (projectInfo?.aliases) {
       projectInfo.aliases.forEach((alias) => {

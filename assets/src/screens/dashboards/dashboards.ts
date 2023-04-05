@@ -1,5 +1,6 @@
 import { DataModuleProps } from '@/modules/DataModuleFactory'
 import { dateToYMD, pastTwoWeeksDates } from '@/stores/dataStore'
+import { add, sub } from 'date-fns'
 
 /**
  * supported variables:
@@ -92,6 +93,7 @@ export const ComingSoonModules = (): DataModuleProps[] => [
 export const PastTwoWeeksModules = (
   startDate: Date,
   startDateStr: string,
+  endDate: Date,
   endDateStr: string
 ): DataModuleProps[] => {
   const { startDate: prevStart, endDate: prevEnd } = pastTwoWeeksDates(startDate)
@@ -120,6 +122,8 @@ export const PastTwoWeeksModules = (
         completedAfter: startDateStr,
         completedBefore: endDateStr,
       },
+      startDate,
+      endDate,
     },
     {
       module: 'pull_requests',

@@ -49,12 +49,6 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
 }
 
 const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
-  const idToName = connectStore.idToName.get()
-  const getName = (user: QueryUser) => {
-    if (idToName[user.id] !== undefined) return idToName[user.id]
-    return user.name
-  }
-
   if (module instanceof IssuesModule) {
     const issues = await module.fetchData()
     if (issues.length == 0) return null
@@ -71,15 +65,12 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
             if (daysAgo > 30) return null
           }
 
-          if (issue.completedAt)
-            props.push(`completed ${formatDistance(new Date(issue.completedAt), Date.now())} ago`)
-          else if (issue.startedAt)
-            props.push(`started ${formatDistance(new Date(issue.startedAt), Date.now())} ago`)
-          else if (issue.createdAt)
-            props.push(`created ${formatDistance(new Date(issue.createdAt), Date.now())} ago`)
+          if (issue.completedAt) props.push(`completed`)
+          else if (issue.startedAt) props.push(`started`)
+          else if (issue.createdAt) props.push(`created`)
 
           if (issue.assignee) {
-            const name = getName(issue.assignee)
+            const name = connectStore.getName(issue.assignee)
             if (name === false) return null
             props.push(`by ${name}`)
           }
@@ -102,14 +93,12 @@ const moduleToText = async (module: AnyBaseModule): Promise<string | null> => {
         .map((pull: QueryPullRequest) => {
           const props = [pull.title]
 
-          if (pull.closed_at)
-            props.push(`merged ${formatDistance(new Date(pull.closed_at), Date.now())} ago`)
-          else if (pull.created_at)
-            props.push(`created ${formatDistance(new Date(pull.created_at), Date.now())} ago`)
+          if (pull.closed_at) props.push(`merged`)
+          else if (pull.created_at) props.push(`created`)
 
           if (pull.comments) props.push(`${pull.comments} comments`)
           if (pull.user) {
-            const name = getName(pull.user)
+            const name = connectStore.getName(pull.user)
             if (name === false) return null
             props.push(`by ${name}`)
           }
