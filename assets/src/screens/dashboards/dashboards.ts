@@ -20,7 +20,7 @@ export const DashboardModules = (dateKey: string, timelineStart: string): DataMo
   {
     id: 'team',
     module: 'team_current',
-    title: 'Breakdown by Team Member',
+    title: 'Recent Activity by Team Member',
     updatedPulls: `is:pr updated:>${dateKey}`,
     updatedIssues: { updatedAfter: dateKey },
   },
