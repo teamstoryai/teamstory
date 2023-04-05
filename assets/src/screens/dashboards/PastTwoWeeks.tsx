@@ -1,10 +1,11 @@
 import { DataModuleProps } from '@/modules/DataModuleFactory'
 import PastDashboard from '@/screens/dashboards/PastDashboard'
-import { dateToYMD, pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
+import { pastTwoWeeksDates, renderDates } from '@/stores/dataStore'
 import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboards/Suggestions'
 import { useState } from 'preact/hooks'
 import { ComingSoonModules, PastTwoWeeksModules } from '@/screens/dashboards/dashboards'
-import { add, startOfDay, sub } from 'date-fns'
+import { startOfDay } from 'date-fns'
+import useAnchorDate from '@/hooks/useAnchorDate'
 
 type Props = {
   path: string
@@ -22,9 +23,8 @@ const PastTwoWeeks = (props: Props) => {
   const [suggestion, setSuggestion] = useState<Suggestion | undefined>(
     suggestionFromParams(params, suggestions)
   )
-  const [anchorDate, setAnchorDate] = useState<Date>(
-    params.get('start') ? new Date(params.get('start')!) : new Date()
-  )
+
+  const { anchorDate, prevPeriod, nextPeriod } = useAnchorDate(params, { days: 14 })
 
   const today = startOfDay(new Date())
   const { startDate, endDate } = pastTwoWeeksDates(startOfDay(anchorDate))
@@ -48,18 +48,6 @@ const PastTwoWeeks = (props: Props) => {
       : suggestionId == 'slow'
       ? ComingSoonModules()
       : PastTwoWeeksModules(startDate, startDateStr, endDate, endDateStr)
-
-  const updateAnchorDate = (date: Date) => {
-    setAnchorDate(date)
-    setSuggestion(suggestion)
-    const url = new URL(location.href)
-    url.searchParams.set('start', dateToYMD(date))
-    history.pushState({}, '', url.toString())
-  }
-
-  const prevPeriod = () => updateAnchorDate(sub(anchorDate, { days: 14 }))
-  const nextPeriod =
-    anchorDate < today ? () => updateAnchorDate(add(anchorDate, { days: 14 })) : undefined
 
   return (
     <PastDashboard {...{ title, modules, prevPeriod, nextPeriod }}>
