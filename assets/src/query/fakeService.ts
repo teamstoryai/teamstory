@@ -3,11 +3,22 @@ import { fakeData } from '@/query/fakeData'
 import { IssueFields, IssueFilters, IssueService } from '@/query/issueService'
 import { QueryIssue, QueryPullRequest, QueryUser } from '@/query/types'
 import { logger } from '@/utils'
+import { differenceInCalendarDays } from 'date-fns'
 
 class FakeService implements CodeService, IssueService {
   setToken(token: string): void {}
   pulls(repo: string, filters: PRFilters): Promise<QueryPullRequest[]> {
-    const pulls = fetchSome(fakeData.pullTitles, 5).map((title) =>
+    const hasDateRange =
+      filters.mergedAfter || filters.updatedAfter
+        ? differenceInCalendarDays(
+            new Date(),
+            new Date(filters.mergedAfter || filters.updatedAfter!)
+          )
+        : false
+
+    const max = hasDateRange ? hasDateRange : 5
+
+    const pulls = fetchSome(fakeData.pullTitles, max).map((title) =>
       toPullRequest(title, repo, filters)
     )
 
@@ -17,9 +28,16 @@ class FakeService implements CodeService, IssueService {
   }
 
   issues(props: IssueFilters, fields: IssueFields): Promise<QueryIssue[]> {
-    const hasDateRange = !!props.completedBefore
-    const featureMax = props.label == 'bug' ? 0 : props.open ? 2 : hasDateRange ? 12 : 4
-    const bugMax = props.open ? 3 : hasDateRange ? 10 : 5
+    const hasDateRange =
+      props.completedAfter || props.updatedAfter
+        ? differenceInCalendarDays(
+            new Date(),
+            new Date(props.completedAfter || props.updatedAfter!)
+          )
+        : false
+    const featureMax =
+      props.label == 'bug' ? 0 : props.open ? 2 : hasDateRange ? hasDateRange / 2 : 4
+    const bugMax = props.open ? 3 : hasDateRange ? hasDateRange : 5
 
     const additional: Partial<QueryIssue> = props.priority
       ? { priority: props.priority, priorityLabel: 'High' }
@@ -70,16 +88,24 @@ function toPullRequest(
   additional?: Partial<QueryPullRequest>
 ): QueryPullRequest {
   const user = fetchOne(fakeData.users)
+  const number = Math.floor(Math.random() * 1000)
   return {
-    number: Math.floor(Math.random() * 1000),
+    number,
     title,
     user,
     repo,
-    html_url: 'https://sample.com',
-    created_at: dateInRange(filters.createdAfter, filters.createdBefore),
+    html_url: 'https://sample.com/pull/' + number,
+    created_at: dateInRange(
+      filters.createdAfter || filters.updatedAfter,
+      filters.createdBefore || filters.updatedBefore
+    ),
     updated_at: dateInRange(filters.updatedAfter, filters.updatedBefore),
-    merged_at: filters.open ? undefined : dateInRange(filters.mergedAfter, filters.mergedBefore),
-    closed_at: filters.open ? undefined : dateInRange(filters.mergedAfter, filters.mergedBefore),
+    closed_at: filters.open
+      ? undefined
+      : dateInRange(
+          filters.mergedAfter || filters.updatedAfter,
+          filters.mergedBefore || filters.updatedBefore
+        ),
     comments: Math.floor(Math.random() * 100),
   }
 }
@@ -95,16 +121,21 @@ function toIssue(
       ? fetchOne(fakeData.users)
       : undefined
   const color = label == 'Feature' ? 'blue' : label == 'Bug' ? 'red' : undefined
+  const id = '' + Math.random()
 
   return {
-    id: '' + Math.random(),
+    id,
     title,
     identifier: 'SPACE-' + Math.floor(Math.random() * 1000),
-    url: 'https://sample.com',
-    createdAt: dateInRange(props.createdAfter, props.createdBefore),
-    completedAt: props.open ? undefined : dateInRange(props.completedAfter, props.completedBefore),
-    startedAt: props.started || !props.open ? dateInRange(undefined, undefined) : undefined,
+    url: 'https://sample.com/issues/' + id,
+    createdAt: dateInRange(props.createdAfter || props.updatedAfter, props.createdBefore),
+    completedAt: props.open
+      ? undefined
+      : dateInRange(props.completedAfter || props.updatedAfter, props.completedBefore),
+    startedAt:
+      props.started || !props.open ? dateInRange(props.updatedAfter, undefined) : undefined,
     labels: label ? [{ name: label, color }] : [],
+    creator: fetchOne(fakeData.users),
     assignee,
     ...additional,
   }
