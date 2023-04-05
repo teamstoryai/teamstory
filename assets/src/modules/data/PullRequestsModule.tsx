@@ -1,6 +1,5 @@
 import BaseModule from '@/modules/data/BaseModule'
 import PullRequestsCard from '@/modules/ui/PullRequestsCard'
-import github from '@/query/github'
 import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
@@ -25,8 +24,10 @@ export default class PullRequestsModule extends BaseModule<
       repos.map(async (repo) => {
         const key = keyFunction(repo.name, query)
         if (clearCache) dataStore.clear(key)
-        const result = await dataStore.cacheRead(key, () => github.pulls(repo.name, query))
-        return result.items.map((i) => ({ ...i, repo: repo.name }))
+        const result = await dataStore.cacheRead(key, () =>
+          connectStore.codeService.pulls(repo.name, query)
+        )
+        return result.map((i) => ({ ...i, repo: repo.name }))
       })
     )
 

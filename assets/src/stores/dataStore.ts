@@ -39,8 +39,6 @@ const IDB_CACHE_TTL = 1000 * 60 * 10 // 10 minutes
 class DataStore {
   // --- stores
 
-  initialized = atom(false)
-
   cache: Cache<any> = {}
 
   inProgress: Cache<Promise<any>> = {}
@@ -118,18 +116,6 @@ class DataStore {
   clearAll = () => {
     this.cache = {}
     this.inProgress = {}
-  }
-
-  initTokens = () => {
-    const tokens = tokenStore.tokens.get()
-    tokens.forEach((token) => {
-      if (token.name == 'github') {
-        github.setToken(token.access)
-      } else if (token.name == 'linear') {
-        linear.setToken(token.access)
-      }
-    })
-    this.initialized.set(true)
   }
 
   storeData = (key: string | undefined, data: any) => {

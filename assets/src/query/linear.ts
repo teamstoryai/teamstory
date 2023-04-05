@@ -2,31 +2,9 @@ import { IssueConnection, LinearClient } from '@linear/sdk'
 import { QueryIssue, QueryUser } from '@/query/types'
 import { IssueFilter, TeamFilter, UserFilter } from '@linear/sdk/dist/_generated_documents'
 import { config } from '@/config'
+import { IssueFields, IssueFilters, IssueService } from '@/query/issueService'
 
-export type IssueFilters = {
-  before?: string
-  after?: string
-  started?: boolean
-  open?: boolean
-  createdBefore?: string
-  createdAfter?: string
-  completedAfter?: string
-  completedBefore?: string
-  updatedAfter?: string
-  label?: string
-  priority?: number // 1 = urgent, 2 = high, 3 = medium, 4 = low
-  custom?: IssueFilter
-}
-
-export type LinearIssueFields = {
-  labels?: boolean
-  creator?: boolean
-  assignee?: boolean
-  state?: boolean
-  nonEssentials?: boolean
-}
-
-class Linear {
+class Linear implements IssueService {
   client: LinearClient = new LinearClient({ apiKey: 'nothing' })
 
   teamFilter: string[] = []
@@ -35,7 +13,7 @@ class Linear {
     this.client = new LinearClient({ accessToken: token })
   }
 
-  issues = async (props: IssueFilters = {}, fields: LinearIssueFields): Promise<QueryIssue[]> => {
+  issues = async (props: IssueFilters = {}, fields: IssueFields): Promise<QueryIssue[]> => {
     const filter: IssueFilter = {}
     if (props.open !== undefined) {
       filter.completedAt = { ...filter.completedAt, null: props.open }

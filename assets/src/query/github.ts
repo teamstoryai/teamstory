@@ -1,5 +1,6 @@
 import { config } from '@/config'
-import { QueryPullRequest } from '@/query/types'
+import { CodeService } from '@/query/codeService'
+import { QueryPullRequest, QueryUser } from '@/query/types'
 import axios, { AxiosInstance } from 'axios'
 
 export type PaginatedResult<T> = {
@@ -8,7 +9,7 @@ export type PaginatedResult<T> = {
   total_count: number
 }
 
-class Github {
+class Github implements CodeService {
   token: string = ''
   axios: AxiosInstance = axios.create()
 
@@ -34,7 +35,7 @@ class Github {
     }
   }
 
-  pulls = async (repo: string, query: string): Promise<PaginatedResult<QueryPullRequest>> => {
+  pulls = async (repo: string, query: string): Promise<QueryPullRequest[]> => {
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await this.axios.get('https://api.github.com/search/issues?q=' + q)
 
@@ -51,8 +52,11 @@ class Github {
           repo,
         } as QueryPullRequest)
     )
-    response.data.items = data
-    return response.data
+    return data
+  }
+
+  teamMembers(): Promise<QueryUser[]> {
+    throw new Error('Method not implemented.')
   }
 }
 

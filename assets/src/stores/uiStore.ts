@@ -49,19 +49,17 @@ class UIStore {
   setupProjectListener = () => {
     projectStore.addListener(async (project: Project) => {
       logger.info('project changed, clearing data cache', project.id)
-      dataStore.initialized.set(false)
       dataStore.clearAll()
       tokenStore.tokens.set([])
       connectStore.clearData()
       await this.loadTokens(project)
-      dataStore.initTokens()
     })
   }
 
   loadTokens = async (project: Project) => {
     this.initialized.set(false)
     await Promise.all([
-      tokenStore.fetchTokens(project).then(() => dataStore.initTokens()),
+      tokenStore.fetchTokens(project).then(() => connectStore.initTokens()),
       connectStore.loadConnections(project),
     ])
     this.initialized.set(true)
