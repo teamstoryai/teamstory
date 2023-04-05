@@ -346,6 +346,13 @@ class APIService {
     return response.data
   }
 
+  async listAllLearnings(project: Project, offset?: number): Promise<R.ItemsResponse<Learning>> {
+    const params = new URLSearchParams({ project_id: project.id })
+    if (offset) params.set('offset', offset.toString())
+    const response = await this.axios.get(`${this.endpoint}/learnings?${params.toString()}`)
+    return response.data
+  }
+
   async updateLearning(
     project: Project,
     item: Partial<Learning>

@@ -21,6 +21,20 @@ defmodule TeamstoryWeb.LearningsController do
     end
   end
 
+  # GET /learnings
+  def index(
+        conn,
+        %{
+          "project_id" => project_uuid
+        } = params
+      ) do
+    with user when is_map(user) <- Guardian.Plug.current_resource(conn),
+         {:ok, project} <- Projects.project_by_uuid(user.id, project_uuid),
+         items <- LearningLog.all_logs_for_project(project, user, params["offset"] || 0) do
+      render(conn, "list.json", user: user, items: items)
+    end
+  end
+
   # POST /learnings
   def create(conn, %{
         "project_id" => project_uuid,

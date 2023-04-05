@@ -16,7 +16,7 @@ type Props = {
   headerActions?: JSX.Element
 }
 
-const ModuleCard = ({
+const CardFrame = ({
   title,
   refresh,
   children,
@@ -55,4 +55,4 @@ const ModuleCard = ({
   )
 }
 
-export default ModuleCard
+export default CardFrame

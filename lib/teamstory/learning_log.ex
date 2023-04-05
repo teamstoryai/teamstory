@@ -8,6 +8,19 @@ defmodule Teamstory.LearningLog do
 
   alias Teamstory.LearningLog.Learning
 
+  def all_logs_for_project(project, user, offset) do
+    from(t in Learning,
+      where:
+        t.project_id == ^project.id and
+          (t.user_id == ^user.id or t.private != true),
+      order_by: [asc: :start_date],
+      limit: 50,
+      offset: ^offset
+    )
+    |> Repo.all()
+    |> Repo.preload(:user)
+  end
+
   def all_logs_for_period(project, user, type, start_date, end_date) do
     from(t in Learning,
       where:
