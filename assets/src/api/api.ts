@@ -5,6 +5,8 @@ import {
   AuthToken,
   AuthTokenPair,
   IssueTracker,
+  Learning,
+  LearningKey,
   OAuthToken,
   Project,
   ProjectRole,
@@ -333,6 +335,26 @@ class APIService {
     const response = await this.axios.get(
       `${this.endpoint}/connect/repos/fetch_repos?service=${service}&org=${encodeURIComponent(org)}`
     )
+    return response.data
+  }
+
+  // learning
+
+  async listLearnings(project: Project, key: LearningKey): Promise<R.ItemsResponse<Learning>> {
+    const params = new URLSearchParams({ project_id: project.id, ...key })
+    const response = await this.axios.get(`${this.endpoint}/learnings?${params.toString()}`)
+    return response.data
+  }
+
+  async updateLearning(
+    project: Project,
+    item: Partial<Learning>
+  ): Promise<R.ItemResponse<Learning>> {
+    const params = new URLSearchParams({ project_id: project.id, ...item.key })
+    const response = await this.axios.post(`${this.endpoint}/learnings?${params.toString()}`, {
+      content: item.content,
+      private: item.private,
+    })
     return response.data
   }
 

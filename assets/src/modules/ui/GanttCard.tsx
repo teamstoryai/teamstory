@@ -9,7 +9,7 @@ const GanttCard = (props: ModuleCardProps<any, Task[]>) => {
   const gantt: MutableRef<Gantt | null> = useRef<Gantt | null>(null)
 
   useEffect(() => {
-    if (!data) return
+    if (!data || !data.length) return
     if (!gantt.current) {
       gantt.current = new Gantt(divRef.current, data, {
         view_mode: props.module.props.viewMode || 'Day',
@@ -42,6 +42,7 @@ const GanttCard = (props: ModuleCardProps<any, Task[]>) => {
       className="lg:col-span-2"
       {...{ count: data?.length, error, loading, refresh }}
     >
+      {data?.length == 0 ? <div class="text-gray-500">No data</div> : null}
       <div ref={divRef}></div>
     </CardFrame>
   )

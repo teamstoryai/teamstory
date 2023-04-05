@@ -34,5 +34,5 @@ export default function useDataModule<Output>(
     loadData(true)
   }, [])
 
-  return { data, loading, error, refresh }
+  return { data, loading, error, refresh, setError }
 }

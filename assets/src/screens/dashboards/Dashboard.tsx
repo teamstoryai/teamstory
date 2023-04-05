@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'preact/hooks'
 
-import Helmet from '@/components/core/Helmet'
 import DailyPrompt from '@/components/dashboard/DailyPrompt'
 import AppHeader from '@/components/layout/AppHeader'
 

@@ -12,7 +12,7 @@ export default ({
 }: RenderableProps<{
   className?: string
   tooltip?: string | TooltipProps
-  onClick: (e: MouseEvent) => void
+  onClick?: (e: MouseEvent) => void
 }>) => {
   const ref = useRef<HTMLDivElement>(null)
 

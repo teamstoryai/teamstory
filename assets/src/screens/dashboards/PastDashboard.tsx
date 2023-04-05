@@ -11,10 +11,14 @@ import PageTitle from '@/components/layout/PageTitle'
 import { projectStore } from '@/stores/projectStore'
 import { RenderableProps } from 'preact'
 import { uiStore } from '@/stores/uiStore'
+import Pressable from '@/components/core/Pressable'
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid'
 
 type Props = {
   title: string
   modules: DataModuleProps[]
+  prevPeriod?: () => void
+  nextPeriod?: () => void
 }
 
 const PastDashboard = (props: RenderableProps<Props>) => {
@@ -31,7 +35,22 @@ const PastDashboard = (props: RenderableProps<Props>) => {
   return (
     <>
       <AppHeader>
-        <PageTitle title={props.title}></PageTitle>
+        <PageTitle title={props.title}>
+          <Pressable
+            tooltip="Previous period"
+            onClick={props.prevPeriod}
+            className={props.prevPeriod ? '' : 'text-gray-400'}
+          >
+            <ChevronLeftIcon class="h-6 w-6" />
+          </Pressable>
+          <Pressable
+            tooltip="Next period"
+            onClick={props.nextPeriod}
+            className={props.nextPeriod ? '' : 'text-gray-400'}
+          >
+            <ChevronRightIcon class="h-6 w-6" />
+          </Pressable>
+        </PageTitle>
       </AppHeader>
       <AppBody>
         {props.children}

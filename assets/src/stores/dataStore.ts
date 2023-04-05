@@ -99,6 +99,13 @@ class DataStore {
     }
   }
 
+  cacheWrite = (key: string, data: any) => {
+    this.cache[key] = data
+    const project = projectStore.currentProject.get()!
+    const idbKey = `${project.id}:${key}`
+    set(idbKey, { d: data, t: Date.now() })
+  }
+
   clear = (key: string) => {
     if (this.fakeMode) return
     delete this.cache[key]

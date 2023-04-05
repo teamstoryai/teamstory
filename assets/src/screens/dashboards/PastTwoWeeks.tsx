@@ -5,6 +5,7 @@ import Suggestions, { Suggestion, suggestionFromParams } from '@/screens/dashboa
 import { useState } from 'preact/hooks'
 import { ComingSoonModules, PastTwoWeeksModules } from '@/screens/dashboards/dashboards'
 import { startOfDay } from 'date-fns'
+import useAnchorDate from '@/hooks/useAnchorDate'
 
 type Props = {
   path: string
@@ -23,8 +24,10 @@ const PastTwoWeeks = (props: Props) => {
     suggestionFromParams(params, suggestions)
   )
 
+  const { anchorDate, prevPeriod, nextPeriod } = useAnchorDate(params, { days: 14 })
+
   const today = startOfDay(new Date())
-  const { startDate, endDate } = pastTwoWeeksDates(today)
+  const { startDate, endDate } = pastTwoWeeksDates(startOfDay(anchorDate))
 
   const { startDateStr, endDateStr, startDateHuman, endDateHuman } = renderDates(
     startDate,
@@ -47,7 +50,7 @@ const PastTwoWeeks = (props: Props) => {
       : PastTwoWeeksModules(startDate, startDateStr, endDate, endDateStr)
 
   return (
-    <PastDashboard title={title} modules={modules}>
+    <PastDashboard {...{ title, modules, prevPeriod, nextPeriod }}>
       <Suggestions {...{ suggestions, suggestion, setSuggestion }} />
     </PastDashboard>
   )
