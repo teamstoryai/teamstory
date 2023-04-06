@@ -29,14 +29,17 @@ export default class AISummaryModule extends BaseModule<AISummaryModuleProps, st
     const modules = dataStore.currentDashboard
     const moduleString = modules.map((m) => m.props.module).join(',')
     const key = 'summary:' + moduleString
-    const lsKey = this.props.rememberKey ? LS_LAST_VISIT + this.props.rememberKey : undefined
+    const project = projectStore.currentProject.get()!
+    const lsKey = this.props.rememberKey
+      ? LS_LAST_VISIT + this.props.rememberKey + ':' + project.id
+      : undefined
 
     if (clearCache) {
       dataStore.clear(key)
       // if (lsKey) localStorage.removeItem(lsKey)
     }
 
-    if (projectStore.currentProject.get()?.sample && !clearCache) {
+    if (project.sample && !clearCache) {
       return fakeService.aiSummary(this.props.instructions)
     }
 
