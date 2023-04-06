@@ -14,8 +14,9 @@ import { add, sub } from 'date-fns'
 export const DashboardModules = (dateKey: string, timelineStart: string): DataModuleProps[] => [
   {
     module: 'ai_summary',
-    title: 'Executive summary',
+    title: 'Latest updates',
     instructions: "Summary of the team's recent activity with one bullet point per person:",
+    rememberKey: 'dashboard',
   },
   {
     id: 'team',
