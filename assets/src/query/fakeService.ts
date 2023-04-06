@@ -17,8 +17,9 @@ class FakeService implements CodeService, IssueService {
         : false
 
     const max = hasDateRange ? hasDateRange : 5
+    const min = hasDateRange ? max / 2 : 0
 
-    const pulls = fetchSome(fakeData.pullTitles, max).map((title) =>
+    const pulls = fetchSome(fakeData.pullTitles, min, max).map((title) =>
       toPullRequest(title, repo, filters)
     )
 
@@ -38,12 +39,13 @@ class FakeService implements CodeService, IssueService {
     const featureMax =
       props.label == 'bug' ? 0 : props.open ? 2 : hasDateRange ? hasDateRange / 2 : 4
     const bugMax = props.open ? 3 : hasDateRange ? hasDateRange : 5
+    const min = hasDateRange ? featureMax / 2 : 0
 
     const additional: Partial<QueryIssue> = props.priority
       ? { priority: props.priority, priorityLabel: 'High' }
       : {}
 
-    const features = fetchSome(fakeData.features, featureMax).map((title) =>
+    const features = fetchSome(fakeData.features, min, featureMax).map((title) =>
       toIssue(title, props, 'Feature', additional)
     )
     const bugs = fetchSome(fakeData.bugs, bugMax).map((title) =>
@@ -71,8 +73,8 @@ function fetchOne<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)]
 }
 
-function fetchSome<T>(array: T[], max?: number): T[] {
-  const count = Math.floor(Math.random() * Math.min(max || 999, array.length))
+function fetchSome<T>(array: T[], min: number = 0, max: number = 999): T[] {
+  const count = Math.floor(min + Math.random() * (Math.min(max, array.length) - min))
   const someArray: T[] = []
   const startIndex = Math.floor(Math.random() * array.length)
   for (let i = 0; i < count; i++) {
