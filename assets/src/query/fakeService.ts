@@ -108,7 +108,7 @@ function toPullRequest(
           filters.mergedAfter || filters.updatedAfter,
           filters.mergedBefore || filters.updatedBefore
         ),
-    comments: Math.floor(Math.random() * 100),
+    comments: Math.floor(Math.random() * 4),
   }
 }
 
