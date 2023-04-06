@@ -72,6 +72,7 @@ const Dashboard = (props: Props) => {
       </AppHeader>
       <AppBody>
         <DailyPrompt date={today} />
+        <div class="h-2" />
 
         <Suggestions {...{ suggestions, suggestion, setSuggestion }} />
 

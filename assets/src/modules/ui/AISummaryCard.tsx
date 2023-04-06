@@ -40,7 +40,7 @@ const AISummaryCard = (props: ModuleCardProps<any, string>) => {
           const style = trimmedLine.length > 0 ? 'list-item' : 'list-none'
 
           return (
-            <li class={`${style} text-gray-800`} key={i}>
+            <li class={`${style} text-gray-800 text-sm mb-1 last:mb-0`} key={i}>
               {boldPart ? <span class="font-semibold">{boldPart}</span> : null}
               {boldPart ? <span>{textPart}</span> : <span>{textPart}</span>}
             </li>

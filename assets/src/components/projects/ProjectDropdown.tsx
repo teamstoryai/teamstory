@@ -5,7 +5,7 @@ import { paths } from '@/config'
 import { projectStore } from '@/stores/projectStore'
 import { uiStore } from '@/stores/uiStore'
 import { classNames, mediumColorFor } from '@/utils'
-import { Bars4Icon } from '@heroicons/react/24/outline'
+import { Bars4Icon, ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { useStore } from '@nanostores/preact'
 
 const ProjectDropdown = () => {
@@ -28,8 +28,8 @@ const ProjectDropdown = () => {
     <div class="relative">
       <div
         className={classNames(
-          'mx-1 mt-4 mb-2 flex items-center text-gray-900 text-sm whitespace-nowrap',
-          'hover:bg-gray-300/50 hover:text-gray-900 cursor-pointer rounded-md px-1 py-3',
+          'mx-1 mt-5 mb-3 flex items-center text-gray-800 text-sm whitespace-nowrap',
+          'hover:bg-gray-300/50 hover:text-gray-900 cursor-pointer rounded-md px-1 py-2',
           'block'
         )}
         onClick={() => {
@@ -43,6 +43,7 @@ const ProjectDropdown = () => {
           {currentProject.name[0].toUpperCase()}
         </div>
         <div class="font-semibold">{currentProject.name}</div>
+        <ChevronUpDownIcon className="h-5 w-5 ml-1 opacity-60" />
       </div>
 
       <div

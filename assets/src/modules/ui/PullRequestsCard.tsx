@@ -19,8 +19,8 @@ const PullRequestsCard = (props: ModuleCardProps<any, QueryPullRequest[]>) => {
             class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1 flex items-center"
           >
             <div class="flex-1">
-              <div class="text-sm text-teal-500">{pr.repo}</div>
-              <div class="text-gray-800">{pr.title}</div>
+              <div class="text-xs text-teal-500">{pr.repo}</div>
+              <div class="text-gray-800 text-sm">{pr.title}</div>
               <div class="text-gray-500 text-xs">
                 {!pr.closed_at ? (
                   <>

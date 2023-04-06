@@ -32,8 +32,8 @@ const AppSidebar = ({ showHideButton }: { showHideButton?: boolean }) => {
   const needsSetup = !Project.meta(currentProject).ob
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 select-none bg-gray-50">
-      <div className="flex-1 flex flex-col overflow-y-auto scrollbar">
+    <div className="flex-1 flex flex-col min-h-0 select-none bg-white border-r border-gray-200">
+      <div className="flex-1 flex flex-col overflow-y-auto scrollbar xl:px-2">
         {!projects.length ? (
           <>
             <div class="h-3" />
@@ -75,17 +75,14 @@ function Links({ items }: { items: NavItem[] }) {
               key={item.name}
               href={item.href}
               className={classNames(
-                url == item.href ? 'bg-blue-200 text-gray-900' : 'text-gray-700 hover:bg-blue-300',
-                'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                url == item.href ? 'bg-blue-300 text-gray-900' : 'text-gray-800 hover:bg-blue-300',
+                'group flex items-center px-2 py-2 text-sm rounded-md'
               )}
               style={{ marginLeft: item.indent }}
             >
               {item.icon && (
                 <item.icon
-                  className={classNames(
-                    url == item.href ? 'text-gray-700' : 'text-gray-800',
-                    'mr-3 flex-shrink-0 h-6 w-6'
-                  )}
+                  className={classNames('opacity-60 mr-3 flex-shrink-0 h-6 w-6')}
                   aria-hidden="true"
                 />
               )}
