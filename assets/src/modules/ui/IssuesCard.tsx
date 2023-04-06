@@ -17,7 +17,7 @@ const IssuesCard = (props: ModuleCardProps<any, QueryIssue[]>) => {
             key={issue.id}
             class="hover:bg-gray-100 cursor-pointer rounded-md -m-1 p-1"
           >
-            <div class="text-sm flex gap-2 text-gray-500">
+            <div class="text-xs flex gap-2 text-gray-500">
               <div class="text-teal-500">{issue.identifier}</div>
               {issue.priority ? <Priority issue={issue} /> : null}
               {issue.assignee && (
@@ -28,7 +28,7 @@ const IssuesCard = (props: ModuleCardProps<any, QueryIssue[]>) => {
               )}
               {issue.labels && <Labels labels={issue.labels} />}
             </div>
-            <div class="text-gray-800">{issue.title}</div>
+            <div class="text-gray-800 text-sm">{issue.title}</div>
             <div class="text-gray-500 text-xs">
               {issue.completedAt
                 ? `completed ${formatDistance(new Date(issue.completedAt!), new Date())} ago`

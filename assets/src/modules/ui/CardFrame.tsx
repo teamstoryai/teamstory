@@ -48,7 +48,7 @@ const CardFrame = ({
         )}
       </div>
 
-      {loading && <Loader class="self-center" />}
+      {loading && <Loader class="self-center pb-4" />}
       {children}
       <ErrorMessage error={error} />
     </div>
