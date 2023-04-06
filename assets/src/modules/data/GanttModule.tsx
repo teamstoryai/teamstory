@@ -1,4 +1,3 @@
-import linear, { IssueFilters } from '@/query/linear'
 import { QueryIssue } from '@/query/types'
 import { dataStore } from '@/stores/dataStore'
 import { logger } from '@/utils'
@@ -7,6 +6,7 @@ import { Task } from '@/gantt'
 import GanttCard from '@/modules/ui/GanttCard'
 import BaseModule from '@/modules/data/BaseModule'
 import { connectStore } from '@/stores/connectStore'
+import { IssueFilters } from '@/query/issueService'
 
 export type GanttModuleProps = {
   title: string
@@ -22,7 +22,9 @@ export default class GanttModule extends BaseModule<GanttModuleProps, Task[]> {
     const key = 'issues:' + JSON.stringify(filters)
     if (clearCache) dataStore.clear(key)
 
-    const issues = await dataStore.cacheRead(key, () => linear.issues(filters, { assignee: true }))
+    const issues = await dataStore.cacheRead(key, () =>
+      connectStore.issueService.issues(filters, { assignee: true })
+    )
     issues.sort((a, b) => a.completedAt!.localeCompare(b.completedAt!))
     const issueToTask = (issue: QueryIssue): Task | null => {
       const assignee = issue.assignee ? connectStore.getName(issue.assignee) : undefined

@@ -57,11 +57,11 @@ const AppSidebar = ({ showHideButton }: { showHideButton?: boolean }) => {
 
 const mainNav = [
   { name: 'Dashboard', href: paths.DASHBOARD, icon: HomeIcon },
+  { name: 'Team Info', href: paths.TEAM, icon: UsersIcon },
   { name: 'Learning Log', href: paths.LEARNING, icon: SparklesIcon },
   { name: 'Past 2 Weeks', href: paths.PAST_WEEKS, icon: ChevronDoubleLeftIcon },
   { name: 'Past Month', href: paths.PAST_MONTH, icon: CalendarDaysIcon },
   { name: 'This Quarter', href: paths.PAST_QUARTER, icon: Squares2X2Icon },
-  { name: 'Teams', href: paths.TEAM, icon: UsersIcon },
   { name: 'Ask Tally', href: paths.ASK_TALLY, icon: ChatBubbleLeftEllipsisIcon },
 ] as NavItem[]
 

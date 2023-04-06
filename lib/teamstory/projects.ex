@@ -9,6 +9,17 @@ defmodule Teamstory.Projects do
   alias Teamstory.{Users.User}
   alias Teamstory.Projects.{Project, UserProject, ProjectInvite, ProjectData}
 
+  @fake_project_uuid "00000000-0000-0000-0000-000000000000"
+  @fake_project_id 1
+
+  def is_fake_project(uuid) do
+    uuid == @fake_project_uuid
+  end
+
+  def get_fake_project() do
+    Repo.one(from q in Project, where: q.id == ^@fake_project_id)
+  end
+
   @spec list_user_projects(User.t()) :: [Project.t()]
   def list_user_projects(user, include_archived \\ false) do
     project_ids = list_user_project_ids(user)
@@ -32,7 +43,7 @@ defmodule Teamstory.Projects do
       from up in UserProject,
         select: up.project_id,
         where: up.user_id == ^user.id and is_nil(up.left_at)
-    )
+    ) ++ [@fake_project_id]
   end
 
   @spec list_all_user_project(User.t()) :: [UserProject.t()]
@@ -62,7 +73,7 @@ defmodule Teamstory.Projects do
   end
 
   def is_member?(project, user) do
-    get_user_project(user, project) != nil
+    project.id == @fake_project_id || get_user_project(user, project) != nil
   end
 
   @spec project_by_uuid!(binary, binary) :: Project.t()

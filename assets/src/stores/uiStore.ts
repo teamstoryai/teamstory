@@ -9,7 +9,6 @@ import { tokenStore } from '@/stores/tokenStore'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 import { projectStore } from '@/stores/projectStore'
-import { fakeDataSwitchProject, initFakeData } from '@/stores/fakeData'
 import { logger } from '@/utils'
 
 const SLEEP_CHECK_INTERVAL = 30_000
@@ -45,27 +44,22 @@ class UIStore {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
       authStore.updateUser({ timezone })
     }
-
-    initFakeData()
   }
 
   setupProjectListener = () => {
     projectStore.addListener(async (project: Project) => {
       logger.info('project changed, clearing data cache', project.id)
-      dataStore.initialized.set(false)
       dataStore.clearAll()
       tokenStore.tokens.set([])
       connectStore.clearData()
-      fakeDataSwitchProject(project)
       await this.loadTokens(project)
-      dataStore.initTokens()
     })
   }
 
   loadTokens = async (project: Project) => {
     this.initialized.set(false)
     await Promise.all([
-      tokenStore.fetchTokens(project).then(() => dataStore.initTokens()),
+      tokenStore.fetchTokens(project).then(() => connectStore.initTokens()),
       connectStore.loadConnections(project),
     ])
     this.initialized.set(true)

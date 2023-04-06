@@ -39,8 +39,6 @@ const IDB_CACHE_TTL = 1000 * 60 * 10 // 10 minutes
 class DataStore {
   // --- stores
 
-  initialized = atom(false)
-
   cache: Cache<any> = {}
 
   inProgress: Cache<Promise<any>> = {}
@@ -48,10 +46,6 @@ class DataStore {
   dataById: Cache<any> = {}
 
   currentDashboard: AnyBaseModule[] = []
-
-  // --- variables
-
-  fakeMode = false
 
   // --- actions
 
@@ -61,8 +55,6 @@ class DataStore {
     } else if (this.inProgress[key] != undefined) {
       return await this.inProgress[key]
     } else {
-      if (this.fakeMode) throw new Error('unhandled fake data ' + key)
-
       const project = projectStore.currentProject.get()!
       const idbKey = `${project.id}:${key}`
 
@@ -78,7 +70,7 @@ class DataStore {
         try {
           const result = await fetch()
           logger.debug('fetch returned', key, result)
-          set(idbKey, { d: result, t: Date.now() })
+          if (!project.sample) set(idbKey, { d: result, t: Date.now() })
           return result
         } catch (e) {
           logger.error(e)
@@ -107,7 +99,6 @@ class DataStore {
   }
 
   clear = (key: string) => {
-    if (this.fakeMode) return
     delete this.cache[key]
 
     const project = projectStore.currentProject.get()!
@@ -118,18 +109,6 @@ class DataStore {
   clearAll = () => {
     this.cache = {}
     this.inProgress = {}
-  }
-
-  initTokens = () => {
-    const tokens = tokenStore.tokens.get()
-    tokens.forEach((token) => {
-      if (token.name == 'github') {
-        github.setToken(token.access)
-      } else if (token.name == 'linear') {
-        linear.setToken(token.access)
-      }
-    })
-    this.initialized.set(true)
   }
 
   storeData = (key: string | undefined, data: any) => {

@@ -21,8 +21,11 @@ export class Project {
 
   public meta?: ProjectMeta
 
+  public sample?: boolean
+
   public static fromJSON(obj: Object): Project {
     let item: Project = Object.assign(new Project(), obj)
+    item.sample = item.id == '00000000000000000000000000000000'
     return item
   }
 

@@ -1,17 +1,19 @@
 import BaseModule from '@/modules/data/BaseModule'
 import IssuesCard from '@/modules/ui/IssuesCard'
-import linear, { IssueFilters, LinearIssueFields } from '@/query/linear'
+import { IssueFields, IssueFilters } from '@/query/issueService'
+import linear from '@/query/linear'
 import { QueryIssue } from '@/query/types'
+import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
 
 export type IssuesModuleProps = {
   id?: string
   title?: string
   filters: IssueFilters
-  fields?: LinearIssueFields
+  fields?: IssueFields
 }
 
-const defaultFields: LinearIssueFields = {
+const defaultFields: IssueFields = {
   labels: true,
   assignee: true,
 }
@@ -22,7 +24,7 @@ export default class IssuesModule extends BaseModule<IssuesModuleProps, QueryIss
     const fields = this.props.fields || defaultFields
     const key = 'issues:' + JSON.stringify(filters)
     if (clearCache) dataStore.clear(key)
-    return dataStore.cacheRead(key, () => linear.issues(filters, fields))
+    return dataStore.cacheRead(key, () => connectStore.issueService.issues(filters, fields))
   }
 
   render = () => {

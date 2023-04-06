@@ -1,15 +1,13 @@
-import { action, atom, onMount } from 'nanostores'
+import { action, atom } from 'nanostores'
 import { route } from 'preact-router'
 import { v4 as uuid } from 'uuid'
 
 import { API, ProjectsResponse } from '@/api'
 import { config, LS_AUTH_TOKENS, OAuthProvider, paths } from '@/config'
 import { AuthTokenPair, Project, User } from '@/models'
-import { uiStore } from '@/stores/uiStore'
 import { logger } from '@/utils'
 
 import { projectStore } from './projectStore'
-import { initFakeData } from '@/stores/fakeData'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/serviceworker.js')

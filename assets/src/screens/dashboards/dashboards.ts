@@ -14,27 +14,28 @@ import { add, sub } from 'date-fns'
 export const DashboardModules = (dateKey: string, timelineStart: string): DataModuleProps[] => [
   {
     module: 'ai_summary',
-    title: 'Executive summary',
+    title: 'Latest updates',
     instructions: "Summary of the team's recent activity with one bullet point per person:",
+    rememberKey: 'dashboard',
   },
   {
     id: 'team',
     module: 'team_current',
-    title: 'Breakdown by Team Member',
-    updatedPulls: `is:pr updated:>${dateKey}`,
+    title: 'Recent Activity by Team Member',
+    updatedPulls: { updatedAfter: dateKey },
     updatedIssues: { updatedAfter: dateKey },
   },
   {
     id: 'open',
     module: 'pull_requests',
     title: 'New Open Pull Requests',
-    query: `is:open is:pr draft:false created:>${dateKey}`,
+    filters: { open: true, createdAfter: dateKey },
   },
   {
     id: 'merged',
     module: 'pull_requests',
     title: 'Recently Merged Pull Requests',
-    query: `is:merged is:pr merged:>${dateKey}`,
+    filters: { merged: true, mergedAfter: dateKey },
   },
   {
     id: 'in-progress',
@@ -59,7 +60,7 @@ export const NeedsAttentionModules = (dateKey: string): DataModuleProps[] => [
   {
     module: 'pull_requests',
     title: 'Stale Pull Requests',
-    query: `is:open is:pr draft:false created:<${dateKey}`,
+    filters: { open: true, createdBefore: dateKey },
   },
   {
     module: 'issues',
@@ -75,9 +76,9 @@ export const NeedsAttentionModules = (dateKey: string): DataModuleProps[] => [
     module: 'issues',
     title: 'Slow Issues',
     filters: {
+      open: true,
       custom: {
         startedAt: { lt: new Date(dateKey) },
-        completedAt: { null: true },
       },
     },
   },
@@ -132,7 +133,7 @@ export const PastTwoWeeksModules = (
     {
       module: 'pull_requests',
       title: 'Merged Pull Requests',
-      query: `is:merged is:pr merged:${startDateStr}..${endDateStr}`,
+      filters: { merged: true, mergedAfter: startDateStr, mergedBefore: endDateStr },
     },
     {
       module: 'issues',

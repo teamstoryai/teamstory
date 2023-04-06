@@ -1,9 +1,16 @@
 import { API } from '@/api'
 import { config } from '@/config'
 import { IssueTracker, Project, Repository } from '@/models'
+import { CodeService } from '@/query/codeService'
+import { fakeData } from '@/query/fakeData'
+import fakeService from '@/query/fakeService'
+import github from '@/query/github'
+import { IssueService } from '@/query/issueService'
 import linear from '@/query/linear'
+import stubService from '@/query/stubService'
 import { QueryUser } from '@/query/types'
 import { projectStore } from '@/stores/projectStore'
+import { tokenStore } from '@/stores/tokenStore'
 import { assertIsDefined } from '@/utils'
 import { atom } from 'nanostores'
 
@@ -35,6 +42,12 @@ export type ProjectUserMap = {
 type NameMap = { [id: string]: string | false }
 
 class ConnectStore {
+  // --- services
+
+  codeService: CodeService = stubService
+
+  issueService: IssueService = stubService
+
   // --- stores
 
   repos = atom<Repository[]>([])
@@ -44,8 +57,6 @@ class ConnectStore {
   users = atom<ProjectUserMap>({})
 
   idToName = atom<NameMap>({})
-
-  fakeMode = false
 
   // --- actions
 
@@ -64,10 +75,30 @@ class ConnectStore {
     ])
   }
 
+  initTokens = () => {
+    this.issueService = this.codeService = stubService
+
+    const tokens = tokenStore.tokens.get()
+    tokens.forEach((token) => {
+      if (token.name == 'github') {
+        this.codeService = github
+        github.setToken(token.access)
+      } else if (token.name == 'linear') {
+        this.issueService = linear
+        linear.setToken(token.access)
+      } else if (token.name == 'fake') {
+        this.codeService = this.issueService = fakeService
+      }
+    })
+  }
+
   // --- repos
 
   loadConnectedRepos = async (project?: Project) => {
-    if (this.fakeMode) return this.repos.get()
+    if (project?.sample) {
+      this.repos.set(fakeData.repos)
+      return this.repos.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.repos.list(project)
@@ -93,7 +124,10 @@ class ConnectStore {
   // --- trackers
 
   loadConnectedTrackers = async (project?: Project) => {
-    if (this.fakeMode) return this.trackers.get()
+    if (project?.sample) {
+      this.trackers.set([])
+      return this.trackers.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = await API.issue_trackers.list(project)
@@ -129,7 +163,10 @@ class ConnectStore {
   // --- user data
 
   loadUsers = async (project?: Project) => {
-    if (this.fakeMode) return this.users.get()
+    if (project?.sample) {
+      this.users.set({})
+      return this.users.get()
+    }
     if (!project) project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')
     const response = (await API.getProjectData(project.id, 'users')) as ProjectUserMap
@@ -152,7 +189,6 @@ class ConnectStore {
   updateUsers = async (changes: ProjectUserMap) => {
     const updated = { ...this.users.get(), ...changes }
     this.users.set(updated)
-    if (this.fakeMode) return
 
     const project = projectStore.currentProject.get()
     assertIsDefined(project, 'project')

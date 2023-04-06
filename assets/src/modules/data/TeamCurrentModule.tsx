@@ -1,4 +1,3 @@
-import linear, { IssueFilters } from '@/query/linear'
 import { QueryIssue, QueryPullRequest, QueryUser } from '@/query/types'
 import { connectStore, ProjectUserMap } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
@@ -6,11 +5,13 @@ import BaseModule from '@/modules/data/BaseModule'
 import TeamCurrentCard from '@/modules/ui/TeamCurrentCard'
 import PullRequestsModule from '@/modules/data/PullRequestsModule'
 import IssuesModule from '@/modules/data/IssuesModule'
+import { IssueFilters } from '@/query/issueService'
+import { PRFilters } from '@/query/codeService'
 
 export type TeamCurrentModuleProps = {
   id?: string
   title: string
-  updatedPulls: string
+  updatedPulls: PRFilters
   updatedIssues: IssueFilters
 }
 
@@ -31,7 +32,7 @@ export default class TeamCurrentsModule extends BaseModule<TeamCurrentModuleProp
     const repos = connectStore.repos.get()
     const props = this.props
 
-    const prModule = new PullRequestsModule({ query: props.updatedPulls })
+    const prModule = new PullRequestsModule({ filters: props.updatedPulls })
     const updatedPulls = prModule.fetchData(clearCache)
 
     const issueModule = new IssuesModule({
@@ -40,7 +41,11 @@ export default class TeamCurrentsModule extends BaseModule<TeamCurrentModuleProp
     })
     const updatedIssues = issueModule.fetchData(clearCache)
 
-    const teamInfo = dataStore.cacheRead('linearTeam', () => linear.teamMembers(), 86400000)
+    const teamInfo = dataStore.cacheRead(
+      'linearTeam',
+      () => connectStore.issueService.teamMembers(),
+      86400000
+    )
 
     await Promise.all([updatedPulls, updatedIssues, teamInfo])
 

@@ -1,5 +1,6 @@
 import { config } from '@/config'
-import { QueryPullRequest } from '@/query/types'
+import { CodeService, PRFilters } from '@/query/codeService'
+import { QueryPullRequest, QueryUser } from '@/query/types'
 import axios, { AxiosInstance } from 'axios'
 
 export type PaginatedResult<T> = {
@@ -8,7 +9,7 @@ export type PaginatedResult<T> = {
   total_count: number
 }
 
-class Github {
+class Github implements CodeService {
   token: string = ''
   axios: AxiosInstance = axios.create()
 
@@ -34,7 +35,30 @@ class Github {
     }
   }
 
-  pulls = async (repo: string, query: string): Promise<PaginatedResult<QueryPullRequest>> => {
+  pulls = async (repo: string, filters: PRFilters): Promise<QueryPullRequest[]> => {
+    const queryParts: string[] = []
+
+    if (filters.merged) queryParts.push('is:merged')
+
+    if (filters.createdAfter && filters.createdBefore)
+      queryParts.push(`created:${filters.createdAfter}..${filters.createdBefore}`)
+    else if (filters.createdAfter) queryParts.push(`created:>${filters.createdAfter}`)
+    else if (filters.createdBefore) queryParts.push(`created:<${filters.createdBefore}`)
+
+    if (filters.updatedAfter && filters.updatedBefore)
+      queryParts.push(`updated:${filters.updatedAfter}..${filters.updatedBefore}`)
+    else if (filters.updatedAfter) queryParts.push(`updated:>${filters.updatedAfter}`)
+    else if (filters.updatedBefore) queryParts.push(`updated:<${filters.updatedBefore}`)
+
+    if (filters.mergedAfter && filters.mergedBefore)
+      queryParts.push(`merged:${filters.mergedAfter}..${filters.mergedBefore}`)
+    else if (filters.mergedAfter) queryParts.push(`merged:>${filters.mergedAfter}`)
+    else if (filters.mergedBefore) queryParts.push(`merged:<${filters.mergedBefore}`)
+
+    if (filters.draft !== undefined) queryParts.push('draft:' + filters.draft)
+    if (filters.open) queryParts.push('is:open')
+
+    const query = queryParts.join(' ')
     const q = encodeURIComponent(`repo:${repo} type:pr ${query}`)
     const response = await this.axios.get('https://api.github.com/search/issues?q=' + q)
 
@@ -51,8 +75,11 @@ class Github {
           repo,
         } as QueryPullRequest)
     )
-    response.data.items = data
-    return response.data
+    return data
+  }
+
+  teamMembers(): Promise<QueryUser[]> {
+    throw new Error('Method not implemented.')
   }
 }
 

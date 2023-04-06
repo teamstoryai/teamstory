@@ -2,7 +2,7 @@ import BaseModule from '@/modules/data/BaseModule'
 import PullRequestsCard from '@/modules/ui/PullRequestsCard'
 import StatsCard from '@/modules/ui/StatsCard'
 import github from '@/query/github'
-import linear, { IssueFilters } from '@/query/linear'
+import { IssueFilters } from '@/query/issueService'
 import { QueryPullRequest } from '@/query/types'
 import { connectStore } from '@/stores/connectStore'
 import { dataStore } from '@/stores/dataStore'
@@ -53,7 +53,9 @@ export default class StatsModule extends BaseModule<StatsModuleProps, Stat[]> {
 const getStats = async (filters: IssueFilters) => {
   const stats: StatsMap = {}
   const key = 'issues:' + JSON.stringify(filters)
-  const issues = await dataStore.cacheRead(key, () => linear.issues(filters, { labels: true }))
+  const issues = await dataStore.cacheRead(key, () =>
+    connectStore.issueService.issues(filters, { labels: true })
+  )
   for (const issue of issues) {
     const labels = issue.labels
     labels?.forEach((label) => {
