@@ -1,10 +1,8 @@
-# Daybird
+# Teamstory
 
-Daybird is a daily planning app with calendar and tasks. A hosted version can be found at [daybird.app](https://daybird.app).
+Teamstory is an engineering manager's best friend.
 
-Built with Phoenix/Elixir and Typescript/Preact, and uses Postgres as the DB.
-
-Pull requests welcome, as are issues and discussions.
+Built with Phoenix/Elixir and Typescript/React, and uses Postgres as the DB.
 
 ## Building from Source
 
